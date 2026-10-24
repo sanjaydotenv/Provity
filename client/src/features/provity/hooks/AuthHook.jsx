@@ -24,6 +24,7 @@ export const useAuthHook = () => {
     const OTPVerificationData = {OTP , "Email": Email}
     const response = await verifyOTP(OTPVerificationData)
     console.log(response)
+    navigate("/dashboard")
   };
 
   return {
