@@ -3,6 +3,8 @@ import HomePage from "./features/provity/ui/pages/HomePage";
 import { createBrowserRouter, RouterProvider } from "react-router";
 import RegisterPage from "./features/provity/ui/pages/RegisterPage";
 import LoginPage from "./features/provity/ui/pages/LoginPage";
+import OTPVerification from "./features/provity/ui/components/OTPVerification";
+import DashboardPage from "./features/provity/ui/pages/DashboardPage";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -17,6 +19,14 @@ const App = () => {
     {
       path: "/auth/login",
       element: <LoginPage />
+    },
+    {
+      path: "/auth/verify",
+      element: <OTPVerification />
+    },
+    {
+      path: "/dashboard",
+      element: <DashboardPage />
     }
   ]);
 
