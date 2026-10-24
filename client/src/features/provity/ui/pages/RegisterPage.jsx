@@ -6,12 +6,14 @@ import { IoIosInformationCircleOutline } from "react-icons/io";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useNavigateHook } from "../../hooks/NavigationHook";
+import { useAuthHook } from "../../hooks/AuthHook";
 
 gsap.registerPlugin(useGSAP);
 
 const RegisterPage = () => {
   const iconDets = useRef(null);
   const { navigate } = useNavigateHook();
+  const { register, handleSubmit, handleDataRegister } = useAuthHook();
 
   useGSAP(() => {
     gsap.set(iconDets.current, {
@@ -59,7 +61,11 @@ const RegisterPage = () => {
       />
 
       <div className="page absolute top-0 left-0 min-h-screen w-full px-8 py-4 text-white">
-        <div onClick={() => navigate("/")} id="nav" className="nav w-full flex justify-between items-center">
+        <div
+          onClick={() => navigate("/")}
+          id="nav"
+          className="nav w-full flex justify-between items-center"
+        >
           <ProvityLogo />
         </div>
 
@@ -70,22 +76,32 @@ const RegisterPage = () => {
             </i>
 
             <form
+              onSubmit={handleSubmit(handleDataRegister)}
               className="flex w-full flex-col items-center justify-center gap-5 py-6 sm:w-[80%] md:w-[65%] lg:w-[50%]"
               action=""
             >
               <input
+                {...register("UserName", {
+                  required: true,
+                })}
                 className="w-full rounded-lg border border-[var(--border-color)] px-5 py-2 sm:w-[80%] md:w-[70%] lg:w-[60%]"
                 type="text"
                 placeholder="UserName"
               />
 
               <input
+                {...register("Email", {
+                  required: true,
+                })}
                 className="w-full rounded-lg border border-[var(--border-color)] px-5 py-2 sm:w-[80%] md:w-[70%] lg:w-[60%]"
                 type="email"
                 placeholder="Email"
               />
 
               <input
+                {...register("Password", {
+                  required: true,
+                })}
                 className="w-full rounded-lg border border-[var(--border-color)] px-5 py-2 sm:w-[80%] md:w-[70%] lg:w-[60%]"
                 type="password"
                 placeholder="Password"
@@ -93,6 +109,9 @@ const RegisterPage = () => {
 
               <div className="relative w-full sm:w-[80%] md:w-[70%] lg:w-[60%]">
                 <input
+                  {...register("PhoneNo", {
+                    required: true,
+                  })}
                   className="w-full rounded-lg border border-[var(--border-color)] px-5 py-2 pr-12"
                   type="tel"
                   placeholder="Phone No."

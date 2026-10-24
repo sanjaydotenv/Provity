@@ -7,7 +7,9 @@ import jwt from "jsonwebtoken";
 import { _config } from "../config/config.js";
 
 const userRegisterController = async (req, res) => {
+  console.log("running")
   const { UserName, Email, Password, PhoneNo } = req.body;
+  console.log(UserName, Email, Password, PhoneNo )
 
   const isEmailAlreadyExists = await userModel.findOne({ Email });
 

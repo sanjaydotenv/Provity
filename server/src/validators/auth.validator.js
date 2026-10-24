@@ -12,7 +12,7 @@ export const resgisterValidator = [
     .withMessage("Password is required")
     .isLength({ min: 3 })
     .withMessage("Password at least 3 Characters long"),
-  body("PhoneNo")
+  body("Phone No")
     .isMobilePhone("en-IN")
     .withMessage("Please enter a valid mobile number"),
   (req, res, next) => {
