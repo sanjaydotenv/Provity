@@ -1,12 +1,12 @@
-import { axiosInsatnce } from "../../../config/axiosInstance"
+import { axiosInsatnce } from "../../../config/axiosInstance";
 
 export const registerAPI = async (data) => {
-    const response = await axiosInsatnce.post("/auth/register" , data)
+  const response = await axiosInsatnce.post("/auth/register", data);
 
-    return response
-}
+  return response;
+};
 
 export const verifyOTP = async (data) => {
-    const response = await axiosInsatnce.post("/auth/verify-email" , data)
-    return response
-}
+  const response = await axiosInsatnce.post("/auth/verify-email", data);
+  return response;
+};

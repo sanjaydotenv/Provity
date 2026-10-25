@@ -4,7 +4,7 @@ import { resgisterValidator } from "../validators/auth.validator.js";
 import passport from "../config/passport.js";
 import { _config } from "../config/config.js";
 import userModel from "../models/user.model.js";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 
 const route = Router();
 
@@ -29,35 +29,49 @@ route.get(
   "/google/callback",
   passport.authenticate("google", {
     session: false,
-    failureRedirect: "/",
+    failureRedirect: "http://localhost:5173/auth/login",
   }),
 
-  async (req,res) => {
-    const user = req.user;
-    const Email = user.emails[0].value;
+  async (req, res) => {
+    try {
+      const user = req.user;
+      const Email = user.emails[0].value;
 
-    const isUserExist = await userModel.findOne({ Email });
+      let isUserExist = await userModel.findOne({ Email });
 
-    // ––––––––––– Handle the Login –––––––––––
-    if (isUserExist) {
-      const token = jwt.sign({ id: isUserExist._id }, _config.JWT_ACCESS_SECRET, {
-        expiresIn: "15m",
+      // Handle Signup
+      if (!isUserExist) {
+        isUserExist = await userModel.create({
+          UserName: user.displayName,
+          Email,
+          googleId: user.id,
+        });
+      }
+
+      // Generate JWT
+      const token = jwt.sign(
+        { id: isUserExist._id },
+        _config.JWT_ACCESS_SECRET,
+        { expiresIn: "15m" },
+      );
+
+      // Store JWT in an HttpOnly cookie
+      res.cookie("accessToken", token, {
+        httpOnly: true,
+        sameSite: "lax",
+        maxAge: 15 * 60 * 1000,
+        path: "/",
       });
-      return res.status(200).json({ token });
+
+      // Redirect to frontend
+      return res.redirect("http://localhost:5173/dashboard");
+    } catch (error) {
+      console.error("Google OAuth error:", error);
+
+      return res.redirect(
+        "http://localhost:5173/login?error=google_auth_failed",
+      );
     }
-
-    // ––––––––––– Handle the Signup –––––––––––
-    const newUser = await userModel.create({
-      UserName: user.displayName,
-      Email,
-      googleId: user.id,
-    });
-
-    const token = jwt.sign({ id: newUser._id }, _config.JWT_ACCESS_SECRET, {
-      expiresIn: "15m",
-    });
-
-    return res.status(201).json({ token });
   },
 );
 

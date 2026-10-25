@@ -2,9 +2,11 @@ import Desktop02 from "../../../../assets/Desktop02.png";
 import ProvityLogo from "../components/ProvityLogo";
 import { FcGoogle } from "react-icons/fc";
 import { useNavigateHook } from "../../hooks/NavigationHook";
+import { useAuthHook } from "../../hooks/AuthHook";
 
 const RegisterPage = () => {
   const { navigate } = useNavigateHook();
+  const {handleGoogleOAuth} = useAuthHook()
 
   return (
     <div className="h-screen min-h-[600px] w-full select-none overflow-hidden">
@@ -57,7 +59,7 @@ const RegisterPage = () => {
               </span>
             </p>
 
-            <button className="w-full sm:w-[70%] md:w-[50%] lg:w-[30%] px-3 py-2 border-1 border-[var(--border-color)] mt-5 rounded-full text-base sm:text-lg flex items-center justify-center gap-2 opacity-50 hover:opacity-100 animation duration-250">
+            <button onClick={handleGoogleOAuth} className="w-full sm:w-[70%] md:w-[50%] lg:w-[30%] px-3 py-2 border-1 border-[var(--border-color)] mt-5 rounded-full text-base sm:text-lg flex items-center justify-center gap-2 opacity-50 hover:opacity-100 animation duration-250">
               <i>Continue With Google</i>{" "}
               <span className="mt-1">
                 <FcGoogle size={18} />

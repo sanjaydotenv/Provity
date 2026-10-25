@@ -13,7 +13,7 @@ gsap.registerPlugin(useGSAP);
 const RegisterPage = () => {
   const iconDets = useRef(null);
   const { navigate } = useNavigateHook();
-  const { register, handleSubmit, handleDataRegister } = useAuthHook();
+  const { register, handleSubmit, handleDataRegister , handleGoogleOAuth } = useAuthHook();
 
   useGSAP(() => {
     gsap.set(iconDets.current, {
@@ -146,7 +146,7 @@ const RegisterPage = () => {
               </span>
             </p>
 
-            <button className="mt-5 flex w-full items-center justify-center gap-2 rounded-full border border-[var(--border-color)] px-3 py-2 text-base opacity-50 duration-250 hover:opacity-100 sm:w-[70%] sm:text-lg md:w-[50%] lg:w-[30%]">
+            <button onClick={handleGoogleOAuth} className="mt-5 flex w-full items-center justify-center gap-2 rounded-full border border-[var(--border-color)] px-3 py-2 text-base opacity-50 duration-250 hover:opacity-100 sm:w-[70%] sm:text-lg md:w-[50%] lg:w-[30%]">
               <i>Continue With Google</i>
 
               <span className="mt-1">
