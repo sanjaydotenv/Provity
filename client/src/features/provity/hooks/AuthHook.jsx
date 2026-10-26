@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import { registerAPI, verifyOTP } from "../api/AuthAPI";
+import { loginAPI, registerAPI, verifyOTP } from "../api/AuthAPI";
 
 export const useAuthHook = () => {
   const navigate = useNavigate();
@@ -27,8 +27,13 @@ export const useAuthHook = () => {
     navigate("/dashboard");
   };
 
+  const handleDataLogin = async (data) => {
+    const response = await loginAPI(data);
+    console.log(response);
+  };
+
   const handleGoogleOAuth = async () => {
-    window.location.href = "http://localhost:3000/api/auth/google"
+    window.location.href = "http://localhost:3000/api/auth/google";
   };
 
   return {
@@ -38,5 +43,6 @@ export const useAuthHook = () => {
     handleDataRegister,
     handleOTPVerification,
     handleGoogleOAuth,
+    handleDataLogin,
   };
 };

@@ -10,3 +10,10 @@ export const verifyOTP = async (data) => {
   const response = await axiosInsatnce.post("/auth/verify-email", data);
   return response;
 };
+
+
+export const loginAPI = async (data) => {
+  const response = await axiosInsatnce.post("/auth/login" , data)
+
+  return response
+}

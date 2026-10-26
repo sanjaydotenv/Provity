@@ -6,60 +6,121 @@ import { useAuthHook } from "../../hooks/AuthHook";
 
 const RegisterPage = () => {
   const { navigate } = useNavigateHook();
-  const {handleGoogleOAuth} = useAuthHook()
+
+  const { handleGoogleOAuth, handleDataLogin, handleSubmit, register, errors } =
+    useAuthHook();
 
   return (
-    <div className="h-screen min-h-[600px] w-full select-none overflow-hidden">
+    <div className="relative min-h-screen min-h-[600px] w-full select-none overflow-x-hidden">
       <img
-        className="absolute inset-0 h-full w-full object-cover"
+        className="absolute inset-0 h-full min-h-screen w-full object-cover"
         src={Desktop02}
         alt=""
       />
 
-      <div className="page absolute top-0 left-0 px-8 py-4 h-full w-full text-white">
-        <div onClick={() => navigate("/")} id="nav" className="nav w-full flex justify-between items-center">
+      <div className="page absolute inset-0 min-h-screen w-full px-4 py-4 sm:px-6 md:px-8 text-white">
+        <div
+          onClick={() => navigate("/")}
+          id="nav"
+          className="nav flex w-full items-center justify-between"
+        >
           <ProvityLogo />
         </div>
 
-        <div className="hero h-[95%] w-full flex items-center justify-center">
-          <div className="form h-[60%] w-full flex flex-col items-center">
-            <i className="text-2xl sm:text-3xl opacity-80 font-light text-center">
+        <div className="hero flex min-h-[calc(100vh-100px)] w-full items-center justify-center ">
+          <div className="form flex w-full flex-col items-center">
+            <i className="text-center text-2xl font-light opacity-80 sm:text-3xl mb-5">
               Login your account
             </i>
 
             <form
-              className="h-[70%] w-full sm:w-[80%] md:w-[65%] lg:w-[50%] flex flex-col items-center justify-center gap-5"
-              action=""
+              onSubmit={handleSubmit(handleDataLogin)}
+              noValidate
+              className="flex w-full flex-col items-center justify-center gap-5 sm:w-[80%] md:w-[65%] lg:w-[50%]"
             >
-              <input
-                className="w-full sm:w-[80%] md:w-[70%] lg:w-[60%] px-5 py-2 border-1 border-[var(--border-color)] rounded-lg"
-                type="text"
-                placeholder="Email"
-              />
+              {/* Email */}
+              <div className="relative flex w-full flex-col items-center">
+                <input
+                  {...register("Email", {
+                    required: "Email is required",
+                    pattern: {
+                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                      message: "Please enter a valid email address",
+                    },
+                  })}
+                  className={`w-full rounded-lg border bg-transparent px-5 py-2 sm:w-[80%] md:w-[70%] lg:w-[60%] ${
+                    errors.Email
+                      ? "border-red-500 focus:border-red-500"
+                      : "border-[var(--border-color)]"
+                  } outline-none`}
+                  type="email"
+                  placeholder="Email"
+                  autoComplete="email"
+                  aria-invalid={!!errors.Email}
+                />
 
-              <input
-                className="w-full sm:w-[80%] md:w-[70%] lg:w-[60%] px-5 py-2 border-1 border-[var(--border-color)] rounded-lg"
-                type="text"
-                placeholder="Password"
-              />
+                {errors.Email && (
+                  <p
+                    role="alert"
+                    className="mt-1 w-full text-left text-sm text-red-400 sm:w-[80%] md:w-[70%] lg:w-[60%]"
+                  >
+                    {" "}
+                    {errors.Email.message}{" "}
+                  </p>
+                )}
+              </div>
 
+              {/* Password */}
+              <div className="relative flex w-full flex-col items-center">
+                <input
+                  {...register("Password", {
+                    required: "Password is required",
+                  })}
+                  className={`w-full rounded-lg border bg-transparent px-5 py-2 sm:w-[80%] md:w-[70%] lg:w-[60%] ${
+                    errors.Password
+                      ? "border-red-500 focus:border-red-500"
+                      : "border-[var(--border-color)]"
+                  } outline-none`}
+                  type="password"
+                  placeholder="Password"
+                  autoComplete="current-password"
+                  aria-invalid={!!errors.Password}
+                />
+
+                {errors.Password && (
+                  <p
+                    role="alert"
+                    className="mt-1 w-full text-left text-sm text-red-400 sm:w-[80%] md:w-[70%] lg:w-[60%]"
+                  >
+                    {" "}
+                    {errors.Password.message}{" "}
+                  </p>
+                )}
+              </div>
+
+              {/* Submit */}
               <input
-                className="w-full sm:w-[80%] md:w-[70%] lg:w-[60%] mt-5 cursor-pointer px-5 py-3 border-1 border-[var(--border-color)] rounded-lg"
+                className="mt-5 w-full cursor-pointer rounded-lg border border-[var(--border-color)] px-5 py-3 sm:w-[80%] md:w-[70%] lg:w-[60%]"
                 type="submit"
+                value="Login"
               />
             </form>
 
-            <p className="text-sm text-center px-2">
+            <p className="mt-2 px-2 text-center text-sm">
               Don’t have an account?{" "}
               <span
                 onClick={() => navigate("/auth/register")}
-                className="text-[var(--primary-color)] cursor-pointer"
+                className="cursor-pointer text-[var(--primary-color)]"
               >
                 SignUp
               </span>
             </p>
 
-            <button onClick={handleGoogleOAuth} className="w-full sm:w-[70%] md:w-[50%] lg:w-[30%] px-3 py-2 border-1 border-[var(--border-color)] mt-5 rounded-full text-base sm:text-lg flex items-center justify-center gap-2 opacity-50 hover:opacity-100 animation duration-250">
+            <button
+              onClick={handleGoogleOAuth}
+              type="button"
+              className="mt-5 flex w-full items-center justify-center gap-2 rounded-full border border-[var(--border-color)] px-3 py-2 text-base opacity-50 duration-250 hover:opacity-100 sm:w-[70%] sm:text-lg md:w-[50%] lg:w-[30%]"
+            >
               <i>Continue With Google</i>{" "}
               <span className="mt-1">
                 <FcGoogle size={18} />
