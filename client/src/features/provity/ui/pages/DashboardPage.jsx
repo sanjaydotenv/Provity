@@ -20,6 +20,7 @@ import {
   FiMoreHorizontal,
   FiCalendar,
 } from "react-icons/fi";
+import { useNavigateHook } from "../../hooks/NavigationHook";
 
 const ORANGE = "#FC6C26";
 
@@ -52,16 +53,13 @@ const getTimeData = (now) => {
   const nextYearStart = new Date(year + 1, 0, 1);
 
   const totalDaysInYear = Math.round(
-    (nextYearStart.getTime() - yearStart.getTime()) / DAY_MS
+    (nextYearStart.getTime() - yearStart.getTime()) / DAY_MS,
   );
 
   const dayOfYear =
     Math.floor((now.getTime() - yearStart.getTime()) / DAY_MS) + 1;
 
-  const daysRemainingInYear = Math.max(
-    0,
-    totalDaysInYear - dayOfYear
-  );
+  const daysRemainingInYear = Math.max(0, totalDaysInYear - dayOfYear);
 
   const yearElapsed =
     ((now.getTime() - yearStart.getTime()) /
@@ -81,7 +79,7 @@ const getTimeData = (now) => {
 
   const remainingMilliseconds = Math.max(
     0,
-    nextDayStart.getTime() - now.getTime()
+    nextDayStart.getTime() - now.getTime(),
   );
 
   const elapsedSeconds = Math.floor(elapsedMilliseconds / 1000);
@@ -93,9 +91,7 @@ const getTimeData = (now) => {
   const remainingHours = remainingMilliseconds / 3600000;
 
   const dayElapsed =
-    (elapsedMilliseconds /
-      (nextDayStart.getTime() - dayStart.getTime())) *
-    100;
+    (elapsedMilliseconds / (nextDayStart.getTime() - dayStart.getTime())) * 100;
 
   const dayRemaining = 100 - dayElapsed;
 
@@ -108,9 +104,10 @@ const getTimeData = (now) => {
       hours,
       minutes,
       seconds,
-      text: `${String(hours).padStart(2, "0")}:${String(
-        minutes
-      ).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`,
+      text: `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+        2,
+        "0",
+      )}:${String(seconds).padStart(2, "0")}`,
     };
   };
 
@@ -146,6 +143,7 @@ const getTimeData = (now) => {
 const DashboardPage = () => {
   const [now, setNow] = useState(() => new Date());
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { navigate } = useNavigateHook();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -219,9 +217,7 @@ const DashboardPage = () => {
   const completedTasks = 0;
 
   const taskProgress =
-    totalTasks > 0
-      ? Math.min(100, (completedTasks / totalTasks) * 100)
-      : 0;
+    totalTasks > 0 ? Math.min(100, (completedTasks / totalTasks) * 100) : 0;
 
   const countdowns = [
     {
@@ -307,7 +303,10 @@ const DashboardPage = () => {
         {sidebarOpen && (
           <button
             aria-label="Close sidebar"
-            onClick={() => setSidebarOpen(false)}
+            onClick={() => {
+              setSidebarOpen(false);
+              navigate("/dashboard/flow");
+            }}
             className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm lg:hidden"
           />
         )}
@@ -344,15 +343,16 @@ const DashboardPage = () => {
               className="group relative flex items-center gap-3 overflow-hidden rounded-xl border border-[#FC6C26]/20 bg-gradient-to-r from-[#FC6C26]/20 to-[#FC6C26]/[0.04] px-4 py-3.5 text-left text-sm font-medium text-white"
             >
               <span className="absolute bottom-3 left-0 top-3 w-[3px] rounded-r-full bg-[#FC6C26]" />
-
               <IoHome className="text-lg text-[#FC6C26]" />
               Dashboard
-
               <span className="ml-auto h-1.5 w-1.5 rounded-full bg-[#FC6C26] shadow-[0_0_10px_#FC6C26]" />
             </button>
 
             <button
-              onClick={() => setSidebarOpen(false)}
+              onClick={() => {
+                setSidebarOpen(false)
+                navigate("/dashboard/flow")
+              }}
               className="flex items-center gap-3 rounded-xl border border-transparent px-4 py-3.5 text-left text-sm text-white/55 transition hover:border-white/[0.08] hover:bg-white/[0.04] hover:text-white"
             >
               <FiPlus className="text-lg" />
@@ -438,9 +438,7 @@ const DashboardPage = () => {
 
                 <div>
                   <p className="text-xs font-medium">{today}</p>
-                  <p className="mt-0.5 text-[10px] text-white/40">
-                    {weekday}
-                  </p>
+                  <p className="mt-0.5 text-[10px] text-white/40">{weekday}</p>
                 </div>
               </div>
             </section>
@@ -599,7 +597,7 @@ const DashboardPage = () => {
                           style={{
                             width: `${Math.min(
                               100,
-                              Math.max(0, item.remainingProgress)
+                              Math.max(0, item.remainingProgress),
                             )}%`,
                           }}
                         />
@@ -673,9 +671,7 @@ const DashboardPage = () => {
                         </button>
                       </div>
 
-                      <p className="mt-5 text-sm text-white/50">
-                        {stat.label}
-                      </p>
+                      <p className="mt-5 text-sm text-white/50">{stat.label}</p>
 
                       <div className="mt-1 flex items-end justify-between gap-2">
                         <span className="text-4xl font-semibold tracking-tight">
@@ -862,9 +858,7 @@ const DashboardPage = () => {
                       <div className="flex items-center gap-1.5">
                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
 
-                        <p className="text-[10px] text-white/40">
-                          Completed
-                        </p>
+                        <p className="text-[10px] text-white/40">Completed</p>
                       </div>
 
                       <p className="mt-2 text-xl font-semibold">
@@ -876,9 +870,7 @@ const DashboardPage = () => {
                       <div className="flex items-center gap-1.5">
                         <span className="h-1.5 w-1.5 rounded-full bg-[#FC6C26]" />
 
-                        <p className="text-[10px] text-white/40">
-                          Remaining
-                        </p>
+                        <p className="text-[10px] text-white/40">Remaining</p>
                       </div>
 
                       <p className="mt-2 text-xl font-semibold">
@@ -896,9 +888,7 @@ const DashboardPage = () => {
 
             {/* Footer */}
             <footer className="mt-10 flex flex-col justify-between gap-2 border-t border-white/[0.07] py-5 text-[10px] text-white/25 sm:flex-row sm:items-center">
-              <p>
-                © {now.getFullYear()} Provity. Stay focused. Keep growing.
-              </p>
+              <p>© {now.getFullYear()} Provity. Stay focused. Keep growing.</p>
 
               <p className="flex items-center gap-1.5">
                 Crafted for productivity

@@ -5,7 +5,8 @@ import RegisterPage from "./features/provity/ui/pages/RegisterPage";
 import LoginPage from "./features/provity/ui/pages/LoginPage";
 import OTPVerification from "./features/provity/ui/components/OTPVerification";
 import DashboardPage from "./features/provity/ui/pages/DashboardPage";
-import TodayFlowPage from "./features/provity/ui/pages/TodayFlowPage";
+import TodayFlow from "./features/provity/ui/components/TodayFlow";
+import FlowPage from "./features/provity/ui/pages/FlowPage";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -31,7 +32,11 @@ const App = () => {
     },
     {
       path: "/dashboard/flow",
-      element: <TodayFlowPage />,
+      element: <FlowPage />,
+    },
+    {
+      path: "/dashboard/add-flow",
+      element: <TodayFlow />,
     },
   ]);
 
