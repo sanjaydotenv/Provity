@@ -3,12 +3,23 @@ import ProvityLogo from "../components/ProvityLogo";
 import { FcGoogle } from "react-icons/fc";
 import { useNavigateHook } from "../../hooks/NavigationHook";
 import { useAuthHook } from "../../hooks/AuthHook";
+import { useEffect } from "react";
 
 const RegisterPage = () => {
   const { navigate } = useNavigateHook();
 
-  const { handleGoogleOAuth, handleDataLogin, handleSubmit, register, errors } =
-    useAuthHook();
+  const {
+    handleGoogleOAuth,
+    handleDataLogin,
+    handleSubmit,
+    register,
+    errors,
+    // handleGetMe,
+  } = useAuthHook();
+
+  // useEffect(() => {
+  //   handleGetMe();
+  // }, []);
 
   return (
     <div className="relative min-h-screen min-h-[600px] w-full select-none overflow-x-hidden">

@@ -17,6 +17,7 @@ route.post(
 route.post("/verify-email", authController.emailVerifictionController);
 route.post("/login", authController.userLoginController);
 route.get("/get-me" , authentication ,authController.getMeController)
+route.post("/refresh-token" , authController.refreshAccessTokenViaRefresToken)
 
 route.get(
   "/google",
@@ -51,17 +52,17 @@ route.get(
       }
 
       // Generate JWT
-      const token = jwt.sign(
+      const refreshToken = jwt.sign(
         { id: isUserExist._id },
         _config.JWT_REFRESH_SECRET,
-        { expiresIn: "15m" },
+        { expiresIn: "7d" },
       );
 
       // Store JWT in an HttpOnly cookie
-      res.cookie("refreshToken", token, {
+      res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         sameSite: "lax",
-        maxAge: 15 * 60 * 1000,
+        maxAge: 7 * 24 * 60 * 60 * 10000,
         path: "/",
       });
 

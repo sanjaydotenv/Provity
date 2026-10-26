@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Desktop01 from "../../../../assets/Desktop01.png";
 import { useNavigateHook } from "../../hooks/NavigationHook";
 import ProvityLogo from "../components/ProvityLogo";
@@ -6,6 +6,7 @@ import ProvityLogo from "../components/ProvityLogo";
 const HomePage = () => {
   const { navigate } = useNavigateHook();
 
+  
   return (
     <div className="h-screen min-h-screen w-full text-white relative overflow-hidden">
       <img

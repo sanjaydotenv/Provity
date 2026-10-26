@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import HomePage from "./features/provity/ui/pages/HomePage";
 import { createBrowserRouter, RouterProvider } from "react-router";
 import RegisterPage from "./features/provity/ui/pages/RegisterPage";
@@ -7,12 +7,18 @@ import OTPVerification from "./features/provity/ui/components/OTPVerification";
 import DashboardPage from "./features/provity/ui/pages/DashboardPage";
 import TodayFlow from "./features/provity/ui/components/TodayFlow";
 import FlowPage from "./features/provity/ui/pages/FlowPage";
+import AuthHydration from "./features/provity/ui/components/AuthHydration";
 
 const App = () => {
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <HomePage />,
+      element: (
+        <>
+          <AuthHydration />
+          <HomePage />
+        </>
+      ),
     },
     {
       path: "/auth/register",

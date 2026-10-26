@@ -7,9 +7,7 @@ import jwt from "jsonwebtoken";
 import { _config } from "../config/config.js";
 
 const userRegisterController = async (req, res) => {
-  console.log("running");
   const { UserName, Email, Password, PhoneNo } = req.body;
-  console.log(UserName, Email, Password, PhoneNo);
 
   const isEmailAlreadyExists = await userModel.findOne({ Email });
 
@@ -38,7 +36,7 @@ const userRegisterController = async (req, res) => {
 
   return res.status(201).json({
     success: true,
-    message: "Registration successful. Please verify your email.",
+    message: "Registration successfull. Please verify your email.",
   });
 };
 
@@ -76,6 +74,7 @@ const emailVerifictionController = async (req, res) => {
 
   res.cookie("refreshToken", refreshToken, {
     httpOnlt: true,
+    maxAge: 7 * 24 * 60 * 60 * 10000,
   });
 
   return res.status(200).json({
@@ -96,8 +95,6 @@ const userLoginController = async (req, res) => {
   if (!user) {
     throw new AppError("Something went wrong");
   }
-
-  console.log(Password, user.Password);
 
   const isValidPassword = await bcrypt.compare(Password, user.Password);
 
@@ -140,8 +137,55 @@ const getMeController = async (req, res) => {
 
   res.status(200).json({
     message: "User fetched successfully",
-    user
+    user,
   });
+};
+
+const refreshAccessTokenViaRefresToken = async (req, res) => {
+  const refreshToken = req.cookies?.refreshToken;
+
+  if (!refreshToken) {
+    throw new AppError("refresh Token not found");
+  }
+
+  let decoded = null;
+  try {
+    decoded = jwt.verify(refreshToken, _config.JWT_REFRESH_SECRET);
+
+    if (!decoded) {
+      throw new AppError("Invalid credentials");
+    }
+
+    const user = await userModel.findById(decoded.id);
+
+    if (!user) {
+      throw new AppError("user not found");
+    }
+
+    const accessToken = jwt.sign({ id: user._id }, _config.JWT_ACCESS_SECRET, {
+      expiresIn: "15m",
+    });
+
+    const newRefreshToken = jwt.sign(
+      { id: user._id },
+      _config.JWT_REFRESH_SECRET,
+      {
+        expiresIn: "7d",
+      },
+    );
+
+    res.cookie("refreshToken", newRefreshToken, {
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 10000,
+    });
+
+    res.status(200).json({
+      message: "reGenerate access and refresh Token",
+      accessToken,
+    });
+  } catch (error) {
+    throw new AppError(`Error while decoding refresh Token ${error.message}`);
+  }
 };
 
 export default {
@@ -149,4 +193,5 @@ export default {
   emailVerifictionController,
   userLoginController,
   getMeController,
+  refreshAccessTokenViaRefresToken,
 };

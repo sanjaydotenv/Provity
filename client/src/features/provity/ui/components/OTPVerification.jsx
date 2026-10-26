@@ -12,7 +12,7 @@ const OTP_LENGTH = 4;
 
 const OTPVerification = () => {
   const { navigate } = useNavigateHook();
-  const { handleOTPVerification } = useAuthHook();
+  const { handleOTPVerification , handleGetMe } = useAuthHook();
 
   const [timeLeft, setTimeLeft] = useState(300);
   const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(""));
@@ -21,6 +21,10 @@ const OTPVerification = () => {
   const inputRefs = useRef([]);
   const secondsRef = useRef(null);
   const previousSecondsRef = useRef(null);
+
+  useEffect(() => {
+    handleGetMe()
+  }, [])
 
   // Countdown timer
   useEffect(() => {
