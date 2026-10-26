@@ -7,9 +7,9 @@ import jwt from "jsonwebtoken";
 import { _config } from "../config/config.js";
 
 const userRegisterController = async (req, res) => {
-  console.log("running")
+  console.log("running");
   const { UserName, Email, Password, PhoneNo } = req.body;
-  console.log(UserName, Email, Password, PhoneNo )
+  console.log(UserName, Email, Password, PhoneNo);
 
   const isEmailAlreadyExists = await userModel.findOne({ Email });
 
@@ -50,7 +50,7 @@ const emailVerifictionController = async (req, res) => {
   if (!user) {
     throw new AppError("User not found", 404);
   }
-  
+
   if (Number(OTP) !== user.EmailOTP) {
     throw new AppError("Invalid OTP", 400);
   }
@@ -97,6 +97,8 @@ const userLoginController = async (req, res) => {
     throw new AppError("Something went wrong");
   }
 
+  console.log(Password, user.Password);
+
   const isValidPassword = await bcrypt.compare(Password, user.Password);
 
   if (!isValidPassword) {
@@ -123,8 +125,28 @@ const userLoginController = async (req, res) => {
   });
 };
 
+const getMeController = async (req, res) => {
+  const { id } = req.user;
+
+  if (!id) {
+    throw new AppError("User ID is not found", 404);
+  }
+
+  const user = await userModel.findById(id);
+
+  if (!user) {
+    throw new AppError("User is not found", 404);
+  }
+
+  res.status(200).json({
+    message: "User fetched successfully",
+    user
+  });
+};
+
 export default {
   userRegisterController,
   emailVerifictionController,
   userLoginController,
+  getMeController,
 };

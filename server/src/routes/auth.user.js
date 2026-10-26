@@ -5,6 +5,7 @@ import passport from "../config/passport.js";
 import { _config } from "../config/config.js";
 import userModel from "../models/user.model.js";
 import jwt from "jsonwebtoken";
+import { authentication } from "../middlewares/authentication.middleware.js";
 
 const route = Router();
 
@@ -15,6 +16,7 @@ route.post(
 );
 route.post("/verify-email", authController.emailVerifictionController);
 route.post("/login", authController.userLoginController);
+route.get("/get-me" , authentication ,authController.getMeController)
 
 route.get(
   "/google",
@@ -51,12 +53,12 @@ route.get(
       // Generate JWT
       const token = jwt.sign(
         { id: isUserExist._id },
-        _config.JWT_ACCESS_SECRET,
+        _config.JWT_REFRESH_SECRET,
         { expiresIn: "15m" },
       );
 
       // Store JWT in an HttpOnly cookie
-      res.cookie("accessToken", token, {
+      res.cookie("refreshToken", token, {
         httpOnly: true,
         sameSite: "lax",
         maxAge: 15 * 60 * 1000,
