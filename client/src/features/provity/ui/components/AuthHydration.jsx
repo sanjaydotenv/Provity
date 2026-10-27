@@ -1,29 +1,54 @@
 import { useEffect } from "react";
-import { useAuthHook } from "../../hooks/AuthHook";
 import { useDispatch } from "react-redux";
-import { setAccessToken } from "../../state/AuthSlice";
+
+import { useAuthHook } from "../../hooks/AuthHook";
+import { setAccessToken, setLoading, setUserData } from "../../state/AuthSlice";
 
 const AuthHydration = () => {
-  const { getNewAccessTokenViaRefreshToken } = useAuthHook();
+  const { getNewAccessTokenViaRefreshToken, handleGetMe } = useAuthHook();
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   useEffect(() => {
+    let cancelled = false;
+
     const hydrateUser = async () => {
       try {
         const response = await getNewAccessTokenViaRefreshToken();
-        dispatch(setAccessToken(response.data.accessToken))
-        console.log("User hydration successful:", response.data);
+
+        console.log(response.data.accessToken)
+
+        const accessToken = response.data.accessToken;
+
+        const userResponse = await handleGetMe(response.data.accessToken);
+
+        if (cancelled) return;
+
+        dispatch(setAccessToken(accessToken));
+        dispatch(setUserData(userResponse.data.user));
       } catch (error) {
-        console.error(
+        if (cancelled) return;
+
+        dispatch(setAccessToken(null));
+        dispatch(setUserData(null));
+
+        console.log(
           "User hydration failed:",
           error.response?.data || error.message,
         );
+      } finally {
+        if (!cancelled) {
+          dispatch(setLoading(false));
+        }
       }
     };
 
     hydrateUser();
-  }, [getNewAccessTokenViaRefreshToken]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return null;
 };

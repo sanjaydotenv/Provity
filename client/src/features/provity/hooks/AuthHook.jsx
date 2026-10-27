@@ -13,7 +13,7 @@ import { setUserData } from "../state/AuthSlice";
 
 export const useAuthHook = () => {
   const dispatch = useDispatch();
-  const { accessToken, user } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
   const { navigate } = useNavigateHook();
 
   const {
@@ -37,10 +37,12 @@ export const useAuthHook = () => {
     navigate("/dashboard");
   };
 
-  const handleGetMe = async () => {
-    const response = await getMeAPI(accessToken);
-    dispatch(setUserData(response.data.user));
-  };
+  const handleGetMe = async (token) => {
+  const response = await getMeAPI(token);
+  dispatch(setUserData(response.data.user));
+
+  return response;
+};
 
   const handleDataLogin = async (data) => {
     const response = await loginAPI(data);

@@ -12,23 +12,24 @@ export const verifyOTP = async (data) => {
 };
 
 export const getMeAPI = async (accessToken) => {
-  const response = await axiosInsatnce.get("/auth/get-me" , {
+  console.log(accessToken)
+  const response = await axiosInsatnce.get("/auth/get-me", {
     headers: {
-      Authorization: `Bearer ${accessToken}`
-    }
-  })
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
 
-  return response
-}
+  return response;
+};
 
 export const loginAPI = async (data) => {
-  const response = await axiosInsatnce.post("/auth/login" , data)
+  const response = await axiosInsatnce.post("/auth/login", data);
 
-  return response
-}
+  return response;
+};
 
 export const accessTokenViaRefreshToken = async () => {
-  const response = await axiosInsatnce.post("/auth/refresh-token")
+  const response = await axiosInsatnce.post("/auth/refresh-token");
 
-  return response
-}
+  return response;
+};

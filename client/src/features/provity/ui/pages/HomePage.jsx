@@ -1,17 +1,18 @@
-import React, { useEffect } from "react";
 import Desktop01 from "../../../../assets/Desktop01.png";
 import { useNavigateHook } from "../../hooks/NavigationHook";
 import ProvityLogo from "../components/ProvityLogo";
 import { useSelector } from "react-redux";
+import Loading from "../components/Loading";
 
 const HomePage = () => {
   const { navigate } = useNavigateHook();
 
-  const { accessToken } = useSelector((state) => state.auth);
+  const { loading } = useSelector((state) => state.auth);
 
-  if (accessToken){
-    navigate("/dashboard")
+  if (loading){
+    return <Loading />
   }
+
 
   return (
     <div className="h-screen min-h-screen w-full text-white relative overflow-hidden">

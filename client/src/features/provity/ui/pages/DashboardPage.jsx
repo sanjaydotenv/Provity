@@ -23,6 +23,7 @@ import {
 import { useNavigateHook } from "../../hooks/NavigationHook";
 import { useSelector } from "react-redux";
 import { useAuthHook } from "../../hooks/AuthHook";
+import Loading from "../components/Loading";
 
 const ORANGE = "#FC6C26";
 
@@ -145,19 +146,11 @@ const getTimeData = (now) => {
 const DashboardPage = () => {
   const [now, setNow] = useState(() => new Date());
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
   const { navigate } = useNavigateHook();
-  const { handleGetMe } = useAuthHook();
+  const { user, loading } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    handleGetMe()
-  }, [])
-
-  const { user } = useSelector((state) => state.auth);
-
-  if (!user) {
-    navigate("/");
-  }
-
+  // Live clock
   useEffect(() => {
     const interval = setInterval(() => {
       setNow(new Date());
@@ -165,6 +158,16 @@ const DashboardPage = () => {
 
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate("/", { replace: true });
+    }
+  }, [loading, user, navigate]);
+
+  if (loading || !user) {
+    return <Loading />;
+  }
 
   const timeData = getTimeData(now);
 
