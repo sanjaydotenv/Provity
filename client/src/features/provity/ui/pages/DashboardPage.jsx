@@ -21,6 +21,8 @@ import {
   FiCalendar,
 } from "react-icons/fi";
 import { useNavigateHook } from "../../hooks/NavigationHook";
+import { useSelector } from "react-redux";
+import { useAuthHook } from "../../hooks/AuthHook";
 
 const ORANGE = "#FC6C26";
 
@@ -144,6 +146,17 @@ const DashboardPage = () => {
   const [now, setNow] = useState(() => new Date());
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { navigate } = useNavigateHook();
+  const { handleGetMe } = useAuthHook();
+
+  useEffect(() => {
+    handleGetMe()
+  }, [])
+
+  const { user } = useSelector((state) => state.auth);
+
+  if (!user) {
+    navigate("/");
+  }
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -350,8 +363,8 @@ const DashboardPage = () => {
 
             <button
               onClick={() => {
-                setSidebarOpen(false)
-                navigate("/dashboard/flow")
+                setSidebarOpen(false);
+                navigate("/dashboard/flow");
               }}
               className="flex items-center gap-3 rounded-xl border border-transparent px-4 py-3.5 text-left text-sm text-white/55 transition hover:border-white/[0.08] hover:bg-white/[0.04] hover:text-white"
             >

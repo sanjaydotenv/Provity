@@ -8,6 +8,7 @@ import DashboardPage from "./features/provity/ui/pages/DashboardPage";
 import TodayFlow from "./features/provity/ui/components/TodayFlow";
 import FlowPage from "./features/provity/ui/pages/FlowPage";
 import AuthHydration from "./features/provity/ui/components/AuthHydration";
+import OnlyGoogleOauth from "./features/provity/ui/components/OnlyGoogleOauth";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -31,6 +32,10 @@ const App = () => {
     {
       path: "/auth/verify",
       element: <OTPVerification />,
+    },
+    {
+      path: "/auth/verify-oauth",
+      element: <OnlyGoogleOauth />,
     },
     {
       path: "/dashboard",

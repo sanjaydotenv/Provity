@@ -3,10 +3,17 @@ import ProvityLogo from "../components/ProvityLogo";
 import { FcGoogle } from "react-icons/fc";
 import { useNavigateHook } from "../../hooks/NavigationHook";
 import { useAuthHook } from "../../hooks/AuthHook";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 const RegisterPage = () => {
+
+
   const { navigate } = useNavigateHook();
+
+  const { user } = useSelector(state => state.auth);
+
+ 
 
   const {
     handleGoogleOAuth,
@@ -14,12 +21,16 @@ const RegisterPage = () => {
     handleSubmit,
     register,
     errors,
-    // handleGetMe,
+    handleGetMe,
   } = useAuthHook();
 
-  // useEffect(() => {
-  //   handleGetMe();
-  // }, []);
+  useEffect(() => {
+    handleGetMe();
+  }, []);
+
+   if (user){
+    return navigate("/auth/verify-oauth")
+  }
 
   return (
     <div className="relative min-h-screen min-h-[600px] w-full select-none overflow-x-hidden">

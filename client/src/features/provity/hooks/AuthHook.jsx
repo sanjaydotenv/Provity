@@ -31,23 +31,21 @@ export const useAuthHook = () => {
   };
 
   const handleOTPVerification = async (OTP) => {
-    const OTPVerificationData = { OTP, Email: user.Email };
+    const OTPVerificationData = { OTP, Email: user};
     const response = await verifyOTP(OTPVerificationData);
-    console.log(response);
+    dispatch(setUserData(response.data.user));
     navigate("/dashboard");
   };
 
   const handleGetMe = async () => {
     const response = await getMeAPI(accessToken);
     dispatch(setUserData(response.data.user));
-    console.log(response);
   };
 
   const handleDataLogin = async (data) => {
     const response = await loginAPI(data);
-    console.log(response);
-    console.log(user);
-    await handleGetMe()
+    dispatch(setUserData(response.data.Email))
+    console.log(response)
     navigate("/auth/verify");
   };
 

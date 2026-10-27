@@ -7,10 +7,15 @@ import ProvityLogo from "./ProvityLogo";
 
 import { useNavigateHook } from "../../hooks/NavigationHook";
 import { useAuthHook } from "../../hooks/AuthHook";
+import { useSelector } from "react-redux";
 
 const OTP_LENGTH = 4;
 
 const OTPVerification = () => {
+
+  const data = useSelector(state => state.auth)
+  console.log(data)
+
   const { navigate } = useNavigateHook();
   const { handleOTPVerification , handleGetMe } = useAuthHook();
 

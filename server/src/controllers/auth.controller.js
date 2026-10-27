@@ -119,6 +119,7 @@ const userLoginController = async (req, res) => {
   return res.status(200).json({
     message:
       "Login successfully complete, Please complete Email OTP Verification",
+      Email
   });
 };
 
