@@ -9,6 +9,10 @@ const flowSchema = new mongoose.Schema(
     description: {
       type: String,
     },
+    isPending: {
+      type: Boolean,
+      default: true
+    },
     isDone: {
       type: Boolean,
       default: false,

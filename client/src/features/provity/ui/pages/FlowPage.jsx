@@ -6,11 +6,27 @@ import {
 import { LuClipboardList, LuArrowDownRight } from "react-icons/lu";
 import ProvityLogo from "../components/ProvityLogo";
 import { useNavigateHook } from "../../hooks/NavigationHook";
+import { useDashboardHook } from "../../hooks/DashboardHook";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import TaskCardUI from "../components/TaskCardUI";
+import Loading from "../components/Loading";
 
 const FlowPage = () => {
   const { navigate } = useNavigateHook();
+  const { handleAllTasksData } = useDashboardHook();
+  const { accessToken } = useSelector((state) => state.auth);
+  const { allFlows } = useSelector((state) => state.flow);
 
-  const tasks = [];
+  useEffect(() => {
+    if (accessToken) {
+      handleAllTasksData(accessToken);
+    }
+  }, [accessToken, allFlows]);
+  
+  if (!allFlows) {
+    return <Loading />;
+  }
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-[var(--main-bg)] px-4 py-4 sm:px-7 sm:py-5">
@@ -20,64 +36,98 @@ const FlowPage = () => {
         <div className="flex items-center justify-between py-2 px-1">
           <ProvityLogo />
 
-        <button
-          type="button"
-          onClick={() => navigate("/dashboard")}
-          aria-label="Back to dashboard"
-          className="flex h-10 w-12 items-center justify-center border border-white/20 text-xl text-white/80 transition hover:border-[#FC6C26] hover:text-[#FC6C26] sm:h-11 sm:w-14"
-        >
-          <IoArrowBackOutline />
-        </button>
+          <button
+            type="button"
+            onClick={() => navigate("/dashboard")}
+            aria-label="Back to dashboard"
+            className="flex h-10 w-12 items-center justify-center border border-white/20 text-xl text-white/80 transition hover:border-[#FC6C26] hover:text-[#FC6C26] sm:h-11 sm:w-14"
+          >
+            <IoArrowBackOutline />
+          </button>
         </div>
 
         {/* Main Content */}
-        <main className="mx-auto flex min-h-[calc(100svh-100px)] w-full max-w-6xl flex-col items-center justify-center pb-16 pt-10">
-          {tasks.length === 0 ? (
-            <section className="flex w-full max-w-md flex-col items-center text-center">
-              {/* Icon */}
-              <div className="relative mb-7 flex h-20 w-20 items-center justify-center rounded-3xl border border-[var(--primary-color)]/20 bg-[var(--primary-color)]/[0.07] sm:h-24 sm:w-24">
-                <div className="absolute inset-0 rounded-3xl bg-[var(--primary-color)]/10 blur-2xl" />
+        <main className="mx-auto min-h-[calc(100svh-100px)] w-full max-w-7xl pb-24 pt-8 sm:pt-10">
+          {/* Page Header */}
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p className="mb-1 text-xs font-medium uppercase tracking-[0.25em] text-[var(--primary-color)]">
+                Your productivity
+              </p>
 
-                <LuClipboardList
-                  size={42}
-                  strokeWidth={1.2}
-                  className="relative text-[var(--primary-color)] sm:h-12 sm:w-12"
-                />
+              <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+                My Tasks<span className="text-[var(--primary-color)]">.</span>
+              </h1>
 
-                <span className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full border-4 border-[var(--main-bg)] bg-[var(--primary-color)] text-black">
-                  <IoAddOutline size={18} />
+              <p className="mt-2 text-sm text-white/40">
+                Keep your day organized, one task at a time.
+              </p>
+            </div>
+
+            {/* Task Count */}
+            <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--primary-color)]/10 text-[var(--primary-color)]">
+                <LuClipboardList size={20} />
+              </div>
+
+              <div>
+                <p className="text-lg font-semibold leading-5 text-white">
+                  {Array.isArray(allFlows) ? allFlows.length : 0}
+                </p>
+
+                <p className="mt-1 text-[10px] uppercase tracking-wider text-white/40">
+                  Total tasks
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Tasks */}
+          {!Array.isArray(allFlows) || allFlows.length === 0 ? (
+            <section className="flex min-h-[300px] w-full flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 bg-white/[0.02] px-5 text-center">
+              <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl border border-[var(--primary-color)]/20 bg-[var(--primary-color)]/[0.08] text-[var(--primary-color)]">
+                <LuClipboardList size={32} strokeWidth={1.4} />
+              </div>
+
+              <h2 className="text-xl font-semibold text-white">
+                Nothing on your plate yet.
+              </h2>
+
+              <p className="mt-2 max-w-sm text-sm leading-6 text-white/40">
+                You haven't added any tasks yet. Create your first task and
+                start organizing your day.
+              </p>
+
+              <button
+                type="button"
+                onClick={() => navigate("/dashboard/add-flow")}
+                className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[var(--primary-color)] px-5 py-3 text-sm font-semibold text-black transition hover:brightness-110 active:scale-95"
+              >
+                <IoAddOutline size={20} />
+                Create your first task
+              </button>
+            </section>
+          ) : (
+            <section>
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-sm font-medium text-white/70">
+                  All your tasks
+                </h2>
+
+                <span className="text-xs text-white/35">
+                  {allFlows.length} {allFlows.length === 1 ? "task" : "tasks"}
                 </span>
               </div>
 
-              {/* Heading */}
-              <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-                Nothing on your plate
-                <span className="text-[var(--primary-color)]"> yet.</span>
-              </h1>
-
-              {/* Description */}
-              <p className="mt-3 max-w-xs text-sm leading-6 text-white/50 sm:text-base">
-                You haven't added any tasks for today.
-              </p>
-
-              {/* Date / Status */}
-              <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-4 py-2 text-xs text-white/60 sm:text-sm">
-                <IoCalendarOutline
-                  size={16}
-                  className="text-[var(--primary-color)]"
-                />
-                <span>Your day starts here</span>
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,220px),1fr))] gap-3 sm:gap-4">
+                {allFlows.map((task, index) => (
+                  <TaskCardUI
+                    key={task._id || index}
+                    task={task}
+                    index={index}
+                  />
+                ))}
               </div>
-
-              {/* Hint */}
-              <div className="mt-8 flex items-center gap-2 text-xs text-white/35">
-                <LuArrowDownRight size={16} />
-                <span>Tap the + button to create your first task</span>
-              </div>
-            </section>
-          ) : (
-            <section className="w-full">
-              {/* Today's tasks will appear here */}
             </section>
           )}
         </main>

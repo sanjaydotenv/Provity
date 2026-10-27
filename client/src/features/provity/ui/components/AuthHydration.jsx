@@ -16,8 +16,6 @@ const AuthHydration = () => {
       try {
         const response = await getNewAccessTokenViaRefreshToken();
 
-        console.log(response.data.accessToken)
-
         const accessToken = response.data.accessToken;
 
         const userResponse = await handleGetMe(response.data.accessToken);

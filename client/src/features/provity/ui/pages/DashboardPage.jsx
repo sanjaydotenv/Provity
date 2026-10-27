@@ -23,6 +23,7 @@ import {
 import { useNavigateHook } from "../../hooks/NavigationHook";
 import { useSelector } from "react-redux";
 import Loading from "../components/Loading";
+import { useDashboardHook } from "../../hooks/DashboardHook";
 
 const ORANGE = "#FC6C26";
 
@@ -146,8 +147,16 @@ const DashboardPage = () => {
   const [now, setNow] = useState(() => new Date());
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const { handleAllTasksData } = useDashboardHook();
+
   const { navigate } = useNavigateHook();
-  const { user, loading } = useSelector((state) => state.auth);
+  const { user, loading, accessToken } = useSelector((state) => state.auth);
+  const { flow } = useSelector((state) => state);
+  console.log(flow);
+
+  useEffect(() => {
+    handleAllTasksData(accessToken);
+  }, [accessToken]);
 
   // Live clock
   useEffect(() => {

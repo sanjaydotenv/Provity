@@ -12,7 +12,6 @@ export const verifyOTP = async (data) => {
 };
 
 export const getMeAPI = async (accessToken) => {
-  console.log(accessToken)
   const response = await axiosInsatnce.get("/auth/get-me", {
     headers: {
       Authorization: `Bearer ${accessToken}`,

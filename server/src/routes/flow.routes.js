@@ -12,6 +12,6 @@ route.post(
   flowController.createFlowController,
 );
 
-route.get("/getflow", authentication, flowController.getAllFlowController);
+route.get("/get-flow", authentication, flowController.getAllFlowController);
 
 export default route;

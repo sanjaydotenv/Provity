@@ -8,18 +8,22 @@ import { IoCheckmarkCircleOutline } from "react-icons/io5";
 
 import { useNavigateHook } from "../../hooks/NavigationHook";
 import { useDashboardHook } from "../../hooks/DashboardHook";
+import { useEffect } from "react";
 
 const TodayFlow = () => {
   const { navigate } = useNavigateHook();
 
   const {
     taskValue,
-    setTaskValue,
     showDescriptionInput,
     hideDescriptionInput,
     descriptionToggleInput,
     msg,
+    handleTasksData,
+    handleTaskSubmit,
   } = useDashboardHook();
+
+  
 
   return (
     <div className="min-h-screen  bg-[#080808] px-4 py-5 text-white sm:px-6 sm:py-7 lg:px-8">
@@ -58,9 +62,10 @@ const TodayFlow = () => {
 
               <div id="inp-area" className="min-w-0 flex-1">
                 <input
+                  value={taskValue?.title}
+                  name="title"
                   id="task-title-first"
-                  value={taskValue}
-                  onChange={(e) => setTaskValue(e.target.value)}
+                  onChange={handleTasksData}
                   placeholder="Write your task here..."
                   className="w-full bg-transparent text-xl font-semibold italic tracking-wide text-white outline-none transition-all duration-300 placeholder:font-semibold placeholder:italic placeholder:text-white/35 focus:placeholder:text-white/20 sm:text-2xl lg:text-3xl"
                   type="text"
@@ -96,6 +101,9 @@ const TodayFlow = () => {
 
                   {/* Textarea */}
                   <textarea
+                    value={taskValue?.description}
+                    name="description"
+                    onChange={handleTasksData}
                     id="task-description"
                     placeholder="Add more details about your task..."
                     rows={4}
@@ -164,6 +172,7 @@ const TodayFlow = () => {
               </div>
             )}
             <button
+              onClick={handleTaskSubmit}
               type="button"
               className="group flex items-center justify-center gap-2.5 overflow-hidden rounded-xl bg-[var(--primary-color)] px-5 py-3 text-sm font-semibold text-white shadow-[0_6px_20px_rgba(252,108,38,0.2)] transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(252,108,38,0.4)] active:translate-y-0 active:scale-95 absolute bottom-10 right-10"
             >
@@ -200,7 +209,6 @@ const TodayFlow = () => {
           </div>
 
           {/* Floating Add Button */}
-        
         </main>
       </div>
     </div>

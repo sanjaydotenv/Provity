@@ -8,9 +8,6 @@ const Loading = () => {
 
   const { user } = useSelector((state) => state.auth);
 
-  if (user) {
-    navigate("/dashboard");
-  }
 
   return (
     <div className="fixed inset-0 z-50 flex min-h-screen items-center justify-center overflow-hidden bg-[#080808]">
