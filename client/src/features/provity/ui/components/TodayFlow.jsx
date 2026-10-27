@@ -22,15 +22,15 @@ const TodayFlow = () => {
   } = useDashboardHook();
 
   return (
-    <div className="min-h-screen bg-[#080808] px-4 py-5 text-white sm:px-6 sm:py-7 lg:px-8">
-      <div className="mx-auto flex min-h-[calc(100vh-40px)] max-w-[1500px] flex-col">
+    <div className="min-h-screen  bg-[#080808] px-4 py-5 text-white sm:px-6 sm:py-7 lg:px-8">
+      <div className="mx-auto flex min-h-[calc(100vh-40px)] max-w-[1500px] flex-col overflow-hidden">
         {/* Header */}
         <header className="flex items-center justify-between">
           <ProvityLogo />
 
           <button
             type="button"
-            onClick={() => navigate("/dashboard")}
+            onClick={() => navigate("/dashboard/flow")}
             aria-label="Back to dashboard"
             className="flex h-10 w-12 items-center justify-center border border-white/20 text-xl text-white/80 transition hover:border-[#FC6C26] hover:text-[#FC6C26] sm:h-11 sm:w-14"
           >

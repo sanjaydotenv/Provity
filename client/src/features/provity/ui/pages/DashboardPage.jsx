@@ -22,7 +22,6 @@ import {
 } from "react-icons/fi";
 import { useNavigateHook } from "../../hooks/NavigationHook";
 import { useSelector } from "react-redux";
-import { useAuthHook } from "../../hooks/AuthHook";
 import Loading from "../components/Loading";
 
 const ORANGE = "#FC6C26";

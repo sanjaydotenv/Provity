@@ -9,13 +9,14 @@ import TodayFlow from "./features/provity/ui/components/TodayFlow";
 import FlowPage from "./features/provity/ui/pages/FlowPage";
 import AuthHydration from "./features/provity/ui/components/AuthHydration";
 import OnlyGoogleOauth from "./features/provity/ui/components/OnlyGoogleOauth";
+import SmoothScroll from "./features/provity/ui/components/SmoothScroll";
 
 const RootLayout = () => {
   return (
-    <>
+    <SmoothScroll>
       {" "}
-      <AuthHydration /> <Outlet />
-    </>
+      <AuthHydration /> <Outlet />{" "}
+    </SmoothScroll>
   );
 };
 
