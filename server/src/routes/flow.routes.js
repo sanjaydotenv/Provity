@@ -20,4 +20,6 @@ route.get(
   flowController.getOneFlowController,
 );
 
+route.get("/get-dayWise" , authentication , flowController.getDayWiseData)
+
 export default route;
