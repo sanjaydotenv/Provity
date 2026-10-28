@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addTaskAPI, getAllTasksAPI } from "../api/FlowAPI";
-import { setFlowData } from "../state/FlowSlice";
+import { addTaskAPI, getAllTasksAPI, getOneTaskAPI } from "../api/FlowAPI";
+import { setFlowData, setOneFlowData } from "../state/FlowSlice";
 
 export const useDashboardHook = () => {
   const [taskValue, setTaskValue] = useState({
@@ -52,6 +52,11 @@ export const useDashboardHook = () => {
     dispatch(setFlowData(response.data.allFlow));
   };
 
+  const handleGetOneFlowData = async (id, accessToken) => {
+    const response = await getOneTaskAPI(id, accessToken);
+    dispatch(setOneFlowData(response.data.flow));
+  };
+
   return {
     taskValue,
     setTaskValue,
@@ -63,5 +68,6 @@ export const useDashboardHook = () => {
     handleTasksData,
     handleTaskSubmit,
     handleAllTasksData,
+    handleGetOneFlowData,
   };
 };

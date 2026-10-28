@@ -20,3 +20,13 @@ export const getAllTasksAPI = async (accessToken) => {
 
   return response;
 };
+
+export const getOneTaskAPI = async (id, accessToken) => {
+  const response = await axiosInsatnce.get(`/flow/getflow/${id}/details`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  return response;
+};

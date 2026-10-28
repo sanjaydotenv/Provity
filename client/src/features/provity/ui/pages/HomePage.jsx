@@ -7,12 +7,15 @@ import Loading from "../components/Loading";
 const HomePage = () => {
   const { navigate } = useNavigateHook();
 
-  const { loading } = useSelector((state) => state.auth);
+  const { loading  , user } = useSelector((state) => state.auth);
 
   if (loading){
     return <Loading />
   }
 
+  if (user){
+    navigate("/dashboard")
+  }
 
   return (
     <div className="h-screen min-h-screen w-full text-white relative overflow-hidden">

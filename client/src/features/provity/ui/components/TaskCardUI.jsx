@@ -3,6 +3,10 @@ import {
   IoCheckmarkCircleOutline,
   IoTimeOutline,
 } from "react-icons/io5";
+import { useDashboardHook } from "../../hooks/DashboardHook";
+import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useNavigateHook } from "../../hooks/NavigationHook";
 
 const TIME_ZONE = "Asia/Kolkata";
 
@@ -30,15 +34,23 @@ const formatTime = (date) => {
   }).format(new Date(date));
 };
 
-const TaskCardUI = ({ task, index = 0 }) => {
+const TaskCardUI = ({ task, index = 0, onOpen }) => {
   const isDone = task?.isDone === true;
 
   if (!task || typeof task !== "object" || Array.isArray(task)) {
     return null;
   }
 
+  const { accessToken } = useSelector((state) => state.auth);
+
+  const { handleGetOneFlowData } = useDashboardHook();
+
   return (
     <article
+      onClick={async () => {
+        await handleGetOneFlowData(task._id, accessToken);
+        onOpen?.();
+      }}
       className={`group relative flex h-[140px] min-w-0 flex-col overflow-hidden rounded-xl border p-3 transition-all duration-300 hover:-translate-y-1 ${
         isDone
           ? "border-emerald-400/20 bg-gradient-to-br from-emerald-400/[0.08] via-[#121416] to-[#0D0D0F] hover:border-emerald-400/40"

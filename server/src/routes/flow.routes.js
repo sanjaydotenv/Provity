@@ -14,4 +14,10 @@ route.post(
 
 route.get("/get-flow", authentication, flowController.getAllFlowController);
 
+route.get(
+  "/getflow/:id/details",
+  authentication,
+  flowController.getOneFlowController,
+);
+
 export default route;
