@@ -101,6 +101,7 @@ const getDayWiseData = async (req, res) => {
           tasks: {
             $push: {
               _id: "$_id",
+              date: "$createdAt",
               title: "$title",
               description: "$description",
               isDone: "$isDone",

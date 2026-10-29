@@ -21,19 +21,25 @@ import Loading from "../components/Loading";
 
 const FlowPage = () => {
   const { navigate } = useNavigateHook();
-  const { handleAllTasksData } = useDashboardHook();
+  const { handleDayWiseData } = useDashboardHook();
 
+  
   const { accessToken } = useSelector((state) => state.auth);
-  const { allFlows, oneFlow } = useSelector((state) => state.flow);
-
+  const { oneFlow ,DateWiseData} = useSelector((state) => state.flow);
+  
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+
+  console.log(DateWiseData)
+
 
   // Fetch tasks
   useEffect(() => {
     if (accessToken) {
-      handleAllTasksData(accessToken);
+      handleDayWiseData(accessToken);
+    
     }
   }, [accessToken]);
+
 
   // Prevent background page scrolling while modal is open
   useEffect(() => {
@@ -51,7 +57,7 @@ const FlowPage = () => {
     };
   }, [isDetailsOpen]);
 
-  if (!allFlows) {
+  if (!DateWiseData) {
     return <Loading />;
   }
 
@@ -79,6 +85,8 @@ const FlowPage = () => {
       timeZone: "Asia/Kolkata",
     }).format(new Date(date));
   };
+
+  
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-[var(--main-bg)] px-4 py-4 sm:px-7 sm:py-5">
@@ -122,7 +130,7 @@ const FlowPage = () => {
 
             <div>
               <p className="text-lg font-semibold leading-5 text-white">
-                {Array.isArray(allFlows) ? allFlows.length : 0}
+                {Array.isArray(DateWiseData) ? DateWiseData[0].tasks?.length : 0}
               </p>
 
               <p className="mt-1 text-[10px] uppercase tracking-wider text-white/40">
@@ -133,7 +141,7 @@ const FlowPage = () => {
         </div>
 
         {/* Tasks */}
-        {!Array.isArray(allFlows) || allFlows.length === 0 ? (
+        {!Array.isArray(DateWiseData) || DateWiseData[0].tasks?.length === 0 ? (
           <section className="flex min-h-[300px] w-full flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 bg-white/[0.02] px-5 text-center">
             <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl border border-[var(--primary-color)]/20 bg-[var(--primary-color)]/[0.08] text-[var(--primary-color)]">
               <LuClipboardList size={32} strokeWidth={1.4} />
@@ -165,17 +173,17 @@ const FlowPage = () => {
               </h2>
 
               <span className="text-xs text-white/35">
-                {allFlows.length} {allFlows.length === 1 ? "task" : "tasks"}
+                {DateWiseData[0].tasks.length} {DateWiseData[0].tasks.length === 1 ? "task" : "tasks"}
               </span>
             </div>
 
             <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,220px),1fr))] gap-3 sm:gap-4">
-              {allFlows.map((task, index) => (
+              {DateWiseData[0].tasks.map((task, index) => (
                 <TaskCardUI
-                  key={task._id || index}
-                  task={task}
-                  index={index}
-                  onOpen={() => setIsDetailsOpen(true)}
+                key={task._id || index}
+                task={task}
+                index={index}
+                onOpen={() => setIsDetailsOpen(true)}
                 />
               ))}
             </div>

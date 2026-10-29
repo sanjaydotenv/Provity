@@ -146,28 +146,30 @@ const getTimeData = (now) => {
 const DashboardPage = () => {
   const [now, setNow] = useState(() => new Date());
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [progressValue, setProgressValue] = useState({})
 
-  const { handleDayWiseData } = useDashboardHook();
+  const {
+    handleDayWiseData,
+    handleProgress,
+    DateWiseData,
+    progressValue,
+    handleAllTasksData,
+  } = useDashboardHook();
 
   const { navigate } = useNavigateHook();
   const { user, loading, accessToken } = useSelector((state) => state.auth);
-  const { DateWiseData } = useSelector((state) => state.flow);
+  const { allFlows } = useSelector((state) => state.flow);
+
+  useEffect(() => {
+    handleAllTasksData(accessToken);
+  }, [accessToken]);
 
   useEffect(() => {
     handleDayWiseData(accessToken);
   }, [accessToken]);
 
-  const handleProgress = () => {
-    if (DateWiseData){
-      setProgressValue(DateWiseData[0])
-    }
-  }
-
   useEffect(() => {
-    handleProgress()
-  } , [DateWiseData])
-
+    handleProgress();
+  }, [DateWiseData]);
 
   // Live clock
   useEffect(() => {
@@ -211,39 +213,34 @@ const DashboardPage = () => {
   const stats = [
     {
       label: "Today's Tasks",
-      value: 0,
+      value: DateWiseData?.[0]?.tasks?.length ?? 0,
       subtitle: "Tasks scheduled for today",
       icon: FiClipboard,
       accent: "orange",
     },
     {
       label: "Completed",
-      value: 0,
+      value: DateWiseData?.[0]?.completed ?? 0,
       subtitle: "Tasks finished successfully",
       icon: FiCheckCircle,
       accent: "green",
     },
     {
       label: "Pending Tasks",
-      value: 0,
+      value: DateWiseData?.[0]?.pending ?? 0,
       subtitle: "Tasks waiting for you",
       icon: FiClock,
       accent: "yellow",
     },
     {
       label: "Total Tasks",
-      value: 0,
+      value: allFlows?.length,
       subtitle: "Your overall workload",
       icon: FiTrendingUp,
       accent: "purple",
     },
   ];
 
-  const totalTasks = 8;
-  const completedTasks = 0;
-
-  const taskProgress =
-    totalTasks > 0 ? Math.min(100, (completedTasks / totalTasks) * 100) : 0;
 
   const countdowns = [
     {

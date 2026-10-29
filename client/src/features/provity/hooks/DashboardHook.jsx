@@ -1,16 +1,27 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addTaskAPI, getAllTasksAPI, getOneTaskAPI , getDayWiseDataAPI} from "../api/FlowAPI";
-import { setDateWiseData, setFlowData, setOneFlowData } from "../state/FlowSlice";
+import {
+  addTaskAPI,
+  getAllTasksAPI,
+  getOneTaskAPI,
+  getDayWiseDataAPI,
+} from "../api/FlowAPI";
+import {
+  setDateWiseData,
+  setFlowData,
+  setOneFlowData,
+} from "../state/FlowSlice";
 
 export const useDashboardHook = () => {
   const [taskValue, setTaskValue] = useState({
     title: "",
     description: "",
   });
+  const [progressValue, setProgressValue] = useState({});
   const [descriptionToggleInput, setDescriptionToggleInput] = useState(false);
   const [msg, setMsg] = useState(true);
   const { accessToken } = useSelector((state) => state.auth);
+  const { DateWiseData } = useSelector((state) => state.flow);
 
   const dispatch = useDispatch();
 
@@ -49,7 +60,7 @@ export const useDashboardHook = () => {
 
   const handleAllTasksData = async (accessToken) => {
     const response = await getAllTasksAPI(accessToken);
-    console.log(response)
+    console.log(response);
     dispatch(setFlowData(response.data.allFlow));
   };
 
@@ -59,9 +70,15 @@ export const useDashboardHook = () => {
   };
 
   const handleDayWiseData = async (accessToken) => {
-    const response = await getDayWiseDataAPI(accessToken)
-    dispatch(setDateWiseData(response.data.data))
-  }
+    const response = await getDayWiseDataAPI(accessToken);
+    dispatch(setDateWiseData(response.data.data));
+  };
+
+  const handleProgress = () => {
+    if (DateWiseData) {
+      setProgressValue(DateWiseData[0]);
+    }
+  };
 
   return {
     taskValue,
@@ -75,6 +92,10 @@ export const useDashboardHook = () => {
     handleTaskSubmit,
     handleAllTasksData,
     handleGetOneFlowData,
-    handleDayWiseData
+    handleDayWiseData,
+    setProgressValue,
+    progressValue,
+    handleProgress,
+    DateWiseData,
   };
 };

@@ -5,8 +5,6 @@ import {
 } from "react-icons/io5";
 import { useDashboardHook } from "../../hooks/DashboardHook";
 import { useSelector } from "react-redux";
-import { useEffect } from "react";
-import { useNavigateHook } from "../../hooks/NavigationHook";
 
 const TIME_ZONE = "Asia/Kolkata";
 
@@ -37,13 +35,17 @@ const formatTime = (date) => {
 const TaskCardUI = ({ task, index = 0, onOpen }) => {
   const isDone = task?.isDone === true;
 
+
   if (!task || typeof task !== "object" || Array.isArray(task)) {
     return null;
   }
 
   const { accessToken } = useSelector((state) => state.auth);
+  const data = useSelector((state) => state);
+
 
   const { handleGetOneFlowData } = useDashboardHook();
+
 
   return (
     <article
@@ -111,7 +113,7 @@ const TaskCardUI = ({ task, index = 0, onOpen }) => {
       <div className="relative mt-auto flex items-center justify-between gap-2 border-t border-white/[0.07] pt-2">
         <span className="flex min-w-0 items-center gap-1 text-[10px] text-white/40">
           <IoCalendarOutline className="shrink-0" />
-          <span className="truncate">{formatDate(task?.createdAt)}</span>
+          <span className="truncate">{formatDate(task?.date)}</span>
         </span>
 
         <span
@@ -120,7 +122,7 @@ const TaskCardUI = ({ task, index = 0, onOpen }) => {
           }`}
         >
           {isDone ? <IoCheckmarkCircleOutline /> : <IoTimeOutline />}
-          {formatTime(task?.createdAt)}
+          {formatTime(task?.date)}
         </span>
       </div>
     </article>
