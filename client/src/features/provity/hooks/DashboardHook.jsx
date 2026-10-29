@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addTaskAPI, getAllTasksAPI, getOneTaskAPI } from "../api/FlowAPI";
-import { setFlowData, setOneFlowData } from "../state/FlowSlice";
+import { addTaskAPI, getAllTasksAPI, getOneTaskAPI , getDayWiseDataAPI} from "../api/FlowAPI";
+import { setDateWiseData, setFlowData, setOneFlowData } from "../state/FlowSlice";
 
 export const useDashboardHook = () => {
   const [taskValue, setTaskValue] = useState({
@@ -49,6 +49,7 @@ export const useDashboardHook = () => {
 
   const handleAllTasksData = async (accessToken) => {
     const response = await getAllTasksAPI(accessToken);
+    console.log(response)
     dispatch(setFlowData(response.data.allFlow));
   };
 
@@ -56,6 +57,11 @@ export const useDashboardHook = () => {
     const response = await getOneTaskAPI(id, accessToken);
     dispatch(setOneFlowData(response.data.flow));
   };
+
+  const handleDayWiseData = async (accessToken) => {
+    const response = await getDayWiseDataAPI(accessToken)
+    dispatch(setDateWiseData(response.data.data))
+  }
 
   return {
     taskValue,
@@ -69,5 +75,6 @@ export const useDashboardHook = () => {
     handleTaskSubmit,
     handleAllTasksData,
     handleGetOneFlowData,
+    handleDayWiseData
   };
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ProvityLogo from "../components/ProvityLogo";
 
 import {
@@ -146,16 +146,28 @@ const getTimeData = (now) => {
 const DashboardPage = () => {
   const [now, setNow] = useState(() => new Date());
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [progressValue, setProgressValue] = useState({})
 
-  const { handleAllTasksData } = useDashboardHook();
+  const { handleDayWiseData } = useDashboardHook();
 
   const { navigate } = useNavigateHook();
   const { user, loading, accessToken } = useSelector((state) => state.auth);
-
+  const { DateWiseData } = useSelector((state) => state.flow);
 
   useEffect(() => {
-    handleAllTasksData(accessToken);
+    handleDayWiseData(accessToken);
   }, [accessToken]);
+
+  const handleProgress = () => {
+    if (DateWiseData){
+      setProgressValue(DateWiseData[0])
+    }
+  }
+
+  useEffect(() => {
+    handleProgress()
+  } , [DateWiseData])
+
 
   // Live clock
   useEffect(() => {
@@ -226,15 +238,6 @@ const DashboardPage = () => {
       accent: "purple",
     },
   ];
-
-  const flows = Array.from({ length: 6 }, (_, i) => ({
-    id: i + 1,
-    title: `Daily Flow ${String(i + 1).padStart(2, "0")}`,
-    total: 7,
-    completed: 5,
-    pending: 2,
-    date: "22 Oct 2026",
-  }));
 
   const totalTasks = 8;
   const completedTasks = 0;
@@ -399,21 +402,21 @@ const DashboardPage = () => {
 
               <div className="relative mt-4 flex items-end justify-between">
                 <p className="text-3xl font-semibold tracking-tight">
-                  {completedTasks}
+                  {progressValue?.completed}
                   <span className="text-base font-normal text-white/35">
-                    /{totalTasks}
+                    /{progressValue?.total}
                   </span>
                 </p>
 
                 <p className="pb-1 text-xs text-[#FC6C26]">
-                  {Math.round(taskProgress)}%
+                  {Math.round(progressValue.progress)}%
                 </p>
               </div>
 
               <div className="mt-3 h-1 overflow-hidden rounded-full bg-white/[0.08]">
                 <div
                   className="h-full rounded-full bg-[#FC6C26] transition-all"
-                  style={{ width: `${taskProgress}%` }}
+                  style={{ width: `${progressValue.progress}%` }}
                 />
               </div>
 
@@ -745,7 +748,7 @@ const DashboardPage = () => {
 
               <div className="grid grid-cols-1 items-stretch gap-5 2xl:grid-cols-[minmax(0,1fr)_280px]">
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                  {flows.map((flow) => {
+                  {DateWiseData?.map((flow, idx) => {
                     const flowProgress =
                       flow.total > 0
                         ? Math.min(100, (flow.completed / flow.total) * 100)
@@ -753,7 +756,7 @@ const DashboardPage = () => {
 
                     return (
                       <article
-                        key={flow.id}
+                        key={flow.date}
                         className="group rounded-2xl border border-white/[0.08] bg-[#111214] p-4 transition duration-300 hover:-translate-y-0.5 hover:border-[#FC6C26]/30 hover:bg-[#151516]"
                       >
                         <div className="flex items-center justify-between gap-3">
@@ -764,7 +767,7 @@ const DashboardPage = () => {
 
                             <div className="min-w-0">
                               <h3 className="truncate text-xs font-medium text-white/90">
-                                {flow.title}
+                                {"Day " + String(idx + 1).padStart(3, "0")}
                               </h3>
 
                               <p className="mt-1 text-[10px] text-white/35">
@@ -775,10 +778,13 @@ const DashboardPage = () => {
 
                           <button
                             aria-label={`More options for ${flow.title}`}
-                            className="shrink-0 text-white/25 transition hover:text-white"
+                            className="shrink-0 text-white/25 transition hover:text-white relative"
                           >
                             <FiMoreHorizontal className="text-xl" />
                           </button>
+                          <div className="bg-red-500/30 absolute top-10 left-40 h-8 w-25 rounded-lg hidden">
+                            <p>show in detail</p>
+                          </div>
                         </div>
 
                         <div className="my-4 h-px bg-white/[0.07]" />
@@ -861,12 +867,12 @@ const DashboardPage = () => {
                   <div
                     className="relative flex h-44 w-44 items-center justify-center rounded-full"
                     style={{
-                      background: `conic-gradient(${ORANGE} ${taskProgress * 3.6}deg, rgba(255,255,255,0.07) 0deg)`,
+                      background: `conic-gradient(${ORANGE} ${progressValue.progress * 3.6}deg, rgba(255,255,255,0.07) 0deg)`,
                     }}
                   >
                     <div className="flex h-[calc(100%-12px)] w-[calc(100%-12px)] flex-col items-center justify-center rounded-full border border-white/[0.06] bg-[#111112]">
                       <p className="text-4xl font-semibold tracking-tight">
-                        {Math.round(taskProgress)}
+                        {Math.round(progressValue.progress)}
                         <span className="text-xl text-[#FC6C26]">%</span>
                       </p>
 
@@ -885,7 +891,7 @@ const DashboardPage = () => {
                       </div>
 
                       <p className="mt-2 text-xl font-semibold">
-                        {completedTasks}
+                        {progressValue.completed}
                       </p>
                     </div>
 
@@ -897,7 +903,7 @@ const DashboardPage = () => {
                       </div>
 
                       <p className="mt-2 text-xl font-semibold">
-                        {Math.max(0, totalTasks - completedTasks)}
+                        {Math.max(progressValue.pending)}
                       </p>
                     </div>
                   </div>
