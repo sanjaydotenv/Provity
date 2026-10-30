@@ -216,10 +216,33 @@ export const getTodayTasks = async (req, res) => {
   }
 };
 
+const markAsCompleteController = async (req, res) => {
+  const id = req.params.id;
+
+  if (!id) {
+    throw new AppError("ID is not found", 404);
+  }
+
+  const task = await flowModel.findByIdAndUpdate(id, {
+    isDone: true,
+    isPending: false,
+  });
+
+  if (!task) {
+    throw new AppError("flow not found", 404);
+  }
+
+  res.status(200).json({
+    message: "task completed successfully",
+    task,
+  });
+};
+
 export default {
   createFlowController,
   getAllFlowController,
   getOneFlowController,
   getDayWiseData,
   getTodayTasks,
+  markAsCompleteController,
 };

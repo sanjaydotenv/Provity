@@ -20,6 +20,7 @@ const TodayFlow = () => {
     msg,
     handleTasksData,
     handleTaskSubmit,
+    handleCompleteTask,
   } = useDashboardHook();
 
   return (

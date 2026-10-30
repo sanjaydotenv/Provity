@@ -32,21 +32,32 @@ export const getOneTaskAPI = async (id, accessToken) => {
 };
 
 export const getDayWiseDataAPI = async (accessToken) => {
-  const response = await axiosInsatnce.get("/flow/get-dayWise" , {
+  const response = await axiosInsatnce.get("/flow/get-dayWise", {
     headers: {
-      Authorization: `Bearer ${accessToken}`
-    }
-  })
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
 
-  return response
-}
+  return response;
+};
 
 export const getTodayTaskDataAPI = async (accessToken) => {
-  const response = await axiosInsatnce.get("/flow/today-tasks" , {
+  const response = await axiosInsatnce.get("/flow/today-tasks", {
     headers: {
-      Authorization: `Bearer ${accessToken}`
-    }
-  })
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
 
-  return response
-}
+  return response;
+};
+
+export const markAsCompleteTaskAPI = async (id, accessToken) => {
+  console.log(id, accessToken);
+  const response = await axiosInsatnce.patch(`/flow/complete-task/${id}/details`,{} , {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  return response;
+};

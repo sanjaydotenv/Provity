@@ -6,6 +6,7 @@ import {
   getOneTaskAPI,
   getDayWiseDataAPI,
   getTodayTaskDataAPI,
+  markAsCompleteTaskAPI,
 } from "../api/FlowAPI";
 import {
   setDateWiseData,
@@ -13,12 +14,15 @@ import {
   setOneFlowData,
   setTodayTasks,
 } from "../state/FlowSlice";
+import { useNavigateHook } from "./NavigationHook";
 
 export const useDashboardHook = () => {
   const [taskValue, setTaskValue] = useState({
     title: "",
     description: "",
   });
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const { navigate } = useNavigateHook();
   const [progressValue, setProgressValue] = useState({});
   const [descriptionToggleInput, setDescriptionToggleInput] = useState(false);
   const [msg, setMsg] = useState(true);
@@ -87,6 +91,11 @@ export const useDashboardHook = () => {
     dispatch(setTodayTasks(response.data.tasks));
   };
 
+  const handleCompleteTask = async (id, accessToken) => {
+    await markAsCompleteTaskAPI(id, accessToken);
+    setIsDetailsOpen(false);
+  };
+
   return {
     taskValue,
     setTaskValue,
@@ -105,5 +114,8 @@ export const useDashboardHook = () => {
     handleProgress,
     DateWiseData,
     handleTodayTasks,
+    handleCompleteTask,
+    setIsDetailsOpen,
+    isDetailsOpen,
   };
 };

@@ -20,8 +20,14 @@ route.get(
   flowController.getOneFlowController,
 );
 
-route.get("/get-dayWise" , authentication , flowController.getDayWiseData)
+route.get("/get-dayWise", authentication, flowController.getDayWiseData);
 
-route.get("/today-tasks" , authentication , flowController.getTodayTasks)
+route.get("/today-tasks", authentication, flowController.getTodayTasks);
+
+route.patch(
+  "/complete-task/:id/details",
+  authentication,
+  flowController.markAsCompleteController,
+);
 
 export default route;

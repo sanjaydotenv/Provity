@@ -21,17 +21,23 @@ import Loading from "../components/Loading";
 
 const FlowPage = () => {
   const { navigate } = useNavigateHook();
-  const { handleDayWiseData, handleTodayTasks } = useDashboardHook();
+  const {
+    handleDayWiseData,
+    handleTodayTasks,
+    handleCompleteTask,
+    setIsDetailsOpen,
+    isDetailsOpen,
+  } = useDashboardHook();
 
   const { accessToken } = useSelector((state) => state.auth);
-  const { oneFlow, DateWiseData , todayTasks } = useSelector((state) => state.flow);
+  const { oneFlow, DateWiseData, todayTasks } = useSelector(
+    (state) => state.flow,
+  );
 
-  const [ isDetailsOpen , setIsDetailsOpen ] = useState(false);
 
   useEffect(() => {
     handleTodayTasks(accessToken);
   }, [accessToken]);
-  
 
   useEffect(() => {
     if (!isDetailsOpen) return;
@@ -119,9 +125,7 @@ const FlowPage = () => {
 
             <div>
               <p className="text-lg font-semibold leading-5 text-white">
-                {Array.isArray(todayTasks)
-                  ? todayTasks?.length
-                  : 0}
+                {Array.isArray(todayTasks) ? todayTasks?.length : 0}
               </p>
 
               <p className="mt-1 text-[10px] uppercase tracking-wider text-white/40">
@@ -447,6 +451,9 @@ const FlowPage = () => {
                   </button>
                 ) : (
                   <button
+                    onClick={() => {
+                      handleCompleteTask(oneFlow._id, accessToken);
+                    }}
                     type="button"
                     className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-400 px-5 py-3 text-sm font-semibold text-[#07130c] shadow-[0_4px_20px_rgba(52,211,153,0.08)] transition duration-200 hover:bg-emerald-300 hover:shadow-[0_4px_24px_rgba(52,211,153,0.18)] active:scale-[0.98]"
                   >
