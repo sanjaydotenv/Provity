@@ -241,7 +241,6 @@ const DashboardPage = () => {
     },
   ];
 
-
   const countdowns = [
     {
       title: "MONTH END",
@@ -764,7 +763,7 @@ const DashboardPage = () => {
 
                             <div className="min-w-0">
                               <h3 className="truncate text-xs font-medium text-white/90">
-                                {"Day " + String(idx + 1).padStart(3, "0")}
+                                Day { String(DateWiseData.length - idx).padStart(3, "0")}
                               </h3>
 
                               <p className="mt-1 text-[10px] text-white/35">

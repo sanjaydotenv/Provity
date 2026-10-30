@@ -22,4 +22,6 @@ route.get(
 
 route.get("/get-dayWise" , authentication , flowController.getDayWiseData)
 
+route.get("/today-tasks" , authentication , flowController.getTodayTasks)
+
 export default route;

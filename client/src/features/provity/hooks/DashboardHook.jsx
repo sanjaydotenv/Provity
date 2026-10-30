@@ -5,11 +5,13 @@ import {
   getAllTasksAPI,
   getOneTaskAPI,
   getDayWiseDataAPI,
+  getTodayTaskDataAPI,
 } from "../api/FlowAPI";
 import {
   setDateWiseData,
   setFlowData,
   setOneFlowData,
+  setTodayTasks,
 } from "../state/FlowSlice";
 
 export const useDashboardHook = () => {
@@ -80,6 +82,11 @@ export const useDashboardHook = () => {
     }
   };
 
+  const handleTodayTasks = async (accessToken) => {
+    const response = await getTodayTaskDataAPI(accessToken);
+    dispatch(setTodayTasks(response.data.tasks));
+  };
+
   return {
     taskValue,
     setTaskValue,
@@ -97,5 +104,6 @@ export const useDashboardHook = () => {
     progressValue,
     handleProgress,
     DateWiseData,
+    handleTodayTasks,
   };
 };

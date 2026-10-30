@@ -31,10 +31,18 @@ export const getOneTaskAPI = async (id, accessToken) => {
   return response;
 };
 
-
 export const getDayWiseDataAPI = async (accessToken) => {
-  console.log(accessToken)
   const response = await axiosInsatnce.get("/flow/get-dayWise" , {
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    }
+  })
+
+  return response
+}
+
+export const getTodayTaskDataAPI = async (accessToken) => {
+  const response = await axiosInsatnce.get("/flow/today-tasks" , {
     headers: {
       Authorization: `Bearer ${accessToken}`
     }

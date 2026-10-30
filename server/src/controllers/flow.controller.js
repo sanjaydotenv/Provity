@@ -151,9 +151,75 @@ const getDayWiseData = async (req, res) => {
   }
 };
 
+export const getTodayTasks = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const today = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Kolkata",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(new Date());
+
+    const startDate = new Date(`${today}T00:00:00+05:30`);
+
+    const endDate = new Date(startDate);
+    endDate.setUTCDate(endDate.getUTCDate() + 1);
+
+    console.log("Today:", today);
+    console.log(
+      "Start Date IST:",
+      startDate.toLocaleString("en-IN", {
+        timeZone: "Asia/Kolkata",
+      }),
+    );
+
+    console.log(
+      "End Date IST:",
+      endDate.toLocaleString("en-IN", {
+        timeZone: "Asia/Kolkata",
+      }),
+    );
+
+    // Fetch today's tasks
+    const todayTasksData = await flowModel.aggregate([
+      {
+        $match: {
+          user: new mongoose.Types.ObjectId(userId),
+          createdAt: {
+            $gte: startDate,
+            $lt: endDate,
+          },
+        },
+      },
+      {
+        $sort: {
+          createdAt: -1,
+        },
+      },
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      date: today,
+      total: todayTasksData.length,
+      tasks: todayTasksData,
+    });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
 export default {
   createFlowController,
   getAllFlowController,
   getOneFlowController,
   getDayWiseData,
+  getTodayTasks,
 };

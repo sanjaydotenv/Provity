@@ -35,7 +35,6 @@ const formatTime = (date) => {
 const TaskCardUI = ({ task, index = 0, onOpen }) => {
   const isDone = task?.isDone === true;
 
-
   if (!task || typeof task !== "object" || Array.isArray(task)) {
     return null;
   }
@@ -43,9 +42,7 @@ const TaskCardUI = ({ task, index = 0, onOpen }) => {
   const { accessToken } = useSelector((state) => state.auth);
   const data = useSelector((state) => state);
 
-
   const { handleGetOneFlowData } = useDashboardHook();
-
 
   return (
     <article
@@ -110,19 +107,20 @@ const TaskCardUI = ({ task, index = 0, onOpen }) => {
       </p>
 
       {/* Footer */}
+      {/* Footer */}
       <div className="relative mt-auto flex items-center justify-between gap-2 border-t border-white/[0.07] pt-2">
         <span className="flex min-w-0 items-center gap-1 text-[10px] text-white/40">
           <IoCalendarOutline className="shrink-0" />
-          <span className="truncate">{formatDate(task?.date)}</span>
+          <span className="truncate">{formatDate(task?.createdAt)}</span>
         </span>
 
         <span
           className={`flex shrink-0 items-center gap-1 text-[10px] ${
-            isDone ? "text-emerald-300/70" : "text-[#FC8B55]/70"
+            isDone ? "text-emerald-300/70" : "text-[#FC8B26]/70"
           }`}
         >
           {isDone ? <IoCheckmarkCircleOutline /> : <IoTimeOutline />}
-          {formatTime(task?.date)}
+          {formatTime(task?.createdAt)}
         </span>
       </div>
     </article>
