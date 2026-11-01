@@ -23,7 +23,12 @@ export const useDashboardHook = () => {
   });
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const { navigate } = useNavigateHook();
-  const [progressValue, setProgressValue] = useState({});
+  const [progressValue, setProgressValue] = useState({
+    total: 0,
+    completed: 0,
+    pending: 0,
+    progress: 0,
+  });
   const [descriptionToggleInput, setDescriptionToggleInput] = useState(false);
   const [msg, setMsg] = useState(true);
   const { accessToken } = useSelector((state) => state.auth);

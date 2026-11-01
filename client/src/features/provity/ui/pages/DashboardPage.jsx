@@ -71,7 +71,6 @@ const getTimeData = (now) => {
 
   const yearRemaining = 100 - yearElapsed;
 
-  // Day calculations
   const dayStart = new Date(year, month, date);
   const nextDayStart = new Date(year, month, date + 1);
 
@@ -290,6 +289,7 @@ const DashboardPage = () => {
     purple: "text-violet-400 bg-violet-400/10 border-violet-400/20",
   };
 
+
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#08090B] text-white selection:bg-[#FC6C26]/30">
       {/* Background Effects */}
@@ -405,14 +405,14 @@ const DashboardPage = () => {
                 </p>
 
                 <p className="pb-1 text-xs text-[#FC6C26]">
-                  {Math.round(progressValue.progress)}%
+                  {Math.round(progressValue?.progress)}%
                 </p>
               </div>
 
               <div className="mt-3 h-1 overflow-hidden rounded-full bg-white/[0.08]">
                 <div
                   className="h-full rounded-full bg-[#FC6C26] transition-all"
-                  style={{ width: `${progressValue.progress}%` }}
+                  style={{ width: `${progressValue?.progress ?? 0}%` }}
                 />
               </div>
 
@@ -538,12 +538,12 @@ const DashboardPage = () => {
               </div>
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {countdowns.map((item) => {
+                {countdowns?.map((item) => {
                   const Icon = item.icon;
 
                   return (
                     <article
-                      key={item.title}
+                      key={item?.title}
                       className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#111214] p-5 transition duration-300 hover:-translate-y-1 hover:border-[#FC6C26]/30 hover:bg-[#151414]"
                     >
                       <div className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-[#FC6C26]/[0.04] blur-2xl transition group-hover:bg-[#FC6C26]/10" />
@@ -551,21 +551,21 @@ const DashboardPage = () => {
                       <div className="relative flex items-start justify-between gap-3">
                         <div className="min-w-0">
                           <p className="text-[10px] font-medium tracking-[1.8px] text-white/40">
-                            {item.title}
+                            {item?.title}
                           </p>
 
                           <div className="mt-4 flex items-baseline gap-2">
                             <span className="text-4xl font-semibold tracking-tight">
-                              {item.value}
+                              {item?.value}
                             </span>
 
                             <span className="text-xs text-white/40">
-                              {item.unit}
+                              {item?.unit}
                             </span>
                           </div>
 
                           <p className="mt-2 text-xs text-[#FC6C26]">
-                            {item.remainingDetail}
+                            {item?.remainingDetail}
                           </p>
                         </div>
 
@@ -577,11 +577,11 @@ const DashboardPage = () => {
                       {/* Elapsed / Remaining */}
                       <div className="relative mt-5 flex items-center justify-between gap-2">
                         <p className="text-[10px] text-white/40">
-                          {item.detail}
+                          {item?.detail}
                         </p>
 
                         <p className="shrink-0 text-xs font-medium text-white/70">
-                          {item.progress.toFixed(1)}%
+                          {item?.progress.toFixed(1)}%
                         </p>
                       </div>
 
@@ -589,10 +589,10 @@ const DashboardPage = () => {
                       <div
                         className="relative mt-2 h-2 overflow-hidden rounded-full bg-white/[0.07]"
                         role="progressbar"
-                        aria-label={`${item.title} elapsed`}
+                        aria-label={`${item?.title} elapsed`}
                         aria-valuemin={0}
                         aria-valuemax={100}
-                        aria-valuenow={Number(item.progress.toFixed(1))}
+                        aria-valuenow={Number(item?.progress.toFixed(1))}
                       >
                         <div
                           className="h-full rounded-full bg-gradient-to-r from-[#FC6C26] to-[#FF9B62] transition-[width] duration-700"
@@ -609,7 +609,7 @@ const DashboardPage = () => {
                         </p>
 
                         <p className="text-[10px] text-white/50">
-                          {item.remainingProgress.toFixed(1)}%
+                          {item?.remainingProgress?.toFixed(1)}%
                         </p>
                       </div>
 
@@ -619,7 +619,7 @@ const DashboardPage = () => {
                           style={{
                             width: `${Math.min(
                               100,
-                              Math.max(0, item.remainingProgress),
+                              Math.max(0, item?.remainingProgress),
                             )}%`,
                           }}
                         />
@@ -670,12 +670,12 @@ const DashboardPage = () => {
               </div>
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                {stats.map((stat) => {
-                  const Icon = stat.icon;
+                {stats?.map((stat) => {
+                  const Icon = stat?.icon;
 
                   return (
                     <article
-                      key={stat.label}
+                      key={stat?.label}
                       className="group rounded-2xl border border-white/[0.08] bg-[#111214] p-5 transition duration-300 hover:border-white/[0.15] hover:bg-[#151618]"
                     >
                       <div className="flex items-start justify-between">
@@ -686,25 +686,27 @@ const DashboardPage = () => {
                         </div>
 
                         <button
-                          aria-label={`${stat.label} options`}
+                          aria-label={`${stat?.label} options`}
                           className="rounded-lg p-1.5 text-white/20 transition hover:bg-white/[0.05] hover:text-white/70"
                         >
                           <FiMoreHorizontal className="text-xl" />
                         </button>
                       </div>
 
-                      <p className="mt-5 text-sm text-white/50">{stat.label}</p>
+                      <p className="mt-5 text-sm text-white/50">
+                        {stat?.label}
+                      </p>
 
                       <div className="mt-1 flex items-end justify-between gap-2">
                         <span className="text-4xl font-semibold tracking-tight">
-                          {stat.value}
+                          {stat?.value}
                         </span>
 
                         <FiArrowUpRight className="mb-1 text-lg text-white/20 transition group-hover:text-[#FC6C26]" />
                       </div>
 
                       <p className="mt-3 text-[11px] text-white/30">
-                        {stat.subtitle}
+                        {stat?.subtitle}
                       </p>
                     </article>
                   );
@@ -747,7 +749,7 @@ const DashboardPage = () => {
                   {DateWiseData?.map((flow, idx) => {
                     const flowProgress =
                       flow.total > 0
-                        ? Math.min(100, (flow.completed / flow.total) * 100)
+                        ? Math.min(100, (flow?.completed / flow?.total) * 100)
                         : 0;
 
                     return (
@@ -763,17 +765,21 @@ const DashboardPage = () => {
 
                             <div className="min-w-0">
                               <h3 className="truncate text-xs font-medium text-white/90">
-                                Day { String(DateWiseData.length - idx).padStart(3, "0")}
+                                Day{" "}
+                                {String(DateWiseData?.length - idx).padStart(
+                                  3,
+                                  "0",
+                                )}
                               </h3>
 
                               <p className="mt-1 text-[10px] text-white/35">
-                                {flow.date}
+                                {flow?.date}
                               </p>
                             </div>
                           </div>
 
                           <button
-                            aria-label={`More options for ${flow.title}`}
+                            aria-label={`More options for ${flow?.title}`}
                             className="shrink-0 text-white/25 transition hover:text-white relative"
                           >
                             <FiMoreHorizontal className="text-xl" />
@@ -788,7 +794,7 @@ const DashboardPage = () => {
                         <div className="grid grid-cols-3 gap-2">
                           <div>
                             <p className="text-lg font-semibold">
-                              {flow.total}
+                              {flow?.total}
                             </p>
 
                             <p className="mt-1 text-[9px] text-white/35 sm:text-[10px]">
@@ -798,7 +804,7 @@ const DashboardPage = () => {
 
                           <div>
                             <p className="text-lg font-semibold text-emerald-400">
-                              {flow.completed}
+                              {flow?.completed}
                             </p>
 
                             <p className="mt-1 text-[9px] text-white/35 sm:text-[10px]">
@@ -808,7 +814,7 @@ const DashboardPage = () => {
 
                           <div>
                             <p className="text-lg font-semibold text-amber-400">
-                              {flow.pending}
+                              {flow?.pending}
                             </p>
 
                             <p className="mt-1 text-[9px] text-white/35 sm:text-[10px]">
@@ -863,12 +869,12 @@ const DashboardPage = () => {
                   <div
                     className="relative flex h-44 w-44 items-center justify-center rounded-full"
                     style={{
-                      background: `conic-gradient(${ORANGE} ${progressValue.progress * 3.6}deg, rgba(255,255,255,0.07) 0deg)`,
+                      background: `conic-gradient(${ORANGE} ${progressValue?.progress * 3.6}deg, rgba(255,255,255,0.07) 0deg)`,
                     }}
                   >
                     <div className="flex h-[calc(100%-12px)] w-[calc(100%-12px)] flex-col items-center justify-center rounded-full border border-white/[0.06] bg-[#111112]">
                       <p className="text-4xl font-semibold tracking-tight">
-                        {Math.round(progressValue.progress)}
+                        {Math.round(progressValue?.progress)}
                         <span className="text-xl text-[#FC6C26]">%</span>
                       </p>
 
@@ -887,7 +893,7 @@ const DashboardPage = () => {
                       </div>
 
                       <p className="mt-2 text-xl font-semibold">
-                        {progressValue.completed}
+                        {progressValue?.completed}
                       </p>
                     </div>
 
@@ -899,7 +905,7 @@ const DashboardPage = () => {
                       </div>
 
                       <p className="mt-2 text-xl font-semibold">
-                        {Math.max(progressValue.pending)}
+                        {Math.max(progressValue?.pending)}
                       </p>
                     </div>
                   </div>
