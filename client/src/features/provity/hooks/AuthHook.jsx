@@ -16,6 +16,8 @@ export const useAuthHook = () => {
   const { user } = useSelector((state) => state.auth);
   const { navigate } = useNavigateHook();
 
+  console.log(user)
+
   const {
     register,
     handleSubmit,
