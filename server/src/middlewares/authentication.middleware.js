@@ -1,11 +1,9 @@
 import { _config } from "../config/config.js";
 import AppError from "../utils/app.error.js";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 
 export const authentication = async (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
-
-  console.log(token)
 
   if (!token) {
     throw new AppError("token is not found", 404);
@@ -22,6 +20,6 @@ export const authentication = async (req, res, next) => {
     next();
   } catch (error) {
     console.log(`Error while decoding token ${error.message}`);
-    throw new AppError(`Error while decoding token ${error.message}`)
+    throw new AppError(`Error while decoding token ${error.message}`);
   }
 };

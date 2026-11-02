@@ -167,20 +167,7 @@ export const getTodayTasks = async (req, res) => {
     const endDate = new Date(startDate);
     endDate.setUTCDate(endDate.getUTCDate() + 1);
 
-    console.log("Today:", today);
-    console.log(
-      "Start Date IST:",
-      startDate.toLocaleString("en-IN", {
-        timeZone: "Asia/Kolkata",
-      }),
-    );
 
-    console.log(
-      "End Date IST:",
-      endDate.toLocaleString("en-IN", {
-        timeZone: "Asia/Kolkata",
-      }),
-    );
 
     // Fetch today's tasks
     const todayTasksData = await flowModel.aggregate([
@@ -207,7 +194,7 @@ export const getTodayTasks = async (req, res) => {
       tasks: todayTasksData,
     });
   } catch (error) {
-    console.log(error);
+    console.error("Today's tasks error:", error);
 
     return res.status(500).json({
       success: false,
