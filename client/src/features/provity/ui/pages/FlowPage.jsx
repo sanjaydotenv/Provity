@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import {
   IoAddOutline,
@@ -20,20 +20,24 @@ import TaskCardUI from "../components/TaskCardUI";
 import Loading from "../components/Loading";
 
 const FlowPage = () => {
+  const titleRef = useRef(null);
+  const descriptionRef = useRef(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [updatedTask, setUpdatedTask] = useState({});
+
   const { navigate } = useNavigateHook();
   const {
-    handleDayWiseData,
     handleTodayTasks,
     handleCompleteTask,
     setIsDetailsOpen,
     isDetailsOpen,
+    handleUpdatedTask,
   } = useDashboardHook();
 
   const { accessToken } = useSelector((state) => state.auth);
   const { oneFlow, DateWiseData, todayTasks } = useSelector(
     (state) => state.flow,
   );
-
 
   useEffect(() => {
     handleTodayTasks(accessToken);
@@ -81,6 +85,19 @@ const FlowPage = () => {
       hour12: true,
       timeZone: "Asia/Kolkata",
     }).format(new Date(date));
+  };
+
+  const handleUpdateChange = (e) => {
+    const name = e.currentTarget.getAttribute("name");
+    const value = e.currentTarget.innerText;
+
+    setUpdatedTask((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+  const handleSaveTask = () => {
+    handleUpdatedTask(oneFlow._id, accessToken, updatedTask);
   };
 
   return (
@@ -317,12 +334,25 @@ const FlowPage = () => {
                   TASK TITLE
                 </p>
 
-                <h1 className="mt-3 break-words text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+                <h1
+                  onInput={(e) => handleUpdateChange(e, oneFlow._id)}
+                  ref={titleRef}
+                  contentEditable={isEditing}
+                  suppressContentEditableWarning
+                  name="title"
+                  className="mt-3 break-words text-3xl font-semibold tracking-tight text-white outline-none focus:outline-none sm:text-4xl"
+                >
                   {oneFlow.title || "Untitled Task"}
                   <span className="text-[#FC6C26]">.</span>
                 </h1>
 
-                <p className="mt-4 whitespace-pre-wrap break-words text-sm leading-7 text-white/50">
+                <p
+                  onInput={handleUpdateChange}
+                  ref={descriptionRef}
+                  contentEditable={isEditing}
+                  name="description"
+                  className="mt-4 whitespace-pre-wrap break-words text-sm leading-7 text-white/50"
+                >
                   {oneFlow.description?.trim() ||
                     "No description has been added to this task yet."}
                 </p>
@@ -351,7 +381,6 @@ const FlowPage = () => {
                         ? "Task completed successfully"
                         : "Task waiting for completion"}
                     </p>
-
                     <p className="mt-1 text-xs leading-5 text-white/40">
                       {oneFlow.isDone
                         ? "Great work! Keep building your productivity."
@@ -433,33 +462,75 @@ const FlowPage = () => {
 
               {/* UI-only action buttons */}
               <div className="grid grid-cols-1 gap-2 sm:flex sm:items-center">
-                <button
-                  type="button"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#FC6C26]/25 bg-[#FC6C26]/[0.08] px-5 py-3 text-sm font-medium text-[#FC8B55] transition duration-200 hover:border-[#FC6C26]/50 hover:bg-[#FC6C26]/15 hover:text-[#FFAD83] active:scale-[0.98]"
-                >
-                  <IoCreateOutline size={18} />
-                  Update Task
-                </button>
+                {isEditing ? (
+                  <>
+                    {/* Save Changes */}
+                    <button
+                      onClick={handleSaveTask}
+                      type="button"
+                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#FC6C26] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#e85d1c] active:scale-[0.98]"
+                    >
+                      <IoCheckmarkCircleOutline size={18} />
+                      Save Changes
+                    </button>
 
-                {oneFlow.isDone ? (
-                  <button
-                    type="button"
-                    className="inline-flex cursor-default items-center justify-center gap-2 rounded-xl border border-emerald-400/20 bg-emerald-400/[0.08] px-5 py-3 text-sm font-medium text-emerald-300"
-                  >
-                    <IoCheckmarkCircleOutline size={18} />
-                    Task Completed
-                  </button>
+                    {/* Cancel Editing */}
+                    <button
+                      onClick={() => setIsEditing(false)}
+                      type="button"
+                      className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-medium text-white/60 transition hover:bg-white/10"
+                    >
+                      <IoCloseOutline size={18} />
+                      Cancel
+                    </button>
+                  </>
                 ) : (
-                  <button
-                    onClick={() => {
-                      handleCompleteTask(oneFlow._id, accessToken);
-                    }}
-                    type="button"
-                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-400 px-5 py-3 text-sm font-semibold text-[#07130c] shadow-[0_4px_20px_rgba(52,211,153,0.08)] transition duration-200 hover:bg-emerald-300 hover:shadow-[0_4px_24px_rgba(52,211,153,0.18)] active:scale-[0.98]"
-                  >
-                    <IoCheckmarkDoneOutline size={18} />
-                    Mark as Complete
-                  </button>
+                  <>
+                    {/* Update Task */}
+                    <button
+                      onClick={() => {
+                        setUpdatedTask({
+                          title: oneFlow.title || "",
+                          description: oneFlow.description || "",
+                        });
+
+                        setIsEditing(true);
+
+                        setTimeout(() => {
+                          titleRef.current?.focus();
+                        }, 0);
+                      }}
+                      type="button"
+                      className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#FC6C26]/25 bg-[#FC6C26]/[0.08] px-5 py-3 text-sm font-medium text-[#FC8B55] transition hover:bg-[#FC6C26]/15"
+                    >
+                      <IoCreateOutline size={18} />
+                      Update Task
+                    </button>
+
+                    {/* Complete Task */}
+                    {!oneFlow.isDone && (
+                      <button
+                        onClick={() =>
+                          handleCompleteTask(oneFlow._id, accessToken)
+                        }
+                        type="button"
+                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-400 px-5 py-3 text-sm font-semibold text-[#07130c]"
+                      >
+                        <IoCheckmarkDoneOutline size={18} />
+                        Mark as Complete
+                      </button>
+                    )}
+
+                    {oneFlow.isDone && (
+                      <button
+                        type="button"
+                        className="inline-flex items-center gap-2 rounded-xl border border-emerald-400/20 bg-emerald-400/[0.08] px-5 py-3 text-sm font-medium text-emerald-300"
+                      >
+                        <IoCheckmarkCircleOutline size={18} />
+                        Task Completed
+                      </button>
+                    )}
+                  </>
                 )}
               </div>
             </div>

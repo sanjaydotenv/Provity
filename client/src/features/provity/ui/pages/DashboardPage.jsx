@@ -289,7 +289,6 @@ const DashboardPage = () => {
     purple: "text-violet-400 bg-violet-400/10 border-violet-400/20",
   };
 
-
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#08090B] text-white selection:bg-[#FC6C26]/30">
       {/* Background Effects */}
@@ -555,8 +554,8 @@ const DashboardPage = () => {
                           </p>
 
                           <div className="mt-4 flex items-baseline gap-2">
-                            <span className="text-4xl font-semibold tracking-tight">
-                              {item?.value}
+                            <span className="text-4xl font-semibold tracking-normal">
+                              {String(item?.value).padStart(2, "0")}
                             </span>
 
                             <span className="text-xs text-white/40">

@@ -20,8 +20,8 @@ const TodayFlow = () => {
     msg,
     handleTasksData,
     handleTaskSubmit,
-    handleCompleteTask,
   } = useDashboardHook();
+
 
   return (
     <div className="min-h-screen  bg-[#080808] px-4 py-5 text-white sm:px-6 sm:py-7 lg:px-8">

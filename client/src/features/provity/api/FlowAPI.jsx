@@ -52,12 +52,31 @@ export const getTodayTaskDataAPI = async (accessToken) => {
 };
 
 export const markAsCompleteTaskAPI = async (id, accessToken) => {
-  console.log(id, accessToken);
-  const response = await axiosInsatnce.patch(`/flow/complete-task/${id}/details`,{} , {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
+  const response = await axiosInsatnce.patch(
+    `/flow/complete-task/${id}/details`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
     },
-  });
+  );
+
+  return response;
+};
+
+export const updateFlowAPI = async (id, accessToken, data) => {
+  console.log(data);
+
+  const response = await axiosInsatnce.patch(
+    `/flow/update-flow/${id}/details`,
+    data,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
 
   return response;
 };

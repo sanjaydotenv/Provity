@@ -7,6 +7,7 @@ import {
   getDayWiseDataAPI,
   getTodayTaskDataAPI,
   markAsCompleteTaskAPI,
+  updateFlowAPI,
 } from "../api/FlowAPI";
 import {
   setDateWiseData,
@@ -101,6 +102,12 @@ export const useDashboardHook = () => {
     setIsDetailsOpen(false);
   };
 
+
+  const handleUpdatedTask = async (id, accessToken , data) => {
+    const response = await updateFlowAPI(id, accessToken , data);
+    console.log(response)
+  };
+
   return {
     taskValue,
     setTaskValue,
@@ -122,5 +129,6 @@ export const useDashboardHook = () => {
     handleCompleteTask,
     setIsDetailsOpen,
     isDetailsOpen,
+    handleUpdatedTask
   };
 };

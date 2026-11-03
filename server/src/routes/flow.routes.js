@@ -30,4 +30,10 @@ route.patch(
   flowController.markAsCompleteController,
 );
 
+route.patch(
+  "/update-flow/:id/details",
+  authentication,
+  flowController.updateFlowController,
+);
+
 export default route;

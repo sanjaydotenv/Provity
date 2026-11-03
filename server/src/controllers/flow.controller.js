@@ -225,6 +225,27 @@ const markAsCompleteController = async (req, res) => {
   });
 };
 
+const updateFlowController = async (req,res) => {
+  const { id } = req.params;
+
+  console.log(req.body)
+
+  if (!id){
+    throw new AppError("flow ID is not found", 404);
+  }
+
+  const flow = await flowModel.findByIdAndUpdate(id, req.body, { new: true });
+
+  if (!flow) {
+    throw new AppError("flow is not found", 404);
+  }
+
+  res.status(200).json({
+    message: "flow updated successfully",
+    flow,
+  });
+};
+
 export default {
   createFlowController,
   getAllFlowController,
@@ -232,4 +253,5 @@ export default {
   getDayWiseData,
   getTodayTasks,
   markAsCompleteController,
+  updateFlowController,
 };
