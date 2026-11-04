@@ -148,9 +148,9 @@ const DashboardPage = () => {
   const [now, setNow] = useState(() => new Date());
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [dateWiseAllTaskShow, setDateWiseAllTaskShow] = useState(true);
-  const dateWiseAllTaskShowRef = useRef(null)
+  const dateWiseAllTaskShowRef = useRef(null);
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const {
     handleDayWiseData,
@@ -296,9 +296,9 @@ const DashboardPage = () => {
   };
 
   const handleDayWiseFlow = (flow) => {
-    dateWiseAllTaskShowRef.current.style.display = "flex"
-    dispatch(setDayFlowDetailsData(flow))
-  }
+    dateWiseAllTaskShowRef.current.style.display = "flex";
+    dispatch(setDayFlowDetailsData(flow));
+  };
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#08090B] text-white selection:bg-[#FC6C26]/30">
@@ -762,7 +762,7 @@ const DashboardPage = () => {
                         ? Math.min(100, (flow?.completed / flow?.total) * 100)
                         : 0;
 
-                    return  (
+                    return (
                       <article
                         onClick={() => handleDayWiseFlow(flow)}
                         key={flow.date}
@@ -855,7 +855,16 @@ const DashboardPage = () => {
                   })}
                 </div>
 
-                {dateWiseAllTaskShow && <div ref={dateWiseAllTaskShowRef} className="absolute top-0 hidden h-full w-full z-99"><OneDayFlowAllTask /></div>}
+                {dateWiseAllTaskShow && (
+                  <div
+                    ref={dateWiseAllTaskShowRef}
+                    className="fixed inset-0 z-[999] hidden items-center justify-center bg-black/60 p-3 backdrop-blur-md sm:p-5 lg:p-8"
+                  >
+                    <div className="h-full max-h-[90vh] w-full max-w-7xl overflow-hidden rounded-2xl border border-white/10 bg-[#111114]/95 shadow-[0_20px_100px_rgba(0,0,0,0.6)] sm:rounded-3xl">
+                      <OneDayFlowAllTask />
+                    </div>
+                  </div>
+                )}
 
                 {/* Overall Progress */}
                 <aside className="relative flex flex-col items-center justify-center overflow-hidden rounded-2xl border border-[#FC6C26]/20 bg-gradient-to-b from-[#19130F] via-[#111112] to-[#101113] p-6 sm:p-8">
