@@ -72,7 +72,6 @@ export const useDashboardHook = () => {
 
   const handleAllTasksData = async (accessToken) => {
     const response = await getAllTasksAPI(accessToken);
-    console.log(response);
     dispatch(setFlowData(response.data.allFlow));
   };
 

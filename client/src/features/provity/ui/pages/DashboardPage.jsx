@@ -21,9 +21,11 @@ import {
   FiCalendar,
 } from "react-icons/fi";
 import { useNavigateHook } from "../../hooks/NavigationHook";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Loading from "../components/Loading";
 import { useDashboardHook } from "../../hooks/DashboardHook";
+import OneDayFlowAllTask from "../components/OneDayFlowAllTask";
+import { setDayFlowDetailsData } from "../../state/FlowSlice";
 
 const ORANGE = "#FC6C26";
 
@@ -145,6 +147,10 @@ const getTimeData = (now) => {
 const DashboardPage = () => {
   const [now, setNow] = useState(() => new Date());
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [dateWiseAllTaskShow, setDateWiseAllTaskShow] = useState(true);
+  const dateWiseAllTaskShowRef = useRef(null)
+
+  const dispatch = useDispatch()
 
   const {
     handleDayWiseData,
@@ -288,6 +294,11 @@ const DashboardPage = () => {
     yellow: "text-amber-400 bg-amber-400/10 border-amber-400/20",
     purple: "text-violet-400 bg-violet-400/10 border-violet-400/20",
   };
+
+  const handleDayWiseFlow = (flow) => {
+    dateWiseAllTaskShowRef.current.style.display = "flex"
+    dispatch(setDayFlowDetailsData(flow))
+  }
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#08090B] text-white selection:bg-[#FC6C26]/30">
@@ -714,7 +725,7 @@ const DashboardPage = () => {
             </section>
 
             {/* Daily Flow */}
-            <section>
+            <section className="relative">
               <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
                 <div>
                   <div className="mb-2 flex items-center gap-2">
@@ -751,8 +762,9 @@ const DashboardPage = () => {
                         ? Math.min(100, (flow?.completed / flow?.total) * 100)
                         : 0;
 
-                    return (
+                    return  (
                       <article
+                        onClick={() => handleDayWiseFlow(flow)}
                         key={flow.date}
                         className="group rounded-2xl border border-white/[0.08] bg-[#111214] p-4 transition duration-300 hover:-translate-y-0.5 hover:border-[#FC6C26]/30 hover:bg-[#151516]"
                       >
@@ -779,11 +791,12 @@ const DashboardPage = () => {
 
                           <button
                             aria-label={`More options for ${flow?.title}`}
-                            className="shrink-0 text-white/25 transition hover:text-white relative"
+                            className="relative shrink-0 text-white/25 transition hover:text-white"
                           >
                             <FiMoreHorizontal className="text-xl" />
                           </button>
-                          <div className="bg-red-500/30 absolute top-10 left-40 h-8 w-25 rounded-lg hidden">
+
+                          <div className="absolute top-10 left-40 hidden h-8 w-25 rounded-lg bg-red-500/30">
                             <p>show in detail</p>
                           </div>
                         </div>
@@ -795,7 +808,6 @@ const DashboardPage = () => {
                             <p className="text-lg font-semibold">
                               {flow?.total}
                             </p>
-
                             <p className="mt-1 text-[9px] text-white/35 sm:text-[10px]">
                               Total
                             </p>
@@ -805,7 +817,6 @@ const DashboardPage = () => {
                             <p className="text-lg font-semibold text-emerald-400">
                               {flow?.completed}
                             </p>
-
                             <p className="mt-1 text-[9px] text-white/35 sm:text-[10px]">
                               Completed
                             </p>
@@ -815,7 +826,6 @@ const DashboardPage = () => {
                             <p className="text-lg font-semibold text-amber-400">
                               {flow?.pending}
                             </p>
-
                             <p className="mt-1 text-[9px] text-white/35 sm:text-[10px]">
                               Pending
                             </p>
@@ -844,6 +854,8 @@ const DashboardPage = () => {
                     );
                   })}
                 </div>
+
+                {dateWiseAllTaskShow && <div ref={dateWiseAllTaskShowRef} className="absolute top-0 hidden h-full w-full z-99"><OneDayFlowAllTask /></div>}
 
                 {/* Overall Progress */}
                 <aside className="relative flex flex-col items-center justify-center overflow-hidden rounded-2xl border border-[#FC6C26]/20 bg-gradient-to-b from-[#19130F] via-[#111112] to-[#101113] p-6 sm:p-8">
