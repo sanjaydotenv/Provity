@@ -1,7 +1,11 @@
 import React from "react";
 import { FiCalendar, FiClock, FiEye } from "react-icons/fi";
+import { useNavigateHook } from "../../hooks/NavigationHook";
 
 const ManagementCard = () => {
+
+  const {navigate} = useNavigateHook()
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
       {/* PLAN 1 */}
@@ -62,6 +66,7 @@ const ManagementCard = () => {
           <span className="text-sm text-gray-400">1 / 15 Tasks</span>
 
           <button
+          onClick={() => navigate("/dashboard/management/details")}
             className="flex items-center gap-2 px-4 py-2 rounded-full
                         border border-orange-500/30 text-orange-400 text-sm"
           >
@@ -174,7 +179,7 @@ const ManagementCard = () => {
           <div className="flex-1 h-2 rounded-full bg-white/10 overflow-hidden">
             <div
               className="h-full rounded-full bg-blue-500"
-              style={{ width: "95%" }}
+              style={{ width: "45%" }}
             />
           </div>
 

@@ -11,6 +11,7 @@ import AuthHydration from "./features/provity/ui/components/AuthHydration";
 import OnlyGoogleOauth from "./features/provity/ui/components/OnlyGoogleOauth";
 import SmoothScroll from "./features/provity/ui/components/SmoothScroll";
 import ManagementPage from "./features/provity/ui/pages/ManagementPage";
+import ManagementDetailsPage from "./features/provity/ui/pages/ManagementDetailsPage";
 
 const RootLayout = () => {
   return (
@@ -61,6 +62,10 @@ const router = createBrowserRouter([
         path: "/dashboard/management",
         element: <ManagementPage />,
       },
+      {
+        path: "/dashboard/management/details",
+        element: <ManagementDetailsPage />
+      }
     ],
   },
 ]);

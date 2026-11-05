@@ -10,14 +10,17 @@ import {
 } from "react-icons/fi";
 import ManagementCard from "../components/ManagementCard";
 import ManagementTrackerCard from "../components/ManagementTrackerCard";
-
+import { useNavigateHook } from "../../hooks/NavigationHook";
 const ManagementPage = () => {
+  const { navigate } = useNavigateHook();
+
   return (
     <div className="min-h-screen bg-[#080808] text-white px-5 md:px-10 py-7">
       <div className="max-w-[1600px] mx-auto">
         {/* BACK BUTTON */}
 
         <button
+        onClick={() => navigate("/dashboard")}
           className="flex items-center gap-2 px-5 py-3 rounded-full
           border border-white/10 bg-white/[0.04] hover:bg-white/10
           text-gray-300 transition-all mb-9"
