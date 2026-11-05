@@ -25,6 +25,6 @@ const flowSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-const flowModel = mongoose.model("Flows", flowSchema);
+const flowModel = new mongoose.model("Flows", flowSchema);
 
 export default flowModel;

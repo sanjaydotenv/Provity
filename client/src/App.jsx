@@ -12,6 +12,7 @@ import OnlyGoogleOauth from "./features/provity/ui/components/OnlyGoogleOauth";
 import SmoothScroll from "./features/provity/ui/components/SmoothScroll";
 import ManagementPage from "./features/provity/ui/pages/ManagementPage";
 import ManagementDetailsPage from "./features/provity/ui/pages/ManagementDetailsPage";
+import CreatePlanForm from "./features/provity/ui/pages/CreatePlanForm";
 
 const RootLayout = () => {
   return (
@@ -65,6 +66,10 @@ const router = createBrowserRouter([
       {
         path: "/dashboard/management/details",
         element: <ManagementDetailsPage />
+      },
+      {
+        path: "/dashboard/management/create-plan",
+        element: <CreatePlanForm />
       }
     ],
   },

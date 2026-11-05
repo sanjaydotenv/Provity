@@ -52,6 +52,7 @@ const ManagementPage = () => {
           </div>
 
           <button
+          onClick={() => navigate("/dashboard/management/create-plan")}
             className="flex items-center gap-2 px-6 py-4 rounded-xl
             bg-gradient-to-r from-orange-500 to-orange-600
             text-black font-semibold"
