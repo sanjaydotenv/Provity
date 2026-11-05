@@ -34,4 +34,23 @@ const getPlanController = async (req, res) => {
   });
 };
 
-export default { createPlanController, getPlanController };
+const savePlanTasksController = async (req, res) => {
+  const { tasks } = req.body;
+  const id = req.params.planId;
+
+  const plan = await planModel.findById(id);
+
+  if (!plan) {
+    return res.status(404).json({
+      message: "Plan not found",
+    });
+  }
+
+  console.log(plan , tasks , id)
+};
+
+export default {
+  createPlanController,
+  getPlanController,
+  savePlanTasksController,
+};

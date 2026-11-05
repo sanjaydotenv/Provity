@@ -10,7 +10,7 @@ export const useManagementHook = () => {
   const { accessToken } = useSelector((state) => state.auth);
   const { navigate } = useNavigateHook();
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const [planData, setPlanData] = useState({
     title: "",
@@ -19,6 +19,8 @@ export const useManagementHook = () => {
     startDate: "",
     endDate: "",
   });
+
+  const [tasksData, setTasksData] = useState({});
 
   // Calculate End Date
   const calculateEndDate = (startDate, duration) => {
@@ -88,19 +90,34 @@ export const useManagementHook = () => {
     }
 
     const response = await createPlanAPI(planData, accessToken);
-    dispatch(setPlan(response.data.plan))
-    navigate("/dashboard/management/details")
+    dispatch(setPlan(response.data.plan));
+    navigate("/dashboard/management/details");
   };
 
   const handleGetPlanAPI = async (accessToken) => {
-    const response = await getPlanAPI(accessToken)
-    dispatch(setPlan(response.data.plan))
-  }
+    const response = await getPlanAPI(accessToken);
+    dispatch(setPlan(response.data.plan));
+  };
 
-  const handlePlanTaskInputData = (data) => {
-    console.log(data.target.attributes.datatype.textContent)
-    console.log(data.target.value)
-  }
+  const handlePlanTaskInputData = (e) => {
+    const dayNumber = Number(e.target.getAttribute("datatype"));
+    const value = e.target.value;
+    const key = e.target.name;
+
+    setTasksData((prev) => ({
+      ...prev,
+
+      [dayNumber]: {
+        ...(prev[dayNumber] || {}),
+        [key]: value,
+        dayNumber,
+      },
+    }));
+  };
+
+  const handleSubmitSaveAllTasksData = () => {
+    console.log(tasksData);
+  };
 
   return {
     durations,
@@ -110,6 +127,7 @@ export const useManagementHook = () => {
     handleCustomDuration,
     handleCreatePlan,
     handleGetPlanAPI,
-    handlePlanTaskInputData
+    handlePlanTaskInputData,
+    handleSubmitSaveAllTasksData,
   };
 };

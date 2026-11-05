@@ -14,11 +14,6 @@ const planTaskSchema = new mongoose.Schema(
       required: true,
     },
 
-    duration: {
-      type: Number,
-      required: true,
-    },
-
     title: {
       type: String,
       required: true,
@@ -30,11 +25,18 @@ const planTaskSchema = new mongoose.Schema(
       default: "",
     },
 
+    dayNumber: {
+      type: Number,
+      required: true,
+      min: 1,
+    },
+
     priority: {
       type: String,
       enum: ["Low", "Medium", "High"],
       default: "Medium",
     },
+
     isDone: {
       type: Boolean,
       default: false,
@@ -44,6 +46,8 @@ const planTaskSchema = new mongoose.Schema(
     timestamps: true,
   },
 );
+
+planTaskSchema.index({ plan: 1, dayNumber: 1 }, { unique: true });
 
 const PlanTaskModel = mongoose.model("PlanTasks", planTaskSchema);
 
