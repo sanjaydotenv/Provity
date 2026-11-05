@@ -10,21 +10,29 @@ import {
   FiCheckCircle,
   FiChevronDown,
 } from "react-icons/fi";
-import { legacy_connect, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useEffect } from "react";
+import { useManagementHook } from "../../hooks/ManagementHook";
+import Loading from "../../ui/components/Loading";
 
 const ManagementPlanDetails = () => {
   const navigate = useNavigate();
 
   // Static Plan Data
 
+  const { handleGetPlanAPI , handlePlanTaskInputData} = useManagementHook();
+  const { accessToken } = useSelector((state) => state.auth);
   const { plan } = useSelector((state) => state.manage);
 
   useEffect(() => {
-    if (!plan) {
-      return "loading";
-    }
-  }, [plan]);
+    if (!accessToken) return;
+
+    handleGetPlanAPI(accessToken);
+  }, [accessToken]);
+
+  if (!plan) {
+    return <Loading />;
+  }
 
   const formateDate = (dateValue) => {
     if (!dateValue) return "";
@@ -183,6 +191,9 @@ const ManagementPlanDetails = () => {
                   </label>
 
                   <input
+                  onChange={handlePlanTaskInputData}
+                  name="title"
+                  datatype={day.dayNumber + 1}
                     type="text"
                     defaultValue={day.title}
                     placeholder={`Enter task for Day ${day.dayNumber}`}
@@ -197,6 +208,9 @@ const ManagementPlanDetails = () => {
                   </label>
 
                   <textarea
+                  onChange={handlePlanTaskInputData}
+                  name="description"
+                  datatype={day.dayNumber + 1}
                     rows={2}
                     defaultValue={day.description}
                     placeholder="Describe what you want to accomplish..."
@@ -212,6 +226,9 @@ const ManagementPlanDetails = () => {
 
                   <div className="relative">
                     <select
+                    onChange={handlePlanTaskInputData}
+                    name="priority"
+                    datatype={day.dayNumber + 1}
                       defaultValue={day.priority}
                       className="w-full appearance-none bg-[#191919] border border-[#303030] focus:border-[#FC6C26] outline-none rounded-lg px-4 py-3 text-sm text-gray-300"
                     >

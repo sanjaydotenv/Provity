@@ -19,6 +19,19 @@ const createPlanController = async (req, res) => {
   });
 };
 
+const getPlanController = async (req, res) => {
+  const plan = await planModel.findOne({ user: req.user.id });
 
+  if (!plan) {
+    return res.status(404).json({
+      message: "Plan not found",
+    });
+  }
 
-export default { createPlanController };
+  res.status(200).json({
+    message: "Plan found",
+    plan,
+  });
+};
+
+export default { createPlanController, getPlanController };

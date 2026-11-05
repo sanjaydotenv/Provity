@@ -6,4 +6,6 @@ const route = Router();
 
 route.post("/create-plan", authentication ,managementController.createPlanController)
 
+route.get("/get-plan", authentication ,managementController.getPlanController)
+
 export default route
