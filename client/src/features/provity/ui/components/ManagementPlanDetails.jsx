@@ -263,7 +263,9 @@ const ManagementPlanDetails = () => {
               </p>
             </div>
 
-            <button onClick={handleSubmitSaveAllTasksData} className="flex items-center justify-center gap-2 bg-[#FC6C26] hover:bg-[#e85c1b] px-6 py-3 rounded-lg text-sm font-medium transition">
+            <button onClick={() => {
+              handleSubmitSaveAllTasksData(plan._id , accessToken)
+            }} className="flex items-center justify-center gap-2 bg-[#FC6C26] hover:bg-[#e85c1b] px-6 py-3 rounded-lg text-sm font-medium transition">
               <FiSave size={17} />
               Save All Tasks
             </button>

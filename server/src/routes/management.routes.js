@@ -8,4 +8,5 @@ route.post("/create-plan", authentication ,managementController.createPlanContro
 
 route.get("/get-plan", authentication ,managementController.getPlanController)
 
+route.post("/save-plan-tasks/:planId", authentication ,managementController.savePlanTasksController)
 export default route

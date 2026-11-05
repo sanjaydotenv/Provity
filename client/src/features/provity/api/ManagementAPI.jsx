@@ -10,13 +10,23 @@ export const createPlanAPI = async (data, accessToken) => {
   return response;
 };
 
-
 export const getPlanAPI = async (accessToken) => {
-  const response = await axiosInsatnce.get("/management/get-plan" , {
+  const response = await axiosInsatnce.get("/management/get-plan", {
     headers: {
-      Authorization: `Bearer ${accessToken}`
-    }
-  })
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  return response;
+};
+
+export const savePlanTasks = async (data, id, accessToken) => {
+  console.log(data , id , accessToken)
+  const response = await axiosInsatnce.post(`/management/save-plan-tasks/${id}`, data, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
 
   return response
-}
+};

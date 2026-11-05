@@ -35,7 +35,6 @@ const getPlanController = async (req, res) => {
 };
 
 const savePlanTasksController = async (req, res) => {
-  const { tasks } = req.body;
   const id = req.params.planId;
 
   const plan = await planModel.findById(id);
@@ -46,7 +45,7 @@ const savePlanTasksController = async (req, res) => {
     });
   }
 
-  console.log(plan , tasks , id)
+  console.log(plan , req.body , id)
 };
 
 export default {

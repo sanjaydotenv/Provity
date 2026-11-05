@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createPlanAPI, getPlanAPI } from "../api/ManagementAPI";
+import { createPlanAPI, getPlanAPI, savePlanTasks } from "../api/ManagementAPI";
 import { useNavigateHook } from "./NavigationHook";
 import { setPlan } from "../state/ManagementSlice";
 
@@ -115,8 +115,9 @@ export const useManagementHook = () => {
     }));
   };
 
-  const handleSubmitSaveAllTasksData = () => {
-    console.log(tasksData);
+  const handleSubmitSaveAllTasksData = async (id , accessToken) => {
+    const response = await savePlanTasks(tasksData , id , accessToken)
+    console.log(response)
   };
 
   return {
