@@ -10,74 +10,52 @@ import {
   FiCheckCircle,
   FiChevronDown,
 } from "react-icons/fi";
+import { legacy_connect, useSelector } from "react-redux";
+import { useEffect } from "react";
 
 const ManagementPlanDetails = () => {
   const navigate = useNavigate();
 
   // Static Plan Data
-  const plan = {
-    title: "Full Stack Developer Roadmap",
-    description:
-      "A structured learning plan to improve full-stack development skills and build practical projects.",
-    startDate: "2026-11-05",
-    endDate: "2026-11-11",
-    duration: 7,
+
+  const { plan } = useSelector((state) => state.manage);
+
+  useEffect(() => {
+    if (!plan) {
+      return "loading";
+    }
+  }, [plan]);
+
+  const formateDate = (dateValue) => {
+    if (!dateValue) return "";
+
+    const date = new Date(dateValue);
+
+    return new Intl.DateTimeFormat("en-US", {
+      weekday: "short",
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    }).format(date);
   };
 
+  const startDate = formateDate(plan.startDate);
+  const endDate = formateDate(plan.endDate);
+
   // Static Days and Tasks
-  const days = [
-    {
-      dayNumber: 1,
-      date: "05 Nov 2026",
-      title: "Learn JavaScript Fundamentals",
-      description: "Revise variables, functions, arrays and objects.",
-      priority: "High",
-    },
-    {
-      dayNumber: 2,
-      date: "06 Nov 2026",
-      title: "Practice Advanced JavaScript",
-      description: "Learn closures, promises and async/await.",
-      priority: "Medium",
-    },
-    {
-      dayNumber: 3,
-      date: "07 Nov 2026",
-      title: "Learn React Hooks",
-      description: "Understand useState, useEffect and useMemo.",
-      priority: "High",
-    },
-    {
-      dayNumber: 4,
-      date: "08 Nov 2026",
-      title: "Build React Components",
-      description: "Practice reusable components and props.",
-      priority: "Medium",
-    },
-    {
-      dayNumber: 5,
-      date: "09 Nov 2026",
-      title: "Learn Node.js",
-      description: "Understand Node.js fundamentals and event loop.",
-      priority: "High",
-    },
-    {
-      dayNumber: 6,
-      date: "10 Nov 2026",
-      title: "Learn Express.js",
-      description: "Practice routes, middleware and controllers.",
-      priority: "Low",
-    },
-    {
-      dayNumber: 7,
-      date: "11 Nov 2026",
-      title: "Build a Full Stack Project",
-      description: "Combine React, Node.js and MongoDB.",
-      priority: "High",
-    },
-  ];
 
   const filledTasks = 7;
+
+  const days = [];
+  for (let i = 0; i < plan.duration; i++) {
+    days.push({
+      dayNumber: i,
+      date: "05 Nov 2026",
+      title: "",
+      description: "",
+      priority: "High",
+    });
+  }
 
   return (
     <div className="min-h-screen bg-[#080808] text-white px-4 py-6 md:px-8 lg:px-10">
@@ -123,7 +101,7 @@ const ManagementPlanDetails = () => {
                 Start Date
               </p>
 
-              <p className="text-sm font-medium">Thu, 05 Nov 2026</p>
+              <p className="text-sm font-medium">{startDate}</p>
             </div>
 
             <div>
@@ -132,7 +110,7 @@ const ManagementPlanDetails = () => {
                 End Date
               </p>
 
-              <p className="text-sm font-medium">Wed, 11 Nov 2026</p>
+              <p className="text-sm font-medium">{endDate}</p>
             </div>
 
             <div>
@@ -141,7 +119,7 @@ const ManagementPlanDetails = () => {
                 Duration
               </p>
 
-              <p className="text-sm font-medium">7 Days</p>
+              <p className="text-sm font-medium">{plan.duration} Days</p>
             </div>
           </div>
         </div>
@@ -177,12 +155,14 @@ const ManagementPlanDetails = () => {
                   </span>
 
                   <span className="text-lg font-semibold text-[#FC6C26] leading-5">
-                    {String(day.dayNumber).padStart(2, "0")}
+                    {String(day.dayNumber + 1).padStart(2, "0")}
                   </span>
                 </div>
 
                 <div>
-                  <h3 className="text-sm font-semibold">Day {day.dayNumber}</h3>
+                  <h3 className="text-sm font-semibold">
+                    Day {day.dayNumber + 1}
+                  </h3>
 
                   <p className="text-xs text-gray-500 mt-1">{day.date}</p>
                 </div>
