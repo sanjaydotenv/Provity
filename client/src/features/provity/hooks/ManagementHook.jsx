@@ -1,7 +1,12 @@
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import { createPlanAPI } from "../api/ManagementAPI";
 
 export const useManagementHook = () => {
   const durations = [7, 10, 15, 30];
+
+  const {accessToken} = useSelector((state) => state.auth);
+
 
   const [planData, setPlanData] = useState({
     title: "",
@@ -10,6 +15,7 @@ export const useManagementHook = () => {
     startDate: "",
     endDate: "",
   });
+
 
   // Calculate End Date
   const calculateEndDate = (startDate, duration) => {
@@ -63,7 +69,7 @@ export const useManagementHook = () => {
     }));
   };
 
-  const handleCreatePlan = (e) => {
+  const handleCreatePlan = async (e) => {
     e.preventDefault();
 
     if (!planData.title.trim()) {
@@ -78,8 +84,8 @@ export const useManagementHook = () => {
       return;
     }
 
-    console.log("Plan Data:", planData);
-
+    const response = await createPlanAPI(planData , accessToken)
+    console.log(response)
   };
 
   return {
