@@ -26,6 +26,8 @@ import Loading from "../components/Loading";
 import { useDashboardHook } from "../../hooks/DashboardHook";
 import OneDayFlowAllTask from "../components/OneDayFlowAllTask";
 import { setDayFlowDetailsData } from "../../state/FlowSlice";
+import { GiCrystalGrowth } from "react-icons/gi";
+
 
 const ORANGE = "#FC6C26";
 
@@ -389,6 +391,18 @@ const DashboardPage = () => {
             >
               <FiPlus className="text-lg" />
               Today Flow
+              <FiArrowUpRight className="ml-auto text-white/25" />
+            </button>
+
+            <button
+              onClick={() => {
+                setSidebarOpen(false);
+                navigate("/dashboard/management");
+              }}
+              className="flex items-center gap-3 rounded-xl border border-transparent px-4 py-3.5 text-left text-sm text-white/55 transition hover:border-white/[0.08] hover:bg-white/[0.04] hover:text-white"
+            >
+              <GiCrystalGrowth />
+              Management
               <FiArrowUpRight className="ml-auto text-white/25" />
             </button>
           </nav>

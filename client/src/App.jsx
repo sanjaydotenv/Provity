@@ -10,6 +10,7 @@ import FlowPage from "./features/provity/ui/pages/FlowPage";
 import AuthHydration from "./features/provity/ui/components/AuthHydration";
 import OnlyGoogleOauth from "./features/provity/ui/components/OnlyGoogleOauth";
 import SmoothScroll from "./features/provity/ui/components/SmoothScroll";
+import ManagementPage from "./features/provity/ui/pages/ManagementPage";
 
 const RootLayout = () => {
   return (
@@ -55,6 +56,10 @@ const router = createBrowserRouter([
       {
         path: "/dashboard/add-flow",
         element: <TodayFlow />,
+      },
+      {
+        path: "/dashboard/management",
+        element: <ManagementPage />,
       },
     ],
   },
