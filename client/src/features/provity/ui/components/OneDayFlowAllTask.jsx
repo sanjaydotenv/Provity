@@ -1,6 +1,5 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router";
 import {
   FiCheckCircle,
   FiClock,
@@ -10,10 +9,13 @@ import {
   FiActivity,
   FiArrowLeft,
 } from "react-icons/fi";
+import { useNavigateHook } from "../../hooks/NavigationHook";
+import { useDashboardHook } from "../../hooks/DashboardHook";
 
 const OneDayFlowAllTask = () => {
   const { dayFlowAllTaskDetails } = useSelector((state) => state.flow);
-  const navigate = useNavigate();
+  const { navigate } = useNavigateHook();
+  const { dateWiseAllTaskShowRef } = useDashboardHook();
 
   const tasks = dayFlowAllTaskDetails?.tasks || [];
 
@@ -42,7 +44,9 @@ const OneDayFlowAllTask = () => {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3 sm:gap-5">
             <button
-              onClick={() => navigate(-1)}
+              onClick={() => {
+                navigate(0);
+              }}
               className="flex h-10 shrink-0 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 text-xs font-medium text-white/70 transition-all hover:border-[#FC6C26]/40 hover:bg-[#FC6C26]/10 hover:text-[#FC6C26]"
             >
               <FiArrowLeft />

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addTaskAPI,
@@ -34,6 +34,7 @@ export const useDashboardHook = () => {
   const [msg, setMsg] = useState(true);
   const { accessToken } = useSelector((state) => state.auth);
   const { DateWiseData } = useSelector((state) => state.flow);
+  const dateWiseAllTaskShowRef = useRef(null);
 
   const dispatch = useDispatch();
 
@@ -128,6 +129,7 @@ export const useDashboardHook = () => {
     handleCompleteTask,
     setIsDetailsOpen,
     isDetailsOpen,
-    handleUpdatedTask
+    handleUpdatedTask,
+    dateWiseAllTaskShowRef
   };
 };

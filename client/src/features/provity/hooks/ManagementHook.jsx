@@ -1,12 +1,16 @@
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { createPlanAPI } from "../api/ManagementAPI";
+import { useNavigateHook } from "./NavigationHook";
+import { setPlan } from "../state/ManagementSlice";
 
 export const useManagementHook = () => {
   const durations = [7, 10, 15, 30];
 
-  const {accessToken} = useSelector((state) => state.auth);
+  const { accessToken } = useSelector((state) => state.auth);
+  const { navigate } = useNavigateHook();
 
+  const dispatch = useDispatch()
 
   const [planData, setPlanData] = useState({
     title: "",
@@ -15,7 +19,6 @@ export const useManagementHook = () => {
     startDate: "",
     endDate: "",
   });
-
 
   // Calculate End Date
   const calculateEndDate = (startDate, duration) => {
@@ -84,8 +87,9 @@ export const useManagementHook = () => {
       return;
     }
 
-    const response = await createPlanAPI(planData , accessToken)
-    console.log(response)
+    const response = await createPlanAPI(planData, accessToken);
+    dispatch(setPlan(response.data.plan))
+    navigate("/dashboard/management/details")
   };
 
   return {

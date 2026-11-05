@@ -150,7 +150,7 @@ const DashboardPage = () => {
   const [now, setNow] = useState(() => new Date());
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [dateWiseAllTaskShow, setDateWiseAllTaskShow] = useState(true);
-  const dateWiseAllTaskShowRef = useRef(null);
+  
 
   const dispatch = useDispatch();
 
@@ -160,6 +160,7 @@ const DashboardPage = () => {
     DateWiseData,
     progressValue,
     handleAllTasksData,
+    dateWiseAllTaskShowRef
   } = useDashboardHook();
 
   const { navigate } = useNavigateHook();
