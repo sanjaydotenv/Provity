@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createPlanAPI, getPlanAPI, savePlanTasks } from "../api/ManagementAPI";
+import { createPlanAPI, getAllPlansAPI, getPlanAPI, savePlanTasks } from "../api/ManagementAPI";
 import { useNavigateHook } from "./NavigationHook";
-import { setPlan } from "../state/ManagementSlice";
+import { setAllPlans, setPlan } from "../state/ManagementSlice";
 
 export const useManagementHook = () => {
   const durations = [7, 10, 15, 30];
@@ -138,6 +138,11 @@ export const useManagementHook = () => {
     }
   };
 
+  const handleGetAllPlans = async (accessToken) => {
+    const response = await getAllPlansAPI(accessToken)
+    dispatch(setAllPlans(response.data.plans))
+  }
+
   return {
     durations,
     planData,
@@ -148,5 +153,6 @@ export const useManagementHook = () => {
     handleGetPlanAPI,
     handlePlanTaskInputData,
     handleSubmitSaveAllTasksData,
+    handleGetAllPlans
   };
 };

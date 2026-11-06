@@ -17,16 +17,16 @@ import Loading from "../components/Loading";
 const ManagementPage = () => {
   const { navigate } = useNavigateHook();
 
-  const { plan } = useSelector((state) => state.manage);
+  const { allPlans } = useSelector((state) => state.manage);
   const { accessToken } = useSelector((state) => state.auth);
 
-  const { handleGetPlanAPI } = useManagementHook();
+  const { handleGetAllPlans } = useManagementHook();
 
   useEffect(() => {
-    handleGetPlanAPI(accessToken);
+    handleGetAllPlans(accessToken);
   }, [accessToken]);
 
-  if (!plan) {
+  if (!accessToken) {
     return <Loading />;
   }
 
@@ -110,16 +110,15 @@ const ManagementPage = () => {
             </div>
 
             {/* PLANS GRID */}
-
-            <div>
-              <ManagementCard plan={plan} />
+            <div className="w-full min-w-0">
+              <ManagementCard allPlans={allPlans} />
             </div>
           </section>
 
           {/* RIGHT SIDE - PLAN DETAILS */}
 
           <div>
-            <ManagementTrackerCard  />
+            <ManagementTrackerCard />
           </div>
         </div>
       </div>

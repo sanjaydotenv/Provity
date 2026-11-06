@@ -34,3 +34,13 @@ export const savePlanTasks = async (data, id, accessToken) => {
 
   return response;
 };
+
+export const getAllPlansAPI = async (accessToken) => {
+  const response = await axiosInsatnce.get("/management/get-all-plans", {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  return response;
+};

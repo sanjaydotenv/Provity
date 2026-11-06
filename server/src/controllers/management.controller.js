@@ -95,8 +95,18 @@ const savePlanTasksController = async (req, res) => {
   }
 };
 
+const getAllPlanController = async (req, res) => {
+  const plans = await planModel.find();
+
+  res.status(200).json({
+    message: "Plans retrieved successfully",
+    plans,
+  });
+};
+
 export default {
   createPlanController,
   getPlanController,
+  getAllPlanController,
   savePlanTasksController,
 };
