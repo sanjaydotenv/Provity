@@ -20,8 +20,6 @@ export const useManagementHook = () => {
     endDate: "",
   });
 
-  const [tasksData, setTasksData] = useState({});
-
   // Calculate End Date
   const calculateEndDate = (startDate, duration) => {
     if (!startDate || !duration || Number(duration) < 1) {
@@ -115,9 +113,29 @@ export const useManagementHook = () => {
     }));
   };
 
-  const handleSubmitSaveAllTasksData = async (id , accessToken) => {
-    const response = await savePlanTasks(tasksData , id , accessToken)
-    console.log(response)
+  const handleSubmitSaveAllTasksData = async (id, accessToken, tasks) => {
+    try {
+      const formattedData = Object.entries(tasks)
+        .filter(([_, task]) => task.title.trim() !== "")
+        .map(([dayNumber, task]) => ({
+          title: task.title.trim(),
+          description: task.description || "",
+          dayNumber: Number(dayNumber),
+          priority: task.priority || "Medium",
+        }));
+
+      if (formattedData.length === 0) {
+        console.log("Please add at least one task");
+        return;
+      }
+
+      const response = await savePlanTasks(formattedData, id, accessToken);
+
+      console.log("Saved Tasks:", response.data);
+      navigate("/dashboard/management")
+    } catch (error) {
+      console.log("Save Tasks Error:", error);
+    }
   };
 
   return {

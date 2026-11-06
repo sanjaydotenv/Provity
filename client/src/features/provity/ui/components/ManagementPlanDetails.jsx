@@ -1,4 +1,6 @@
 import { useNavigate } from "react-router";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 import {
   FiArrowLeft,
@@ -9,32 +11,62 @@ import {
   FiSave,
   FiCheckCircle,
   FiChevronDown,
+  FiAlertCircle,
 } from "react-icons/fi";
-import { useSelector } from "react-redux";
-import { useEffect } from "react";
+
 import { useManagementHook } from "../../hooks/ManagementHook";
 import Loading from "../../ui/components/Loading";
 
 const ManagementPlanDetails = () => {
   const navigate = useNavigate();
 
-  // Static Plan Data
+  const {
+  handleGetPlanAPI,
+  handleSubmitSaveAllTasksData,
+} = useManagementHook();
 
-  const { handleGetPlanAPI , handlePlanTaskInputData , handleSubmitSaveAllTasksData} = useManagementHook();
   const { accessToken } = useSelector((state) => state.auth);
   const { plan } = useSelector((state) => state.manage);
 
+  // Local task state
+  const [tasks, setTasks] = useState({});
+  const [error, setError] = useState("");
+
+  // Get Plan
   useEffect(() => {
     if (!accessToken) return;
 
     handleGetPlanAPI(accessToken);
   }, [accessToken]);
 
+  // Initialize tasks according to plan duration
+  useEffect(() => {
+    if (!plan?.duration) return;
+
+    setTasks((prev) => {
+      const updatedTasks = { ...prev };
+
+      for (let i = 1; i <= plan.duration; i++) {
+        if (!updatedTasks[i]) {
+          updatedTasks[i] = {
+            title: "",
+            description: "",
+            priority: "Medium",
+          };
+        }
+      }
+
+      return updatedTasks;
+    });
+  }, [plan?._id, plan?.duration]);
+
+  // Loading
   if (!plan) {
     return <Loading />;
   }
 
-  const formateDate = (dateValue) => {
+  // Format Date
+  const formatDate = (dateValue) => {
     if (!dateValue) return "";
 
     const date = new Date(dateValue);
@@ -47,23 +79,76 @@ const ManagementPlanDetails = () => {
     }).format(date);
   };
 
-  const startDate = formateDate(plan.startDate);
-  const endDate = formateDate(plan.endDate);
+  // Get Day Date
+  const getDayDate = (dayNumber) => {
+    if (!plan.startDate) return "";
 
-  // Static Days and Tasks
+    const date = new Date(plan.startDate);
 
-  const filledTasks = 7;
+    date.setDate(date.getDate() + dayNumber - 1);
 
-  const days = [];
-  for (let i = 0; i < plan.duration; i++) {
-    days.push({
-      dayNumber: i,
-      date: "05 Nov 2026",
-      title: "",
-      description: "",
-      priority: "High",
-    });
-  }
+    return formatDate(date);
+  };
+
+  const startDate = formatDate(plan.startDate);
+  const endDate = formatDate(plan.endDate);
+
+  // Generate Days
+  const days = Array.from({ length: plan.duration }, (_, index) => ({
+    dayNumber: index + 1,
+    date: getDayDate(index + 1),
+  }));
+
+  // Count Filled Tasks
+  const filledTasks = days.filter((day) =>
+    tasks[day.dayNumber]?.title?.trim(),
+  ).length;
+
+  // Handle Input Change
+  const handleTaskChange = (e) => {
+    const { name, value } = e.target;
+
+    const dayNumber = Number(e.target.dataset.day);
+
+    setTasks((prev) => ({
+      ...prev,
+      [dayNumber]: {
+        ...prev[dayNumber],
+        [name]: value,
+      },
+    }));
+
+    if (name === "title") {
+      setError("");
+    }
+  };
+
+  // Validate and Save Tasks
+  const handleSaveTasks = () => {
+    const emptyDay = days.find((day) => !tasks[day.dayNumber]?.title?.trim());
+
+    // Title Validation
+    if (emptyDay) {
+      const message = `Please enter task title for Day ${emptyDay.dayNumber}`;
+
+      setError(message);
+
+      // Scroll to empty title
+      const element = document.getElementById(`day-${emptyDay.dayNumber}`);
+
+      element?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+
+      return;
+    }
+
+    setError("");
+
+    // Save all tasks through existing hook
+    handleSubmitSaveAllTasksData(plan._id, accessToken , tasks)
+  };
 
   return (
     <div className="min-h-screen bg-[#080808] text-white px-4 py-6 md:px-8 lg:px-10">
@@ -148,101 +233,134 @@ const ManagementPlanDetails = () => {
           </div>
         </div>
 
+        {/* Validation Error */}
+        {error && (
+          <div className="mb-5 flex items-center gap-3 border border-red-500/20 bg-red-500/10 text-red-400 rounded-lg px-4 py-3">
+            <FiAlertCircle size={17} />
+
+            <p className="text-sm">{error}</p>
+          </div>
+        )}
+
         {/* Task Forms */}
         <div className="space-y-4">
-          {days.map((day) => (
-            <div
-              key={day.dayNumber}
-              className="border border-[#252525] bg-[#101010] rounded-xl overflow-hidden"
-            >
-              {/* Day Header */}
-              <div className="p-4 md:p-5 flex items-center gap-4 border-b border-[#252525]">
-                <div className="w-11 h-11 shrink-0 rounded-xl bg-[#FC6C26]/10 border border-[#FC6C26]/20 flex flex-col items-center justify-center">
-                  <span className="text-[9px] text-[#FC6C26] uppercase">
-                    Day
+          {days.map((day) => {
+            const task = tasks[day.dayNumber] || {
+              title: "",
+              description: "",
+              priority: "Medium",
+            };
+
+            const isFilled = Boolean(task.title.trim());
+
+            return (
+              <div
+                key={day.dayNumber}
+                id={`day-${day.dayNumber}`}
+                className={`border ${
+                  error.includes(`Day ${day.dayNumber}`)
+                    ? "border-red-500/50"
+                    : "border-[#252525]"
+                } bg-[#101010] rounded-xl overflow-hidden transition`}
+              >
+                {/* Day Header */}
+                <div className="p-4 md:p-5 flex items-center gap-4 border-b border-[#252525]">
+                  <div className="w-11 h-11 shrink-0 rounded-xl bg-[#FC6C26]/10 border border-[#FC6C26]/20 flex flex-col items-center justify-center">
+                    <span className="text-[9px] text-[#FC6C26] uppercase">
+                      Day
+                    </span>
+
+                    <span className="text-lg font-semibold text-[#FC6C26] leading-5">
+                      {String(day.dayNumber).padStart(2, "0")}
+                    </span>
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm font-semibold">
+                      Day {day.dayNumber}
+                    </h3>
+
+                    <p className="text-xs text-gray-500 mt-1">{day.date}</p>
+                  </div>
+
+                  <span
+                    className={`ml-auto flex items-center gap-1.5 text-[10px] px-2.5 py-1.5 rounded-md ${
+                      isFilled
+                        ? "text-green-400 bg-green-400/10"
+                        : "text-gray-500 bg-white/5"
+                    }`}
+                  >
+                    <FiCheckCircle size={12} />
+
+                    {isFilled ? "Filled" : "Pending"}
                   </span>
-
-                  <span className="text-lg font-semibold text-[#FC6C26] leading-5">
-                    {String(day.dayNumber + 1).padStart(2, "0")}
-                  </span>
                 </div>
 
-                <div>
-                  <h3 className="text-sm font-semibold">
-                    Day {day.dayNumber + 1}
-                  </h3>
+                {/* Task Form */}
+                <div className="p-4 md:p-5 space-y-5">
+                  {/* Title */}
+                  <div>
+                    <label className="block text-xs text-gray-400 mb-2">
+                      Task Title
+                      <span className="text-[#FC6C26] ml-1">*</span>
+                    </label>
 
-                  <p className="text-xs text-gray-500 mt-1">{day.date}</p>
-                </div>
+                    <input
+                      onChange={handleTaskChange}
+                      name="title"
+                      data-day={day.dayNumber}
+                      type="text"
+                      value={task.title}
+                      placeholder={`Enter task for Day ${day.dayNumber}`}
+                      className="w-full bg-[#191919] border border-[#303030] focus:border-[#FC6C26] outline-none rounded-lg px-4 py-3 text-sm placeholder:text-gray-600 transition"
+                    />
+                  </div>
 
-                <span className="ml-auto flex items-center gap-1.5 text-[10px] text-green-400 bg-green-400/10 px-2.5 py-1.5 rounded-md">
-                  <FiCheckCircle size={12} />
-                  Filled
-                </span>
-              </div>
+                  {/* Description */}
+                  <div>
+                    <label className="block text-xs text-gray-400 mb-2">
+                      Description
+                    </label>
 
-              {/* Task Form */}
-              <div className="p-4 md:p-5 space-y-5">
-                {/* Title */}
-                <div>
-                  <label className="block text-xs text-gray-400 mb-2">
-                    Task Title
-                    <span className="text-[#FC6C26] ml-1">*</span>
-                  </label>
+                    <textarea
+                      onChange={handleTaskChange}
+                      name="description"
+                      data-day={day.dayNumber}
+                      rows={2}
+                      value={task.description}
+                      placeholder="Describe what you want to accomplish..."
+                      className="w-full resize-none bg-[#191919] border border-[#303030] focus:border-[#FC6C26] outline-none rounded-lg px-4 py-3 text-sm placeholder:text-gray-600 transition"
+                    />
+                  </div>
 
-                  <input
-                  onChange={handlePlanTaskInputData}
-                  name="title"
-                  datatype={day.dayNumber + 1}
-                    type="text"
-                    defaultValue={day.title}
-                    placeholder={`Enter task for Day ${day.dayNumber}`}
-                    className="w-full bg-[#191919] border border-[#303030] focus:border-[#FC6C26] outline-none rounded-lg px-4 py-3 text-sm placeholder:text-gray-600 transition"
-                  />
-                </div>
+                  {/* Priority */}
+                  <div>
+                    <label className="block text-xs text-gray-400 mb-2">
+                      Priority
+                    </label>
 
-                {/* Description */}
-                <div>
-                  <label className="block text-xs text-gray-400 mb-2">
-                    Description
-                  </label>
+                    <div className="relative">
+                      <select
+                        onChange={handleTaskChange}
+                        name="priority"
+                        data-day={day.dayNumber}
+                        value={task.priority}
+                        className="w-full appearance-none bg-[#191919] border border-[#303030] focus:border-[#FC6C26] outline-none rounded-lg px-4 py-3 text-sm text-gray-300"
+                      >
+                        <option value="Low">Low Priority</option>
 
-                  <textarea
-                  onChange={handlePlanTaskInputData}
-                  name="description"
-                  datatype={day.dayNumber + 1}
-                    rows={2}
-                    defaultValue={day.description}
-                    placeholder="Describe what you want to accomplish..."
-                    className="w-full resize-none bg-[#191919] border border-[#303030] focus:border-[#FC6C26] outline-none rounded-lg px-4 py-3 text-sm placeholder:text-gray-600 transition"
-                  />
-                </div>
+                        <option value="Medium">Medium Priority</option>
 
-                {/* Priority */}
-                <div>
-                  <label className="block text-xs text-gray-400 mb-2">
-                    Priority
-                  </label>
+                        <option value="High">High Priority</option>
+                      </select>
 
-                  <div className="relative">
-                    <select
-                    onChange={handlePlanTaskInputData}
-                    name="priority"
-                    datatype={day.dayNumber + 1}
-                      defaultValue={day.priority}
-                      className="w-full appearance-none bg-[#191919] border border-[#303030] focus:border-[#FC6C26] outline-none rounded-lg px-4 py-3 text-sm text-gray-300"
-                    >
-                      <option value="Low">Low Priority</option>
-                      <option value="Medium">Medium Priority</option>
-                      <option value="High">High Priority</option>
-                    </select>
-
-                    <FiChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+                      <FiChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Save Section */}
@@ -257,15 +375,25 @@ const ManagementPlanDetails = () => {
                 {filledTasks} tasks added across {plan.duration} days.
               </p>
 
-              <p className="flex items-center gap-2 text-xs text-green-400 mt-3">
+              <p
+                className={`flex items-center gap-2 text-xs mt-3 ${
+                  filledTasks === plan.duration
+                    ? "text-green-400"
+                    : "text-yellow-500"
+                }`}
+              >
                 <FiCheckCircle />
-                All tasks are ready to save.
+
+                {filledTasks === plan.duration
+                  ? "All tasks are ready to save."
+                  : `${plan.duration - filledTasks} day(s) still need a title.`}
               </p>
             </div>
 
-            <button onClick={() => {
-              handleSubmitSaveAllTasksData(plan._id , accessToken)
-            }} className="flex items-center justify-center gap-2 bg-[#FC6C26] hover:bg-[#e85c1b] px-6 py-3 rounded-lg text-sm font-medium transition">
+            <button
+              onClick={handleSaveTasks}
+              className="flex items-center justify-center gap-2 bg-[#FC6C26] hover:bg-[#e85c1b] px-6 py-3 rounded-lg text-sm font-medium transition"
+            >
               <FiSave size={17} />
               Save All Tasks
             </button>

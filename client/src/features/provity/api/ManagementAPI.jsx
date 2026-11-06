@@ -21,12 +21,16 @@ export const getPlanAPI = async (accessToken) => {
 };
 
 export const savePlanTasks = async (data, id, accessToken) => {
-  console.log(data , id , accessToken)
-  const response = await axiosInsatnce.post(`/management/save-plan-tasks/${id}`, data, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
+  console.log(data, id, accessToken);
+  const response = await axiosInsatnce.post(
+    `/management/save-plan-tasks/${id}`,
+    { tasks: data },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
     },
-  });
+  );
 
-  return response
+  return response;
 };

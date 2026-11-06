@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router";
 
 import {
@@ -11,16 +11,31 @@ import {
 import ManagementCard from "../components/ManagementCard";
 import ManagementTrackerCard from "../components/ManagementTrackerCard";
 import { useNavigateHook } from "../../hooks/NavigationHook";
+import { useManagementHook } from "../../hooks/ManagementHook";
+import { useSelector } from "react-redux";
+import Loading from "../components/Loading";
 const ManagementPage = () => {
   const { navigate } = useNavigateHook();
+
+  const { plan } = useSelector((state) => state.manage);
+  const { accessToken } = useSelector((state) => state.auth);
+
+  const { handleGetPlanAPI } = useManagementHook();
+
+  useEffect(() => {
+    handleGetPlanAPI(accessToken);
+  }, [accessToken]);
+
+  if (!plan) {
+    return <Loading />;
+  }
 
   return (
     <div className="min-h-screen bg-[#080808] text-white px-5 md:px-10 py-7">
       <div className="max-w-[1600px] mx-auto">
         {/* BACK BUTTON */}
-
         <button
-        onClick={() => navigate("/dashboard")}
+          onClick={() => navigate("/dashboard")}
           className="flex items-center gap-2 px-5 py-3 rounded-full
           border border-white/10 bg-white/[0.04] hover:bg-white/10
           text-gray-300 transition-all mb-9"
@@ -52,7 +67,7 @@ const ManagementPage = () => {
           </div>
 
           <button
-          onClick={() => navigate("/dashboard/management/create-plan")}
+            onClick={() => navigate("/dashboard/management/create-plan")}
             className="flex items-center gap-2 px-6 py-4 rounded-xl
             bg-gradient-to-r from-orange-500 to-orange-600
             text-black font-semibold"
@@ -97,14 +112,14 @@ const ManagementPage = () => {
             {/* PLANS GRID */}
 
             <div>
-              <ManagementCard />
+              <ManagementCard plan={plan} />
             </div>
           </section>
 
           {/* RIGHT SIDE - PLAN DETAILS */}
 
           <div>
-            <ManagementTrackerCard />
+            <ManagementTrackerCard  />
           </div>
         </div>
       </div>
