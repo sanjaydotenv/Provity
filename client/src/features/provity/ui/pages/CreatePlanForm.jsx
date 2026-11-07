@@ -32,7 +32,7 @@ const CreatePlanForm = () => {
   const inputStyle =
     "w-full bg-[#111111] border border-[#292929] rounded-xl px-4 py-3 text-sm text-white placeholder:text-gray-600 outline-none focus:border-[#FC6C26] transition-all";
 
-  const labelStyle = "block text-sm text-gray-300 mb-2 font-medium";
+  const labelStyle = "block text-sm text-gray-300 mb-2 font-semibold";
 
   // Pre-built Duration
   const handlePrebuiltSelect = (days) => {
