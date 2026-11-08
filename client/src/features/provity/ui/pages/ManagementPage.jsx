@@ -14,6 +14,7 @@ import { useNavigateHook } from "../../hooks/NavigationHook";
 import { useManagementHook } from "../../hooks/ManagementHook";
 import { useSelector } from "react-redux";
 import Loading from "../components/Loading";
+import BackBtn from "../components/BackBtn";
 const ManagementPage = () => {
   const { navigate } = useNavigateHook();
 
@@ -34,15 +35,9 @@ const ManagementPage = () => {
     <div className="min-h-screen bg-[#080808] text-white px-5 md:px-10 py-7">
       <div className="max-w-[1600px] mx-auto">
         {/* BACK BUTTON */}
-        <button
-          onClick={() => navigate("/dashboard")}
-          className="flex items-center gap-2 px-5 py-3 rounded-full
-          border border-white/10 bg-white/[0.04] hover:bg-white/10
-          text-gray-300 transition-all mb-9"
-        >
-          <FiArrowLeft />
-          Back
-        </button>
+       <div className="mb-5">
+        <BackBtn />
+       </div>
 
         {/* HEADER */}
 
