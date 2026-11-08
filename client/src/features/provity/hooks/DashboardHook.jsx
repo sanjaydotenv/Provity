@@ -15,7 +15,6 @@ import {
   setOneFlowData,
   setTodayTasks,
 } from "../state/FlowSlice";
-import { useNavigateHook } from "./NavigationHook";
 
 export const useDashboardHook = () => {
   const [taskValue, setTaskValue] = useState({
@@ -23,7 +22,6 @@ export const useDashboardHook = () => {
     description: "",
   });
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-  const { navigate } = useNavigateHook();
   const [progressValue, setProgressValue] = useState({
     total: 0,
     completed: 0,
@@ -35,6 +33,8 @@ export const useDashboardHook = () => {
   const { accessToken } = useSelector((state) => state.auth);
   const { DateWiseData } = useSelector((state) => state.flow);
   const dateWiseAllTaskShowRef = useRef(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
 
   const dispatch = useDispatch();
 
@@ -130,6 +130,8 @@ export const useDashboardHook = () => {
     setIsDetailsOpen,
     isDetailsOpen,
     handleUpdatedTask,
-    dateWiseAllTaskShowRef
+    dateWiseAllTaskShowRef,
+    setSidebarOpen,
+    sidebarOpen,
   };
 };

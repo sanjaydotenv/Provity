@@ -51,29 +51,40 @@ const getDayWiseData = async (req, res) => {
   try {
     const userId = new mongoose.Types.ObjectId(req.user.id);
 
+    // Fixed Starting Date
+    const startingDate = new Date("2026-11-01T00:00:00.000+05:30");
+
+    // Get Current Date (IST)
     const today = new Date();
 
-    const todayIST = new Date(
-      today.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }),
+    const todayIST = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Kolkata",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(today);
+
+    const [year, month, day] = todayIST.split("-").map(Number);
+
+    // Next Day Midnight (IST converted to UTC)
+    const endDate = new Date(
+      Date.UTC(year, month - 1, day + 1) - 330 * 60 * 1000
     );
 
-    const endDate = new Date(todayIST);
-    endDate.setHours(24, 0, 0, 0);
-
-    const startDate = new Date(endDate);
-    startDate.setDate(startDate.getDate() - 6);
-
+    // Aggregation Pipeline
     const data = await flowModel.aggregate([
+      // Stage 1: Filter User Tasks by Date
       {
         $match: {
           user: userId,
           createdAt: {
-            $gte: startDate,
+            $gte: startingDate,
             $lt: endDate,
           },
         },
       },
 
+      // Stage 2: Group Tasks Date Wise
       {
         $group: {
           _id: {
@@ -84,55 +95,32 @@ const getDayWiseData = async (req, res) => {
             },
           },
 
-          total: { $sum: 1 },
+          totalTasks: {
+            $sum: 1,
+          },
 
-          completed: {
+          completedTasks: {
             $sum: {
-              $cond: [{ $eq: ["$isDone", true] }, 1, 0],
+              $cond: ["$isDone", 1, 0],
             },
           },
 
-          pending: {
+          incompleteTasks: {
             $sum: {
-              $cond: [{ $eq: ["$isPending", true] }, 1, 0],
+              $cond: ["$isDone", 0, 1],
             },
           },
 
           tasks: {
-            $push: {
-              _id: "$_id",
-              date: "$createdAt",
-              title: "$title",
-              description: "$description",
-              isDone: "$isDone",
-              isPending: "$isPending",
-            },
+            $push: "$$ROOT",
           },
         },
       },
 
+      // Stage 3: Sort Dates Ascending
       {
         $sort: {
-          _id: -1,
-        },
-      },
-
-      {
-        $project: {
-          _id: 0,
-          date: "$_id",
-          total: 1,
-          completed: 1,
-          pending: 1,
-          tasks: 1,
-          progress: {
-            $round: [
-              {
-                $multiply: [{ $divide: ["$completed", "$total"] }, 100],
-              },
-              0,
-            ],
-          },
+          _id: 1,
         },
       },
     ]);
@@ -141,6 +129,7 @@ const getDayWiseData = async (req, res) => {
       success: true,
       data,
     });
+
   } catch (error) {
     console.error("Day-wise data error:", error);
 
@@ -151,7 +140,7 @@ const getDayWiseData = async (req, res) => {
   }
 };
 
-export const getTodayTasks = async (req, res) => {
+const getTodayTasks = async (req, res) => {
   try {
     const userId = req.user.id;
 
@@ -166,8 +155,6 @@ export const getTodayTasks = async (req, res) => {
 
     const endDate = new Date(startDate);
     endDate.setUTCDate(endDate.getUTCDate() + 1);
-
-
 
     // Fetch today's tasks
     const todayTasksData = await flowModel.aggregate([
@@ -225,12 +212,12 @@ const markAsCompleteController = async (req, res) => {
   });
 };
 
-const updateFlowController = async (req,res) => {
+const updateFlowController = async (req, res) => {
   const { id } = req.params;
 
-  console.log(req.body)
+  console.log(req.body);
 
-  if (!id){
+  if (!id) {
     throw new AppError("flow ID is not found", 404);
   }
 
