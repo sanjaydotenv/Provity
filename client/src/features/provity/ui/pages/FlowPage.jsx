@@ -18,6 +18,7 @@ import { useNavigateHook } from "../../hooks/NavigationHook";
 import { useDashboardHook } from "../../hooks/DashboardHook";
 import TaskCardUI from "../components/TaskCardUI";
 import Loading from "../components/Loading";
+import BackBtn from "../components/BackBtn";
 
 const FlowPage = () => {
   const titleRef = useRef(null);
@@ -106,14 +107,7 @@ const FlowPage = () => {
       <div className="flex items-center justify-between px-1 py-2">
         <ProvityLogo />
 
-        <button
-          type="button"
-          onClick={() => navigate("/dashboard")}
-          aria-label="Back to dashboard"
-          className="flex h-10 w-12 items-center justify-center border border-white/20 text-xl text-white/80 transition hover:border-[#FC6C26] hover:text-[#FC6C26] sm:h-11 sm:w-14"
-        >
-          <IoArrowBackOutline />
-        </button>
+        <BackBtn />
       </div>
 
       {/* Main Content */}
