@@ -120,7 +120,7 @@ const getDayWiseData = async (req, res) => {
       // Stage 3: Sort Dates Ascending
       {
         $sort: {
-          _id: 1,
+          _id: -1,
         },
       },
     ]);

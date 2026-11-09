@@ -20,6 +20,7 @@ import {
   FiMoreHorizontal,
   FiCalendar,
 } from "react-icons/fi";
+
 import { useNavigateHook } from "../../hooks/NavigationHook";
 import { useDispatch, useSelector } from "react-redux";
 import Loading from "../components/Loading";
@@ -28,130 +29,15 @@ import OneDayFlowAllTask from "../components/OneDayFlowAllTask";
 import { setDayFlowDetailsData } from "../../state/FlowSlice";
 
 import SideBar from "../components/SideBar";
-
+import TimeOverview from "../components/TimeOverview";
+import { useDashboardTimeHook } from "../../hooks/DashboardTimeHook";
 
 const ORANGE = "#FC6C26";
 
-const DAY_MS = 24 * 60 * 60 * 1000;
-
-const getTimeData = (now) => {
-  const year = now.getFullYear();
-  const month = now.getMonth();
-  const date = now.getDate();
-
-  // Month calculations
-  const monthStart = new Date(year, month, 1);
-  const nextMonthStart = new Date(year, month + 1, 1);
-
-  const totalDaysInMonth = new Date(year, month + 1, 0).getDate();
-  const currentDay = date;
-
-  const daysPassedInMonth = currentDay;
-  const daysRemainingInMonth = totalDaysInMonth - currentDay;
-
-  const monthElapsed =
-    ((now.getTime() - monthStart.getTime()) /
-      (nextMonthStart.getTime() - monthStart.getTime())) *
-    100;
-
-  const monthRemaining = 100 - monthElapsed;
-
-  // Year calculations
-  const yearStart = new Date(year, 0, 1);
-  const nextYearStart = new Date(year + 1, 0, 1);
-
-  const totalDaysInYear = Math.round(
-    (nextYearStart.getTime() - yearStart.getTime()) / DAY_MS,
-  );
-
-  const dayOfYear =
-    Math.floor((now.getTime() - yearStart.getTime()) / DAY_MS) + 1;
-
-  const daysRemainingInYear = Math.max(0, totalDaysInYear - dayOfYear);
-
-  const yearElapsed =
-    ((now.getTime() - yearStart.getTime()) /
-      (nextYearStart.getTime() - yearStart.getTime())) *
-    100;
-
-  const yearRemaining = 100 - yearElapsed;
-
-  const dayStart = new Date(year, month, date);
-  const nextDayStart = new Date(year, month, date + 1);
-
-  const totalHoursInDay =
-    (nextDayStart.getTime() - dayStart.getTime()) / 3600000;
-
-  const elapsedMilliseconds = now.getTime() - dayStart.getTime();
-
-  const remainingMilliseconds = Math.max(
-    0,
-    nextDayStart.getTime() - now.getTime(),
-  );
-
-  const elapsedSeconds = Math.floor(elapsedMilliseconds / 1000);
-
-  const remainingSeconds = Math.floor(remainingMilliseconds / 1000);
-
-  const elapsedHours = elapsedMilliseconds / 3600000;
-
-  const remainingHours = remainingMilliseconds / 3600000;
-
-  const dayElapsed =
-    (elapsedMilliseconds / (nextDayStart.getTime() - dayStart.getTime())) * 100;
-
-  const dayRemaining = 100 - dayElapsed;
-
-  const formatDuration = (totalSeconds) => {
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-
-    return {
-      hours,
-      minutes,
-      seconds,
-      text: `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
-        2,
-        "0",
-      )}:${String(seconds).padStart(2, "0")}`,
-    };
-  };
-
-  return {
-    month: {
-      total: totalDaysInMonth,
-      elapsed: daysPassedInMonth,
-      remaining: daysRemainingInMonth,
-      progress: monthElapsed,
-      remainingProgress: monthRemaining,
-    },
-
-    year: {
-      total: totalDaysInYear,
-      elapsed: dayOfYear,
-      remaining: daysRemainingInYear,
-      progress: yearElapsed,
-      remainingProgress: yearRemaining,
-    },
-
-    day: {
-      total: totalHoursInDay,
-      elapsed: elapsedHours,
-      remaining: remainingHours,
-      progress: dayElapsed,
-      remainingProgress: dayRemaining,
-      elapsedDuration: formatDuration(elapsedSeconds),
-      remainingDuration: formatDuration(remainingSeconds),
-    },
-  };
-};
-
 const DashboardPage = () => {
-  const [now, setNow] = useState(() => new Date());
-  
+  const { now, setNow } = useDashboardTimeHook();
+
   const [dateWiseAllTaskShow, setDateWiseAllTaskShow] = useState(true);
-  
 
   const dispatch = useDispatch();
 
@@ -163,13 +49,22 @@ const DashboardPage = () => {
     handleAllTasksData,
     dateWiseAllTaskShowRef,
     sidebarOpen,
-    setSidebarOpen
+    setSidebarOpen,
   } = useDashboardHook();
 
   const { navigate } = useNavigateHook();
   const { user, loading, accessToken } = useSelector((state) => state.auth);
   const { allFlows } = useSelector((state) => state.flow);
 
+  console.log(DateWiseData)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setNow(new Date());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     handleAllTasksData(accessToken);
@@ -183,17 +78,6 @@ const DashboardPage = () => {
     handleProgress();
   }, [DateWiseData]);
 
-  console.log(DateWiseData)
-
-  // Live clock
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setNow(new Date());
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   useEffect(() => {
     if (!loading && !user) {
       navigate("/", { replace: true });
@@ -203,8 +87,6 @@ const DashboardPage = () => {
   if (loading || !user) {
     return <Loading />;
   }
-
-  const timeData = getTimeData(now);
 
   const today = now.toLocaleDateString("en-IN", {
     day: "2-digit",
@@ -223,7 +105,6 @@ const DashboardPage = () => {
     hour12: true,
   });
 
-  // Demo task data: replace with actual task data when connecting your API.
   const stats = [
     {
       label: "Today's Tasks",
@@ -252,48 +133,6 @@ const DashboardPage = () => {
       subtitle: "Your overall workload",
       icon: FiTrendingUp,
       accent: "purple",
-    },
-  ];
-
-  const countdowns = [
-    {
-      title: "MONTH END",
-      value: timeData.month.remaining,
-      total: timeData.month.total,
-      elapsed: timeData.month.elapsed,
-      remaining: timeData.month.remaining,
-      unit: "days remaining",
-      icon: FiCalendar,
-      progress: timeData.month.progress,
-      remainingProgress: timeData.month.remainingProgress,
-      detail: `${timeData.month.elapsed} of ${timeData.month.total} days passed`,
-      remainingDetail: `${timeData.month.remaining} days left`,
-    },
-    {
-      title: "YEAR END",
-      value: timeData.year.remaining,
-      total: timeData.year.total,
-      elapsed: timeData.year.elapsed,
-      remaining: timeData.year.remaining,
-      unit: "days remaining",
-      icon: IoCalendarOutline,
-      progress: timeData.year.progress,
-      remainingProgress: timeData.year.remainingProgress,
-      detail: `${timeData.year.elapsed} of ${timeData.year.total} days passed`,
-      remainingDetail: `${timeData.year.remaining} days left`,
-    },
-    {
-      title: "DAY END",
-      value: timeData.day.remainingDuration.hours,
-      total: 24,
-      elapsed: timeData.day.elapsed,
-      remaining: timeData.day.remaining,
-      unit: "hours remaining",
-      icon: IoTimeOutline,
-      progress: timeData.day.progress,
-      remainingProgress: timeData.day.remainingProgress,
-      detail: `${timeData.day.elapsedDuration.text} elapsed`,
-      remainingDetail: `${timeData.day.remainingDuration.text} left`,
     },
   ];
 
@@ -448,143 +287,8 @@ const DashboardPage = () => {
             </section>
 
             {/* Time Overview */}
-            <section className="mb-8">
-              <div className="mb-4 flex items-center justify-between">
-                <div>
-                  <h2 className="text-base font-semibold">Time Overview</h2>
 
-                  <p className="mt-1 text-xs text-white/35">
-                    Track elapsed time and what's remaining.
-                  </p>
-                </div>
-
-                <span className="rounded-lg border border-white/[0.08] px-3 py-1.5 text-[10px] text-white/40">
-                  LIVE
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {countdowns?.map((item) => {
-                  const Icon = item.icon;
-
-                  return (
-                    <article
-                      key={item?.title}
-                      className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#111214] p-5 transition duration-300 hover:-translate-y-1 hover:border-[#FC6C26]/30 hover:bg-[#151414]"
-                    >
-                      <div className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-[#FC6C26]/[0.04] blur-2xl transition group-hover:bg-[#FC6C26]/10" />
-
-                      <div className="relative flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className="text-[10px] font-medium tracking-[1.8px] text-white/40">
-                            {item?.title}
-                          </p>
-
-                          <div className="mt-4 flex items-baseline gap-2">
-                            <span className="text-4xl font-semibold tracking-normal">
-                              {String(item?.value).padStart(2, "0")}
-                            </span>
-
-                            <span className="text-xs text-white/40">
-                              {item?.unit}
-                            </span>
-                          </div>
-
-                          <p className="mt-2 text-xs text-[#FC6C26]">
-                            {item?.remainingDetail}
-                          </p>
-                        </div>
-
-                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#FC6C26]/15 bg-[#FC6C26]/[0.08]">
-                          <Icon className="text-xl text-[#FC6C26]" />
-                        </div>
-                      </div>
-
-                      {/* Elapsed / Remaining */}
-                      <div className="relative mt-5 flex items-center justify-between gap-2">
-                        <p className="text-[10px] text-white/40">
-                          {item?.detail}
-                        </p>
-
-                        <p className="shrink-0 text-xs font-medium text-white/70">
-                          {item?.progress.toFixed(1)}%
-                        </p>
-                      </div>
-
-                      {/* Real elapsed progress */}
-                      <div
-                        className="relative mt-2 h-2 overflow-hidden rounded-full bg-white/[0.07]"
-                        role="progressbar"
-                        aria-label={`${item?.title} elapsed`}
-                        aria-valuemin={0}
-                        aria-valuemax={100}
-                        aria-valuenow={Number(item?.progress.toFixed(1))}
-                      >
-                        <div
-                          className="h-full rounded-full bg-gradient-to-r from-[#FC6C26] to-[#FF9B62] transition-[width] duration-700"
-                          style={{
-                            width: `${Math.min(100, Math.max(0, item.progress))}%`,
-                          }}
-                        />
-                      </div>
-
-                      {/* Remaining progress */}
-                      <div className="relative mt-3 flex items-center justify-between gap-2">
-                        <p className="text-[10px] text-white/35">
-                          Time remaining
-                        </p>
-
-                        <p className="text-[10px] text-white/50">
-                          {item?.remainingProgress?.toFixed(1)}%
-                        </p>
-                      </div>
-
-                      <div className="relative mt-1.5 h-1 overflow-hidden rounded-full bg-white/[0.05]">
-                        <div
-                          className="h-full rounded-full bg-emerald-400/70 transition-[width] duration-700"
-                          style={{
-                            width: `${Math.min(
-                              100,
-                              Math.max(0, item?.remainingProgress),
-                            )}%`,
-                          }}
-                        />
-                      </div>
-
-                      {/* Day-specific precise countdown */}
-                      {item.title === "DAY END" && (
-                        <div className="relative mt-4 rounded-xl border border-white/[0.07] bg-black/20 p-3">
-                          <p className="mb-2 text-[9px] uppercase tracking-[1.5px] text-white/35">
-                            Exact countdown
-                          </p>
-
-                          <p className="font-mono text-xl font-medium tracking-wider text-white sm:text-2xl">
-                            {timeData.day.remainingDuration.text}
-                          </p>
-
-                          <p className="mt-1 text-[10px] text-white/35">
-                            HH : MM : SS remaining today
-                          </p>
-                        </div>
-                      )}
-
-                      {/* Total duration */}
-                      <div className="relative mt-4 flex items-center justify-between border-t border-white/[0.07] pt-3">
-                        <p className="text-[10px] text-white/35">
-                          Total duration
-                        </p>
-
-                        <p className="text-xs font-medium text-white/65">
-                          {item.total}{" "}
-                          {item.title === "DAY END" ? "hours" : "days"}
-                        </p>
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
-            </section>
-
+            <TimeOverview />
             {/* Task Overview */}
             <section className="mb-9">
               <div className="mb-4">
@@ -674,8 +378,8 @@ const DashboardPage = () => {
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                   {DateWiseData?.map((flow, idx) => {
                     const flowProgress =
-                      flow.total > 0
-                        ? Math.min(100, (flow?.completed / flow?.total) * 100)
+                      flow.totalTasks > 0
+                        ? Math.min(100, (flow?.completedTasks / flow?.totalTasks) * 100)
                         : 0;
 
                     return (
@@ -700,7 +404,7 @@ const DashboardPage = () => {
                               </h3>
 
                               <p className="mt-1 text-[10px] text-white/35">
-                                {flow?.date}
+                                {flow?._id}
                               </p>
                             </div>
                           </div>
@@ -722,7 +426,7 @@ const DashboardPage = () => {
                         <div className="grid grid-cols-3 gap-2">
                           <div>
                             <p className="text-lg font-semibold">
-                              {flow?.total}
+                              {flow?.totalTasks}
                             </p>
                             <p className="mt-1 text-[9px] text-white/35 sm:text-[10px]">
                               Total
@@ -731,7 +435,7 @@ const DashboardPage = () => {
 
                           <div>
                             <p className="text-lg font-semibold text-emerald-400">
-                              {flow?.completed}
+                              {flow?.completedTasks}
                             </p>
                             <p className="mt-1 text-[9px] text-white/35 sm:text-[10px]">
                               Completed
@@ -740,7 +444,7 @@ const DashboardPage = () => {
 
                           <div>
                             <p className="text-lg font-semibold text-amber-400">
-                              {flow?.pending}
+                              {flow?.incompleteTasks}
                             </p>
                             <p className="mt-1 text-[9px] text-white/35 sm:text-[10px]">
                               Pending
