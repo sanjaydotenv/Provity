@@ -6,7 +6,7 @@ import { IoClose, IoHome } from "react-icons/io5";
 import { useNavigateHook } from "../../hooks/NavigationHook";
 import { FiArrowUpRight, FiPlus } from "react-icons/fi";
 
-const SideBar = () => {
+const SideBar = ({data}) => {
   const { sidebarOpen, setSidebarOpen } = useDashboardHook();
   const { navigate } = useNavigateHook();
 
@@ -87,21 +87,21 @@ const SideBar = () => {
 
           <div className="relative mt-4 flex items-end justify-between">
             <p className="text-3xl font-semibold tracking-tight">
-              {/* {progressValue?.completed} */}
+              {data?.completed}
               <span className="text-base font-normal text-white/35">
                 {/* /{progressValue?.total} */}
               </span>
             </p>
 
             <p className="pb-1 text-xs text-[#FC6C26]">
-              {/* {Math.round(progressValue?.progress)}% */}
+              {Math.round(data?.progress)}%
             </p>
           </div>
 
           <div className="mt-3 h-1 overflow-hidden rounded-full bg-white/[0.08]">
             <div
               className="h-full rounded-full bg-[#FC6C26] transition-all"
-              //   style={{ width: `${progressValue?.progress ?? 0}%` }}
+                style={{ width: `${data?.progress ?? 0}%` }}
             />
           </div>
 

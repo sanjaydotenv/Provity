@@ -28,12 +28,22 @@ export const useDashboardHook = () => {
     pending: 0,
     progress: 0,
   });
+
+  const totalTasks = progressValue?.totalTasks || 0;
+  const completed = progressValue?.completedTasks || 0;
+  const pending = progressValue?.incompleteTasks || 0;
+
+  const progress = totalTasks > 0 ? (completed / totalTasks) * 100 : 0;
+
   const [descriptionToggleInput, setDescriptionToggleInput] = useState(false);
   const [msg, setMsg] = useState(true);
   const { accessToken } = useSelector((state) => state.auth);
   const { DateWiseData } = useSelector((state) => state.flow);
   const dateWiseAllTaskShowRef = useRef(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const recentTasks  = DateWiseData?.slice(0,6)
+
 
 
   const dispatch = useDispatch();
@@ -87,6 +97,7 @@ export const useDashboardHook = () => {
   };
 
   const handleProgress = () => {
+    console.log(DateWiseData)
     if (DateWiseData) {
       setProgressValue(DateWiseData[0]);
     }
@@ -133,5 +144,10 @@ export const useDashboardHook = () => {
     dateWiseAllTaskShowRef,
     setSidebarOpen,
     sidebarOpen,
+    totalTasks,
+    completed,
+    pending,
+    progress,
+    recentTasks
   };
 };

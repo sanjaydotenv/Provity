@@ -44,19 +44,22 @@ const DashboardPage = () => {
   const {
     handleDayWiseData,
     handleProgress,
-    DateWiseData,
-    progressValue,
     handleAllTasksData,
     dateWiseAllTaskShowRef,
     sidebarOpen,
     setSidebarOpen,
+    completed,
+    pending,
+    progress,
+    totalTasks,
+    recentTasks
   } = useDashboardHook();
 
   const { navigate } = useNavigateHook();
   const { user, loading, accessToken } = useSelector((state) => state.auth);
   const { allFlows } = useSelector((state) => state.flow);
 
-  console.log(DateWiseData)
+  // Calculate Daily Progress
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -76,7 +79,7 @@ const DashboardPage = () => {
 
   useEffect(() => {
     handleProgress();
-  }, [DateWiseData]);
+  }, [recentTasks]);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -108,21 +111,21 @@ const DashboardPage = () => {
   const stats = [
     {
       label: "Today's Tasks",
-      value: DateWiseData?.[0]?.tasks?.length ?? 0,
+      value: recentTasks?.[0]?.tasks?.length ?? 0,
       subtitle: "Tasks scheduled for today",
       icon: FiClipboard,
       accent: "orange",
     },
     {
       label: "Completed",
-      value: DateWiseData?.[0]?.completed ?? 0,
+      value: recentTasks?.[0]?.completed ?? 0,
       subtitle: "Tasks finished successfully",
       icon: FiCheckCircle,
       accent: "green",
     },
     {
       label: "Pending Tasks",
-      value: DateWiseData?.[0]?.pending ?? 0,
+      value: recentTasks?.[0]?.pending ?? 0,
       subtitle: "Tasks waiting for you",
       icon: FiClock,
       accent: "yellow",
@@ -192,7 +195,7 @@ const DashboardPage = () => {
         )}
 
         {/* Sidebar */}
-        <SideBar />
+        <SideBar data={{ pending, progress, totalTasks, completed }} />
 
         {/* Main Dashboard */}
         <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-8 xl:px-10">
@@ -376,10 +379,13 @@ const DashboardPage = () => {
 
               <div className="grid grid-cols-1 items-stretch gap-5 2xl:grid-cols-[minmax(0,1fr)_280px]">
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                  {DateWiseData?.map((flow, idx) => {
+                  {recentTasks?.map((flow, idx) => {
                     const flowProgress =
                       flow.totalTasks > 0
-                        ? Math.min(100, (flow?.completedTasks / flow?.totalTasks) * 100)
+                        ? Math.min(
+                            100,
+                            (flow?.completedTasks / flow?.totalTasks) * 100,
+                          )
                         : 0;
 
                     return (
@@ -397,7 +403,7 @@ const DashboardPage = () => {
                             <div className="min-w-0">
                               <h3 className="truncate text-xs font-medium text-white/90">
                                 Day{" "}
-                                {String(DateWiseData?.length - idx).padStart(
+                                {String(recentTasks?.length - idx).padStart(
                                   3,
                                   "0",
                                 )}
@@ -488,8 +494,10 @@ const DashboardPage = () => {
 
                 {/* Overall Progress */}
                 <aside className="relative flex flex-col items-center justify-center overflow-hidden rounded-2xl border border-[#FC6C26]/20 bg-gradient-to-b from-[#19130F] via-[#111112] to-[#101113] p-6 sm:p-8">
+                  {/* Background Glow */}
                   <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[#FC6C26]/[0.09] blur-[70px]" />
 
+                  {/* Header */}
                   <div className="relative mb-5 flex w-full items-center justify-between">
                     <div>
                       <p className="text-[10px] font-medium uppercase tracking-[2px] text-white/40">
@@ -506,15 +514,19 @@ const DashboardPage = () => {
                     </div>
                   </div>
 
+                  {/* Circular Progress */}
                   <div
-                    className="relative flex h-44 w-44 items-center justify-center rounded-full"
+                    className="relative flex h-44 w-44 items-center justify-center rounded-full transition-all duration-700"
                     style={{
-                      background: `conic-gradient(${ORANGE} ${progressValue?.progress * 3.6}deg, rgba(255,255,255,0.07) 0deg)`,
+                      background: `conic-gradient(
+        ${ORANGE} ${progress * 3.6}deg,
+        rgba(255,255,255,0.07) ${progress * 3.6}deg
+      )`,
                     }}
                   >
                     <div className="flex h-[calc(100%-12px)] w-[calc(100%-12px)] flex-col items-center justify-center rounded-full border border-white/[0.06] bg-[#111112]">
                       <p className="text-4xl font-semibold tracking-tight">
-                        {Math.round(progressValue?.progress)}
+                        {Math.round(progress)}
                         <span className="text-xl text-[#FC6C26]">%</span>
                       </p>
 
@@ -524,7 +536,9 @@ const DashboardPage = () => {
                     </div>
                   </div>
 
+                  {/* Task Statistics */}
                   <div className="relative mt-6 grid w-full grid-cols-2 gap-3">
+                    {/* Completed */}
                     <div className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-3">
                       <div className="flex items-center gap-1.5">
                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
@@ -532,11 +546,10 @@ const DashboardPage = () => {
                         <p className="text-[10px] text-white/40">Completed</p>
                       </div>
 
-                      <p className="mt-2 text-xl font-semibold">
-                        {progressValue?.completed}
-                      </p>
+                      <p className="mt-2 text-xl font-semibold">{completed}</p>
                     </div>
 
+                    {/* Remaining */}
                     <div className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-3">
                       <div className="flex items-center gap-1.5">
                         <span className="h-1.5 w-1.5 rounded-full bg-[#FC6C26]" />
@@ -544,14 +557,17 @@ const DashboardPage = () => {
                         <p className="text-[10px] text-white/40">Remaining</p>
                       </div>
 
-                      <p className="mt-2 text-xl font-semibold">
-                        {Math.max(progressValue?.pending)}
-                      </p>
+                      <p className="mt-2 text-xl font-semibold">{pending}</p>
                     </div>
                   </div>
 
+                  {/* Footer */}
                   <p className="relative mt-5 text-center text-xs leading-5 text-white/35">
-                    Every completed task brings you closer to your goal.
+                    {totalTasks === 0
+                      ? "No tasks added for today. Start planning your day!"
+                      : progress === 100
+                        ? "Amazing! You have completed all your daily tasks."
+                        : "Every completed task brings you closer to your goal."}
                   </p>
                 </aside>
               </div>
