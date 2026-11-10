@@ -52,7 +52,7 @@ const DashboardPage = () => {
     pending,
     progress,
     totalTasks,
-    recentTasks
+    recentTasks,
   } = useDashboardHook();
 
   const { navigate } = useNavigateHook();
@@ -173,7 +173,7 @@ const DashboardPage = () => {
         <ProvityLogo />
 
         <button
-          onClick={() => setSidebarOpen(!sidebarOpen)}
+          onClick={() => setSidebarOpen((prev) => !prev)}
           aria-label="Toggle sidebar"
           className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-xl transition hover:border-[#FC6C26]/50"
         >
@@ -195,7 +195,11 @@ const DashboardPage = () => {
         )}
 
         {/* Sidebar */}
-        <SideBar data={{ pending, progress, totalTasks, completed }} />
+        <SideBar
+          data={{ pending, progress, totalTasks, completed }}
+          sidebarOpen={sidebarOpen}
+          setSidebarOpen={setSidebarOpen}
+        />
 
         {/* Main Dashboard */}
         <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-8 xl:px-10">

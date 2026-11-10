@@ -1,13 +1,11 @@
 import React from "react";
 import { GiCrystalGrowth } from "react-icons/gi";
-import { useDashboardHook } from "../../hooks/DashboardHook";
 import ProvityLogo from "./ProvityLogo";
 import { IoClose, IoHome } from "react-icons/io5";
 import { useNavigateHook } from "../../hooks/NavigationHook";
 import { FiArrowUpRight, FiPlus } from "react-icons/fi";
 
-const SideBar = ({data}) => {
-  const { sidebarOpen, setSidebarOpen } = useDashboardHook();
+const SideBar = ({ data, sidebarOpen, setSidebarOpen }) => {
   const { navigate } = useNavigateHook();
 
   return (
@@ -101,7 +99,7 @@ const SideBar = ({data}) => {
           <div className="mt-3 h-1 overflow-hidden rounded-full bg-white/[0.08]">
             <div
               className="h-full rounded-full bg-[#FC6C26] transition-all"
-                style={{ width: `${data?.progress ?? 0}%` }}
+              style={{ width: `${data?.progress ?? 0}%` }}
             />
           </div>
 
