@@ -1,9 +1,14 @@
 import React from "react";
 import { FiCalendar, FiClock, FiEye } from "react-icons/fi";
 import { useNavigateHook } from "../../hooks/NavigationHook";
+import { useManagementHook } from "../../hooks/ManagementHook";
+import { useSelector } from "react-redux";
 
 const ManagementCard = ({ allPlans = [] }) => {
   const { navigate } = useNavigateHook();
+  const { handleGetPlanAllTasks } = useManagementHook();
+  const { accessToken } = useSelector((state) => state.auth);
+
 
   const formatDate = (date) => {
     if (!date) return "N/A";
@@ -23,13 +28,14 @@ const ManagementCard = ({ allPlans = [] }) => {
       {allPlans?.map((plan) => (
         <div
           key={plan._id}
+          onClick={() => handleGetPlanAllTasks(plan._id , accessToken)}
           className="group relative min-w-0 overflow-hidden
           rounded-2xl border border-orange-500/25
           bg-gradient-to-br from-[#20150f] via-[#171313] to-[#100e0e]
           shadow-[0_0_20px_rgba(249,115,22,0.07)]
           hover:border-orange-500/50
           hover:shadow-[0_0_25px_rgba(249,115,22,0.13)]
-          transition-all duration-300"
+          transition-all duration-300 bg-blue-500"
         >
           {/* Top Glow */}
           <div

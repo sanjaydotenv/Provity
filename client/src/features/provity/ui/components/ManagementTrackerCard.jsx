@@ -9,13 +9,59 @@ import {
   FiList,
   FiTrendingUp,
 } from "react-icons/fi";
+import { useSelector } from "react-redux";
+
 const ManagementTrackerCard = () => {
+  const { planAllTasks } = useSelector((state) => state.manage);
+
+  const trackData = planAllTasks?.[0];
+
+  // Sort tasks without modifying Redux state
+  const tasks = [...(trackData?.Tasks ?? [])].sort(
+    (a, b) => a.dayNumber - b.dayNumber,
+  );
+
+  // Calculate task statistics
+  const totalTasks = tasks.length;
+
+  const completed = tasks.filter((task) => task.isDone).length;
+
+  const pending = totalTasks - completed;
+
+  const progress =
+    totalTasks > 0 ? Math.round((completed / totalTasks) * 100) : 0;
+
+  // Circular progress calculation
+  const circumference = 2 * Math.PI * 47;
+
+  const strokeDashoffset = circumference - (progress / 100) * circumference;
+
+  // Format date
+  const formatDate = (date) => {
+    if (!date) return "N/A";
+
+    return new Date(date + "T00:00:00").toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+  // Priority colors
+  const priorityColors = {
+    High: "bg-red-500/10 text-red-400",
+    Medium: "bg-blue-500/10 text-blue-400",
+    Low: "bg-green-500/10 text-green-400",
+  };
+
   return (
     <aside
       className="h-fit rounded-2xl border border-orange-500/30
             bg-gradient-to-br from-[#1b1512] via-[#111010] to-[#0e0d0d]
             p-6 xl:sticky xl:top-6"
     >
+      {/* HEADER */}
+
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-2">
           <FiTarget className="text-orange-500 text-xl" />
@@ -39,9 +85,13 @@ const ManagementTrackerCard = () => {
         </div>
 
         <div>
-          <h3 className="text-xl font-bold">15 Days Plan</h3>
+          <h3 className="text-xl font-bold">
+            {trackData?.duration ?? 0} Days Plan
+          </h3>
 
-          <p className="text-sm text-gray-400">Your productivity plan</p>
+          <p className="text-sm text-gray-400">
+            {trackData?.title || "Your productivity plan"}
+          </p>
         </div>
       </div>
 
@@ -53,7 +103,9 @@ const ManagementTrackerCard = () => {
             <FiCalendar /> Created On
           </p>
 
-          <p className="text-sm font-semibold">Nov 4, 2026</p>
+          <p className="text-sm font-semibold">
+            {formatDate(trackData?.startDate)}
+          </p>
         </div>
 
         <div>
@@ -61,7 +113,9 @@ const ManagementTrackerCard = () => {
             <FiFlag /> Target Date
           </p>
 
-          <p className="text-sm font-semibold">Nov 19, 2026</p>
+          <p className="text-sm font-semibold">
+            {formatDate(trackData?.endDate)}
+          </p>
         </div>
       </div>
 
@@ -69,7 +123,9 @@ const ManagementTrackerCard = () => {
 
       <div className="flex items-center gap-6 py-6">
         <div className="relative w-28 h-28 shrink-0">
-          <svg className="w-full h-full -rotate-90">
+          <svg className="w-full h-full -rotate-90" viewBox="0 0 112 112">
+            {/* Background Circle */}
+
             <circle
               cx="56"
               cy="56"
@@ -79,6 +135,8 @@ const ManagementTrackerCard = () => {
               fill="none"
             />
 
+            {/* Progress Circle */}
+
             <circle
               cx="56"
               cy="56"
@@ -87,31 +145,38 @@ const ManagementTrackerCard = () => {
               strokeWidth="9"
               fill="none"
               strokeLinecap="round"
-              strokeDasharray="19.7 295"
+              strokeDasharray={circumference}
+              strokeDashoffset={strokeDashoffset}
+              className="transition-all duration-700"
             />
           </svg>
 
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-xl font-bold">6.7%</span>
+            <span className="text-xl font-bold">{progress}%</span>
 
             <span className="text-[10px] text-gray-400">Completed</span>
           </div>
         </div>
 
+        {/* TASK STATISTICS */}
+
         <div className="flex-1 space-y-4">
           <div className="flex justify-between text-sm">
             <span className="text-gray-400">Total Tasks</span>
-            <span>15</span>
+
+            <span>{totalTasks}</span>
           </div>
 
           <div className="flex justify-between text-sm">
             <span className="text-gray-400">Completed</span>
-            <span className="text-green-400">1</span>
+
+            <span className="text-green-400">{completed}</span>
           </div>
 
           <div className="flex justify-between text-sm">
             <span className="text-gray-400">Pending</span>
-            <span className="text-orange-400">14</span>
+
+            <span className="text-orange-400">{pending}</span>
           </div>
         </div>
       </div>
@@ -124,105 +189,67 @@ const ManagementTrackerCard = () => {
           Plan Tasks
         </h3>
 
-        <span className="text-xs text-gray-500">4 Tasks</span>
+        <span className="text-xs text-gray-500">{totalTasks} Tasks</span>
       </div>
 
+      {/* DYNAMIC TASKS */}
+
       <div className="space-y-2 max-h-[400px] overflow-y-auto pr-1 custom-scrollbar">
-        {/* TASK 1 */}
-
-        <div
-          className="flex items-center gap-3 p-3 rounded-xl
+        {tasks.length > 0 ? (
+          tasks.map((task) => (
+            <div
+              key={task._id}
+              className="flex items-center gap-3 p-3 rounded-xl
               bg-white/[0.035] border border-white/[0.05]"
-        >
-          <FiCheckCircle size={21} className="shrink-0 text-green-500" />
+            >
+              {/* TASK STATUS ICON */}
 
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium line-through text-gray-500">
-              Learn React Basics
-            </p>
+              {task.isDone ? (
+                <FiCheckCircle size={21} className="shrink-0 text-green-500" />
+              ) : (
+                <FiCircle size={21} className="shrink-0 text-gray-500" />
+              )}
 
-            <p className="text-xs text-gray-500 mt-1">Components, JSX, Props</p>
+              {/* TASK INFORMATION */}
+
+              <div className="flex-1 min-w-0">
+                <p
+                  className={`text-sm font-medium break-words ${
+                    task.isDone ? "line-through text-gray-500" : "text-gray-200"
+                  }`}
+                >
+                  {task.title}
+                </p>
+
+                {task.description && (
+                  <p className="text-xs text-gray-500 mt-1 break-words">
+                    {task.description}
+                  </p>
+                )}
+
+                <p className="text-[10px] text-gray-600 mt-1">
+                  Day {task.dayNumber}
+                </p>
+              </div>
+
+              {/* PRIORITY */}
+
+              <span
+                className={`shrink-0 text-[10px] px-2 py-1 rounded-full ${
+                  priorityColors[task.priority] || priorityColors.Medium
+                }`}
+              >
+                {task.priority || "Medium"}
+              </span>
+            </div>
+          ))
+        ) : (
+          <div className="p-5 text-center rounded-xl bg-white/[0.035] border border-white/[0.05]">
+            <FiList className="mx-auto text-gray-500 text-2xl mb-2" />
+
+            <p className="text-sm text-gray-400">No tasks available</p>
           </div>
-
-          <span
-            className="text-[10px] px-2 py-1 rounded-full
-                bg-red-500/10 text-red-400"
-          >
-            High
-          </span>
-        </div>
-
-        {/* TASK 2 */}
-
-        <div
-          className="flex items-center gap-3 p-3 rounded-xl
-              bg-white/[0.035] border border-white/[0.05]"
-        >
-          <FiCircle size={21} className="shrink-0 text-gray-500" />
-
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-200">
-              Setup Development Environment
-            </p>
-
-            <p className="text-xs text-gray-500 mt-1">Node.js, VS Code, Git</p>
-          </div>
-
-          <span
-            className="text-[10px] px-2 py-1 rounded-full
-                bg-blue-500/10 text-blue-400"
-          >
-            Medium
-          </span>
-        </div>
-
-        {/* TASK 3 */}
-
-        <div
-          className="flex items-center gap-3 p-3 rounded-xl
-              bg-white/[0.035] border border-white/[0.05]"
-        >
-          <FiCircle size={21} className="shrink-0 text-gray-500" />
-
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-200">
-              Build a Simple Counter App
-            </p>
-
-            <p className="text-xs text-gray-500 mt-1">Using React</p>
-          </div>
-
-          <span
-            className="text-[10px] px-2 py-1 rounded-full
-                bg-green-500/10 text-green-400"
-          >
-            Low
-          </span>
-        </div>
-
-        {/* TASK 4 */}
-
-        <div
-          className="flex items-center gap-3 p-3 rounded-xl
-              bg-white/[0.035] border border-white/[0.05]"
-        >
-          <FiCircle size={21} className="shrink-0 text-gray-500" />
-
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-200">
-              Learn React Hooks
-            </p>
-
-            <p className="text-xs text-gray-500 mt-1">useState, useEffect</p>
-          </div>
-
-          <span
-            className="text-[10px] px-2 py-1 rounded-full
-                bg-blue-500/10 text-blue-400"
-          >
-            Medium
-          </span>
-        </div>
+        )}
       </div>
 
       {/* FOOTER */}

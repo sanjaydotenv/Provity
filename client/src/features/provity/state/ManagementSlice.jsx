@@ -7,6 +7,7 @@ const managementSlice = createSlice({
     plan: null,
     loading: true,
     allPlans: null,
+    planAllTasks: null,
   },
 
   reducers: {
@@ -20,9 +21,13 @@ const managementSlice = createSlice({
     setAllPlans: (state, action) => {
       state.allPlans = action.payload;
     },
+    setPlanAllTasks: (state, action) => {
+      state.planAllTasks = action.payload;
+    },
   },
 });
 
-export const { setPlan, setLoading, setAllPlans } = managementSlice.actions;
+export const { setPlan, setLoading, setAllPlans, setPlanAllTasks } =
+  managementSlice.actions;
 
 export default managementSlice.reducer;
