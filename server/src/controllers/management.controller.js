@@ -1,5 +1,7 @@
+import mongoose from "mongoose";
 import planModel from "../models/plan.model.js";
 import planTaskModel from "../models/planTasks.model.js";
+import AppError from "../utils/app.error.js";
 
 const createPlanController = async (req, res) => {
   const { title, description, duration, startDate, endDate } = req.body;
@@ -104,9 +106,47 @@ const getAllPlanController = async (req, res) => {
   });
 };
 
+const getPlanTasksController = async (req, res) => {
+  const planId = req.params.planId;
+
+  if (!planId) {
+    throw new AppError(404, "PlanId is not found");
+  }
+
+  const Plan = await planModel.findById(planId);
+
+  if (!Plan) {
+    throw new AppError("Plan not found Invalid Credentials");
+  }
+
+  const data = await planModel.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(planId),
+      },
+    },
+    {
+      $lookup: {
+        from: "plantasks",
+        localField: "_id",
+        foreignField: "plan",
+        as: "Tasks",
+      },
+    },
+  ]);
+
+  console.log("THIS IS DATA" , data)
+
+  res.status(200).json({
+    message: "Plan all Tasks fetched",
+    tasks: data,
+  });
+};
+
 export default {
   createPlanController,
   getPlanController,
   getAllPlanController,
   savePlanTasksController,
+  getPlanTasksController,
 };

@@ -11,4 +11,6 @@ route.get("/get-plan", authentication ,managementController.getPlanController)
 route.get("/get-all-plans", authentication ,managementController.getAllPlanController)
 
 route.post("/save-plan-tasks/:planId", authentication ,managementController.savePlanTasksController)
+
+route.get("/getPlan-tasks/:planId" , authentication , managementController.getPlanTasksController)
 export default route
