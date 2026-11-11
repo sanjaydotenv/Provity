@@ -13,6 +13,7 @@ import SmoothScroll from "./features/provity/ui/components/SmoothScroll";
 import ManagementPage from "./features/provity/ui/pages/ManagementPage";
 import CreatePlanForm from "./features/provity/ui/pages/CreatePlanForm";
 import ManagementPlanDetails from "./features/provity/ui/components/ManagementPlanDetails";
+import ManagementTaskDetails from "./features/provity/ui/pages/ManagementTaskDetails";
 
 const RootLayout = () => {
   return (
@@ -70,6 +71,10 @@ const router = createBrowserRouter([
       {
         path: "/dashboard/management/details",
         element: <ManagementPlanDetails />
+      },
+      {
+        path: "/dashboard/managementTask/details",
+        element: <ManagementTaskDetails />
       }
     ],
   },

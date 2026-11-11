@@ -42,7 +42,6 @@ const ManagementCard = ({ allPlans = [] }) => {
             className="absolute top-0 left-0 w-40 h-40
           bg-orange-500/[0.06] blur-[70px] pointer-events-none"
           />
-
           <div className="relative p-5 sm:p-6">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
@@ -148,7 +147,7 @@ const ManagementCard = ({ allPlans = [] }) => {
 
               <button
                 onClick={() =>
-                  navigate("/dashboard/management/details", {
+                  navigate("/dashboard/managementTask/details", {
                     state: { plan },
                   })
                 }
