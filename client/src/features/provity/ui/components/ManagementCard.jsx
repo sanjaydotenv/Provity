@@ -9,7 +9,6 @@ const ManagementCard = ({ allPlans = [] }) => {
   const { handleGetPlanAllTasks } = useManagementHook();
   const { accessToken } = useSelector((state) => state.auth);
 
-
   const formatDate = (date) => {
     if (!date) return "N/A";
 
@@ -20,6 +19,10 @@ const ManagementCard = ({ allPlans = [] }) => {
     });
   };
 
+  const setPlanIdOnLocalStorage = (id) => {
+    localStorage.setItem("planId" , id)
+  }
+
   return (
     <div
       className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,380px),1fr))]
@@ -28,7 +31,7 @@ const ManagementCard = ({ allPlans = [] }) => {
       {allPlans?.map((plan) => (
         <div
           key={plan._id}
-          onClick={() => handleGetPlanAllTasks(plan._id , accessToken)}
+          onClick={() => handleGetPlanAllTasks(plan._id, accessToken)}
           className="group relative min-w-0 overflow-hidden
           rounded-2xl border border-orange-500/25
           bg-gradient-to-br from-[#20150f] via-[#171313] to-[#100e0e]
@@ -146,11 +149,12 @@ const ManagementCard = ({ allPlans = [] }) => {
               </span>
 
               <button
-                onClick={() =>
+                onClick={() => {
+                  setPlanIdOnLocalStorage(plan._id)
                   navigate("/dashboard/managementTask/details", {
                     state: { plan },
-                  })
-                }
+                  });
+                }}
                 className="shrink-0 flex items-center gap-2 px-4 py-2.5
                 rounded-full border border-orange-500/30
                 text-orange-400 text-sm font-medium
