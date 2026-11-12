@@ -23,6 +23,9 @@ import {
 
 import { useSelector } from "react-redux";
 import { useManagementHook } from "../../hooks/ManagementHook";
+import BackBtn from "../components/BackBtn";
+import { IoArrowBackOutline } from "react-icons/io5";
+import { useNavigateHook } from "../../hooks/NavigationHook";
 
 const ManagementTaskDetails = () => {
   const [activeTab, setActiveTab] = useState("Tasks");
@@ -32,6 +35,8 @@ const ManagementTaskDetails = () => {
   const [showMenu, setShowMenu] = useState(null);
 
   const [days, setDays] = useState([]);
+
+  const {navigate} = useNavigateHook()
 
   const { handleGetPlanAllTasks } = useManagementHook();
 
@@ -48,7 +53,7 @@ const ManagementTaskDetails = () => {
     }
   }, [planId, accessToken]);
 
-  // GET LATEST PLAN
+
   const latestPlan = useMemo(() => {
     if (!Array.isArray(planAllTasks) || !planAllTasks.length) {
       return null;
@@ -269,12 +274,13 @@ const ManagementTaskDetails = () => {
           </div>
 
           <button
-            onClick={addTask}
-            className="flex items-center gap-2 rounded-full bg-[var(--primary-color)] px-5 py-2.5 text-sm font-semibold text-black transition hover:bg-[var(--primary-color2)]"
-          >
-            <FiPlus size={18} />
-            Create New Plan
-          </button>
+                type="button"
+                onClick={() => navigate(-1)}
+                aria-label="Back to dashboard"
+                className="flex h-10 w-12 items-center justify-center border border-white/20 text-xl text-white/80 transition hover:border-[#FC6C26] hover:text-[#FC6C26] sm:h-11 sm:w-14"
+              >
+                <IoArrowBackOutline />
+              </button>
         </div>
 
         {/* PLAN HERO */}
@@ -383,6 +389,7 @@ const ManagementTaskDetails = () => {
                     <Icon size={15} />
 
                     {tab.name}
+                    
                   </button>
                 );
               })}
@@ -402,7 +409,9 @@ const ManagementTaskDetails = () => {
                   return (
                     <div key={day.day}>
                       <button
-                        onClick={() => toggleDay(day.day)}
+                        onClick={() => {
+                          toggleDay(day.day)
+                        }}
                         className="flex w-full items-center justify-between rounded-lg px-2 py-3 transition hover:bg-white/[0.04]"
                       >
                         <div className="flex min-w-0 items-center gap-2">
@@ -437,7 +446,10 @@ const ManagementTaskDetails = () => {
                                 className="group flex items-center gap-3 rounded-lg border border-white/[0.04] bg-white/[0.025] px-3 py-3 transition hover:border-[var(--primary-color)]/30"
                               >
                                 <button
-                                  onClick={() => toggleTask(day.day, task.id)}
+                                  onClick={() => {
+                                    console.log("hello ji ")
+                                    toggleTask(day.day, task.id)
+                                  }}
                                   className={`shrink-0 ${
                                     task.completed
                                       ? "text-[var(--primary-color)]"
@@ -729,30 +741,6 @@ const ManagementTaskDetails = () => {
 
             {/* QUICK ACTIONS */}
 
-            <div className="rounded-2xl border border-white/10 bg-[#100e0e] p-4">
-              <h3 className="mb-4 flex items-center gap-2 text-sm font-bold">
-                <FiZap className="text-[var(--primary-color)]" />
-                Quick Actions
-              </h3>
-
-              <div className="space-y-2">
-                <button
-                  onClick={addTask}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.06] py-2.5 text-xs font-medium text-white/80 transition hover:border-[var(--primary-color)]/40 hover:text-[var(--primary-color)]"
-                >
-                  <FiPlus size={15} />
-                  Add Task
-                </button>
-
-                <button
-                  onClick={() => setActiveTab("Overview")}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.06] py-2.5 text-xs font-medium text-white/80 transition hover:border-[var(--primary-color)]/40 hover:text-[var(--primary-color)]"
-                >
-                  <FiBarChart2 size={15} />
-                  View Analytics
-                </button>
-              </div>
-            </div>
 
             {/* PRODUCTIVITY */}
 
