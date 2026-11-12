@@ -36,7 +36,7 @@ const ManagementTaskDetails = () => {
 
   const [days, setDays] = useState([]);
 
-  const {navigate} = useNavigateHook()
+  const { navigate } = useNavigateHook();
 
   const { handleGetPlanAllTasks } = useManagementHook();
 
@@ -52,7 +52,6 @@ const ManagementTaskDetails = () => {
       handleGetPlanAllTasks(planId, accessToken);
     }
   }, [planId, accessToken]);
-
 
   const latestPlan = useMemo(() => {
     if (!Array.isArray(planAllTasks) || !planAllTasks.length) {
@@ -274,13 +273,13 @@ const ManagementTaskDetails = () => {
           </div>
 
           <button
-                type="button"
-                onClick={() => navigate(-1)}
-                aria-label="Back to dashboard"
-                className="flex h-10 w-12 items-center justify-center border border-white/20 text-xl text-white/80 transition hover:border-[#FC6C26] hover:text-[#FC6C26] sm:h-11 sm:w-14"
-              >
-                <IoArrowBackOutline />
-              </button>
+            type="button"
+            onClick={() => navigate(-1)}
+            aria-label="Back to dashboard"
+            className="flex h-10 w-12 items-center justify-center border border-white/20 text-xl text-white/80 transition hover:border-[#FC6C26] hover:text-[#FC6C26] sm:h-11 sm:w-14"
+          >
+            <IoArrowBackOutline />
+          </button>
         </div>
 
         {/* PLAN HERO */}
@@ -389,7 +388,6 @@ const ManagementTaskDetails = () => {
                     <Icon size={15} />
 
                     {tab.name}
-                    
                   </button>
                 );
               })}
@@ -410,7 +408,7 @@ const ManagementTaskDetails = () => {
                     <div key={day.day}>
                       <button
                         onClick={() => {
-                          toggleDay(day.day)
+                          toggleDay(day.day);
                         }}
                         className="flex w-full items-center justify-between rounded-lg px-2 py-3 transition hover:bg-white/[0.04]"
                       >
@@ -421,8 +419,7 @@ const ManagementTaskDetails = () => {
                             <FiChevronRight className="text-white/50" />
                           )}
 
-                          <span className="h-2 w-2 shrink-0 rounded-full bg-[var(--primary-color)]" />
-
+                          <span className={`h-2 w-2 shrink-0 rounded-full ${day.tasks[0].isDone ? "bg-green-500" : "bg-yellow-500"}`} />
                           <span className="truncate text-xs font-semibold sm:text-sm">
                             Day {day.day} – {day.date}
                           </span>
@@ -447,8 +444,8 @@ const ManagementTaskDetails = () => {
                               >
                                 <button
                                   onClick={() => {
-                                    console.log("hello ji ")
-                                    toggleTask(day.day, task.id)
+                                    console.log(task);
+                                    toggleTask(day.day, task.id);
                                   }}
                                   className={`shrink-0 ${
                                     task.completed
@@ -740,7 +737,6 @@ const ManagementTaskDetails = () => {
             </div>
 
             {/* QUICK ACTIONS */}
-
 
             {/* PRODUCTIVITY */}
 

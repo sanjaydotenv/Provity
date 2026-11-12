@@ -46,7 +46,6 @@ export const getAllPlansAPI = async (accessToken) => {
 };
 
 export const getPlanAllTasks = async (id, accessToken) => {
-  console.log(id , accessToken)
   const response = await axiosInsatnce.get(`/management/getPlan-tasks/${id}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
