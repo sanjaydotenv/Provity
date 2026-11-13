@@ -1,8 +1,19 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createPlanAPI, getAllPlansAPI, getPlanAllTasks, getPlanAPI, savePlanTasks } from "../api/ManagementAPI";
+import {
+  createPlanAPI,
+  getAllPlansAPI,
+  getPlanAllTasks,
+  getPlanAPI,
+  planTaskCompleteAPI,
+  savePlanTasks,
+} from "../api/ManagementAPI";
 import { useNavigateHook } from "./NavigationHook";
-import { setAllPlans, setPlan, setPlanAllTasks } from "../state/ManagementSlice";
+import {
+  setAllPlans,
+  setPlan,
+  setPlanAllTasks,
+} from "../state/ManagementSlice";
 
 export const useManagementHook = () => {
   const durations = [7, 10, 15, 30];
@@ -132,21 +143,28 @@ export const useManagementHook = () => {
       const response = await savePlanTasks(formattedData, id, accessToken);
 
       console.log("Saved Tasks:", response.data);
-      navigate("/dashboard/management")
+      navigate("/dashboard/management");
     } catch (error) {
       console.log("Save Tasks Error:", error);
     }
   };
 
   const handleGetAllPlans = async (accessToken) => {
-    const response = await getAllPlansAPI(accessToken)
-    dispatch(setAllPlans(response.data.plans))
-  }
+    const response = await getAllPlansAPI(accessToken);
+    dispatch(setAllPlans(response.data.plans));
+  };
 
-  const handleGetPlanAllTasks = async (id , accessToken) => {
-    const response = await getPlanAllTasks(id , accessToken)
-    dispatch(setPlanAllTasks(response.data.tasks))
-  }
+  const handleGetPlanAllTasks = async (id, accessToken) => {
+    const response = await getPlanAllTasks(id, accessToken);
+    dispatch(setPlanAllTasks(response.data.tasks));
+  };
+
+  const handlePlanTaskComplete = async (taskId, planId, accessToken) => {
+    const data = {taskId, planId}
+    console.log(data)
+    const response = await planTaskCompleteAPI(data,accessToken);
+    console.log(response)
+  };
 
   return {
     durations,
@@ -159,6 +177,7 @@ export const useManagementHook = () => {
     handlePlanTaskInputData,
     handleSubmitSaveAllTasksData,
     handleGetAllPlans,
-    handleGetPlanAllTasks
+    handleGetPlanAllTasks,
+    handlePlanTaskComplete,
   };
 };

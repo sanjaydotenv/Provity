@@ -38,7 +38,7 @@ const ManagementTaskDetails = () => {
 
   const { navigate } = useNavigateHook();
 
-  const { handleGetPlanAllTasks } = useManagementHook();
+  const { handleGetPlanAllTasks, handlePlanTaskComplete } = useManagementHook();
 
   const { accessToken } = useSelector((state) => state.auth);
 
@@ -419,7 +419,9 @@ const ManagementTaskDetails = () => {
                             <FiChevronRight className="text-white/50" />
                           )}
 
-                          <span className={`h-2 w-2 shrink-0 rounded-full ${day.tasks[0].isDone ? "bg-green-500" : "bg-yellow-500"}`} />
+                          <span
+                            className={`h-2 w-2 shrink-0 rounded-full ${day.tasks[0].isDone ? "bg-green-500" : "bg-yellow-500"}`}
+                          />
                           <span className="truncate text-xs font-semibold sm:text-sm">
                             Day {day.day} – {day.date}
                           </span>
@@ -444,7 +446,11 @@ const ManagementTaskDetails = () => {
                               >
                                 <button
                                   onClick={() => {
-                                    console.log(task);
+                                    handlePlanTaskComplete(
+                                      task._id,
+                                      task.plan,
+                                      accessToken,
+                                    );
                                     toggleTask(day.day, task.id);
                                   }}
                                   className={`shrink-0 ${

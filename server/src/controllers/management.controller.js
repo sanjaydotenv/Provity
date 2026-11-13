@@ -135,11 +135,41 @@ const getPlanTasksController = async (req, res) => {
     },
   ]);
 
-  console.log("THIS IS DATA" , data)
+  console.log("THIS IS DATA", data);
 
   res.status(200).json({
     message: "Plan all Tasks fetched",
     tasks: data,
+  });
+};
+
+const PlanTaskCompletedController = async (req, res) => {
+  const { planId , taskId } = req.body;
+
+  console.log(req.body);
+
+  const plan = await planModel.findById(planId);
+
+  if (!plan) {
+    throw new AppError(404, "Plan not found");
+  }
+
+  const task = await planTaskModel.findOneAndUpdate(
+    {
+      _id: taskId,
+      plan: planId,
+    },
+    { $set: { isDone: true } },
+    { new: true },
+  );
+
+  if (!task) {
+    throw new AppError(404, "Task not found");
+  }
+
+  res.status(200).json({
+    message: "Task marked as completed",
+    task,
   });
 };
 
@@ -149,4 +179,5 @@ export default {
   getAllPlanController,
   savePlanTasksController,
   getPlanTasksController,
+  PlanTaskCompletedController,
 };

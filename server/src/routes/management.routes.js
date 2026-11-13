@@ -13,4 +13,6 @@ route.get("/get-all-plans", authentication ,managementController.getAllPlanContr
 route.post("/save-plan-tasks/:planId", authentication ,managementController.savePlanTasksController)
 
 route.get("/getPlan-tasks/:planId" , authentication , managementController.getPlanTasksController)
+
+route.patch("/plan-task-completed", authentication, managementController.PlanTaskCompletedController);
 export default route

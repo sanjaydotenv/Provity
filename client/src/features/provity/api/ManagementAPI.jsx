@@ -54,3 +54,18 @@ export const getPlanAllTasks = async (id, accessToken) => {
 
   return response;
 };
+
+export const planTaskCompleteAPI = async (data, accessToken) => {
+  console.log(data , accessToken)
+  const response = await axiosInsatnce.patch(
+    "/management/plan-task-completed",
+    data,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+
+  return response;
+};
