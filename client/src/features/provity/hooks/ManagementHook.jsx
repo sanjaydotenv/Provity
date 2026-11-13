@@ -14,6 +14,7 @@ import {
   setPlan,
   setPlanAllTasks,
 } from "../state/ManagementSlice";
+import { toast } from "react-toastify";
 
 export const useManagementHook = () => {
   const durations = [7, 10, 15, 30];
@@ -160,10 +161,9 @@ export const useManagementHook = () => {
   };
 
   const handlePlanTaskComplete = async (taskId, planId, accessToken) => {
-    const data = {taskId, planId}
-    console.log(data)
-    const response = await planTaskCompleteAPI(data,accessToken);
-    console.log(response)
+    const data = { taskId, planId };
+    await planTaskCompleteAPI(data, accessToken);
+    toast.success("Task Completed");
   };
 
   return {
