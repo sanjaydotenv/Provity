@@ -20,6 +20,9 @@ import Loading from "../../ui/components/Loading";
 const ManagementPlanDetails = () => {
   const navigate = useNavigate();
 
+  console.log("running somethinf")
+  const planIdd = localStorage.getItem("planIdd")
+
   const {
   handleGetPlanAPI,
   handleSubmitSaveAllTasksData,
@@ -33,11 +36,12 @@ const ManagementPlanDetails = () => {
   const [error, setError] = useState("");
 
   // Get Plan
-  useEffect(() => {
-    if (!accessToken) return;
 
-    handleGetPlanAPI(accessToken);
-  }, [accessToken]);
+  useEffect(() => {
+    if (!accessToken) return
+
+    handleGetPlanAPI(planIdd , accessToken)
+  } , [accessToken])
 
   // Initialize tasks according to plan duration
   useEffect(() => {

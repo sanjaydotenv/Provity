@@ -22,7 +22,7 @@ const createPlanController = async (req, res) => {
 };
 
 const getPlanController = async (req, res) => {
-  const plan = await planModel.findOne({ user: req.user.id });
+  const plan = await planModel.findOne({ user: req.user.id , _id: req.params.planId });
 
   if (!plan) {
     return res.status(404).json({

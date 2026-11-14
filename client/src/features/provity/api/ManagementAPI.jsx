@@ -10,8 +10,8 @@ export const createPlanAPI = async (data, accessToken) => {
   return response;
 };
 
-export const getPlanAPI = async (accessToken) => {
-  const response = await axiosInsatnce.get("/management/get-plan", {
+export const getPlanAPI = async (id , accessToken) => {
+  const response = await axiosInsatnce.get(`/management/get-plan/${id}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },

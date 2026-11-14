@@ -6,7 +6,7 @@ const route = Router();
 
 route.post("/create-plan", authentication ,managementController.createPlanController)
 
-route.get("/get-plan", authentication ,managementController.getPlanController)
+route.get("/get-plan/:planId", authentication ,managementController.getPlanController)
 
 route.get("/get-all-plans", authentication ,managementController.getAllPlanController)
 

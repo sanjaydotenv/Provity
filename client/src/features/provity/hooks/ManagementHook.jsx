@@ -100,12 +100,13 @@ export const useManagementHook = () => {
     }
 
     const response = await createPlanAPI(planData, accessToken);
+    localStorage.setItem("planIdd" , response.data.plan._id)
     dispatch(setPlan(response.data.plan));
     navigate("/dashboard/management/details");
   };
 
-  const handleGetPlanAPI = async (accessToken) => {
-    const response = await getPlanAPI(accessToken);
+  const handleGetPlanAPI = async (id , accessToken) => {
+    const response = await getPlanAPI(id , accessToken);
     dispatch(setPlan(response.data.plan));
   };
 
