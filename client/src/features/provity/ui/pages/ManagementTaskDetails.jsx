@@ -205,9 +205,7 @@ const ManagementTaskDetails = () => {
   };
 
   // ADD TASK
-  const addTask = () => {
-    alert("Connect your Add Task API here.");
-  };
+
 
   // DELETE TASK
   const handleDeleteTask = (dayNumber, taskId) => {
@@ -445,6 +443,7 @@ const ManagementTaskDetails = () => {
                                 className="group flex items-center gap-3 rounded-lg border border-white/[0.04] bg-white/[0.025] px-3 py-3 transition hover:border-[var(--primary-color)]/30"
                               >
                                 <button
+                                disabled={task.completed}
                                   onClick={() => {
                                     handlePlanTaskComplete(
                                       task._id,
@@ -455,7 +454,7 @@ const ManagementTaskDetails = () => {
                                   }}
                                   className={`shrink-0 ${
                                     task.completed
-                                      ? "text-[var(--primary-color)]"
+                                      ? "text-[var(--primary-color)] cursor-not-allowed"
                                       : "text-white/60 hover:text-[var(--primary-color)]"
                                   }`}
                                 >
