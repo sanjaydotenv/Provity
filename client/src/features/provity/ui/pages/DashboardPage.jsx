@@ -111,14 +111,14 @@ const DashboardPage = () => {
   const stats = [
     {
       label: "Today's Tasks",
-      value: recentTasks?.[0]?.tasks?.length ?? 0,
+      value: recentTasks?.[0]?.completedTasks || 0,
       subtitle: "Tasks scheduled for today",
       icon: FiClipboard,
       accent: "orange",
     },
     {
       label: "Completed",
-      value: recentTasks?.[0]?.completed ?? 0,
+      value: recentTasks?.[0]?.completedTasks || 0,
       subtitle: "Tasks finished successfully",
       icon: FiCheckCircle,
       accent: "green",
