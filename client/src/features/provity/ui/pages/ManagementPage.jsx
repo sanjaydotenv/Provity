@@ -31,8 +31,6 @@ const ManagementPage = () => {
     return <Loading />;
   }
 
-  console.log(allPlans)
-
   return (
     <div className="min-h-screen bg-[#080808] text-white px-5 md:px-10 py-7">
       <div className="max-w-[1600px] mx-auto">
