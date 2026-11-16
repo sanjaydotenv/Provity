@@ -4,7 +4,6 @@ import { ChatGroq } from "@langchain/groq";
 const model = new ChatGroq({
   model: "openai/gpt-oss-120b",
   apiKey: process.env.GROQ_API_KEY,
-  temperature: 0.7,
 });
 
 export async function askProvity(userText) {
