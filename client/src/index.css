@@ -24,7 +24,7 @@
 
 /* Firefox */
 * {
-  scrollbar-width: thin;
+  scrollbar-width: unset;
   scrollbar-color: #fc6c26 #090909;
 }
 

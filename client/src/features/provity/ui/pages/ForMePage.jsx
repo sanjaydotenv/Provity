@@ -12,6 +12,7 @@ import { useSelector } from "react-redux";
 import { createHabitAPI, getAllHabits } from "../../api/formeAPI";
 import BackBtn from "../components/BackBtn";
 import ForMe from "../components/ForMe";
+import { createPortal } from "react-dom";
 
 const ForMePage = () => {
   const [habits, setHabits] = useState([]);
@@ -32,6 +33,44 @@ const ForMePage = () => {
 
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+  if (!showMsg) return;
+
+  // Current scroll position save karo
+  const scrollY = window.scrollY;
+
+  // Previous styles save karo
+  const previousBodyStyles = {
+    position: document.body.style.position,
+    top: document.body.style.top,
+    width: document.body.style.width,
+    overflow: document.body.style.overflow,
+  };
+
+  const previousHtmlOverflow = document.documentElement.style.overflow;
+
+  // Background scrolling completely lock
+  document.documentElement.style.overflow = "hidden";
+
+  document.body.style.position = "fixed";
+  document.body.style.top = `-${scrollY}px`;
+  document.body.style.width = "100%";
+  document.body.style.overflow = "hidden";
+
+  return () => {
+    // Previous styles restore
+    document.documentElement.style.overflow = previousHtmlOverflow;
+
+    document.body.style.position = previousBodyStyles.position;
+    document.body.style.top = previousBodyStyles.top;
+    document.body.style.width = previousBodyStyles.width;
+    document.body.style.overflow = previousBodyStyles.overflow;
+
+    // Previous scroll position restore
+    window.scrollTo(0, scrollY);
+  };
+}, [showMsg]);
 
   // Fetch All Habits
   useEffect(() => {
@@ -389,11 +428,22 @@ const ForMePage = () => {
         </div>
       )}
 
-      {showMsg && (
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-          <ForMe setShowMsg={setShowMsg} />
-        </div>
-      )}
+      {showMsg &&
+  createPortal(
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 p-3 backdrop-blur-md sm:p-6"
+      onClick={() => setShowMsg(false)}
+    >
+      {/* Modal Container */}
+      <div
+        className="relative h-[85dvh] w-[90vw] overflow-hidden rounded-3xl border border-[var(--primary-color)]/20 bg-[var(--main-bg)] shadow-[0_0_80px_rgba(252,108,38,0.12)]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <ForMe setShowMsg={setShowMsg} />
+      </div>
+    </div>,
+    document.body,
+  )}
     </main>
   );
 };
