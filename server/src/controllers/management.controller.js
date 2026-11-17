@@ -22,7 +22,10 @@ const createPlanController = async (req, res) => {
 };
 
 const getPlanController = async (req, res) => {
-  const plan = await planModel.findOne({ user: req.user.id , _id: req.params.planId });
+  const plan = await planModel.findOne({
+    user: req.user.id,
+    _id: req.params.planId,
+  });
 
   if (!plan) {
     return res.status(404).json({
@@ -98,7 +101,7 @@ const savePlanTasksController = async (req, res) => {
 };
 
 const getAllPlanController = async (req, res) => {
-  const plans = await planModel.find();
+  const plans = await planModel.find().sort({ _id: -1 });
 
   res.status(200).json({
     message: "Plans retrieved successfully",
@@ -144,7 +147,7 @@ const getPlanTasksController = async (req, res) => {
 };
 
 const PlanTaskCompletedController = async (req, res) => {
-  const { planId , taskId } = req.body;
+  const { planId, taskId } = req.body;
 
   console.log(req.body);
 

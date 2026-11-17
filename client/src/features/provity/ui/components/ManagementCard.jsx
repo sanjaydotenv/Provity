@@ -12,8 +12,7 @@ const ManagementCard = ({ allPlans = [] }) => {
   const { accessToken } = useSelector((state) => state.auth);
 
 
-  console.log(allPlans)
-  const lastPlan = allPlans[allPlans.length - 1]
+  
 
   const formatDate = (date) => {
     if (!date) return "N/A";
