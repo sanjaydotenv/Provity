@@ -4,6 +4,8 @@ import ProvityLogo from "./ProvityLogo";
 import { IoClose, IoHome } from "react-icons/io5";
 import { useNavigateHook } from "../../hooks/NavigationHook";
 import { FiArrowUpRight, FiPlus } from "react-icons/fi";
+import { FiAnchor } from "react-icons/fi";
+
 
 const SideBar = ({ data, sidebarOpen, setSidebarOpen }) => {
   const { navigate } = useNavigateHook();
@@ -66,6 +68,18 @@ const SideBar = ({ data, sidebarOpen, setSidebarOpen }) => {
         >
           <GiCrystalGrowth />
           Management
+          <FiArrowUpRight className="ml-auto text-white/25" />
+        </button>
+
+        <button
+          onClick={() => {
+            setSidebarOpen(false);
+            navigate("/dashboard/forme");
+          }}
+          className="flex items-center gap-3 rounded-xl border border-transparent px-4 py-3.5 text-left text-sm text-white/55 transition hover:border-white/[0.08] hover:bg-white/[0.04] hover:text-white"
+        >
+          <FiAnchor />
+          For Me
           <FiArrowUpRight className="ml-auto text-white/25" />
         </button>
       </nav>

@@ -4,6 +4,18 @@ import planTaskModel from "../models/planTasks.model.js";
 import AppError from "../utils/app.error.js";
 
 const createPlanController = async (req, res) => {
+  const allPlans = await planModel.find();
+
+  const result = await allPlans.some((plan) => {
+    return plan.status === "Active";
+  });
+
+  if (result) {
+    return res.status(409).json({
+      message: "You already have an active plan.",
+    });
+  }
+
   const { title, description, duration, startDate, endDate } = req.body;
 
   const plan = await planModel.create({

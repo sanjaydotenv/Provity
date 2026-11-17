@@ -99,14 +99,18 @@ export const useManagementHook = () => {
       return;
     }
 
-    const response = await createPlanAPI(planData, accessToken);
-    localStorage.setItem("planIdd" , response.data.plan._id)
-    dispatch(setPlan(response.data.plan));
-    navigate("/dashboard/management/details");
+    try {
+      const response = await createPlanAPI(planData, accessToken);
+      localStorage.setItem("planIdd", response.data.plan._id);
+      dispatch(setPlan(response.data.plan));
+      navigate("/dashboard/management/details");
+    } catch (error) {
+      toast.warn(error.response.data.message)
+    }
   };
 
-  const handleGetPlanAPI = async (id , accessToken) => {
-    const response = await getPlanAPI(id , accessToken);
+  const handleGetPlanAPI = async (id, accessToken) => {
+    const response = await getPlanAPI(id, accessToken);
     dispatch(setPlan(response.data.plan));
   };
 

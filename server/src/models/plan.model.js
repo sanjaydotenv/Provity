@@ -23,6 +23,7 @@ const planSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ["Active", "Expired", "completed"],
+      default: "Active"
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,
