@@ -1,13 +1,22 @@
 @import "tailwindcss";
 @import "lenis/dist/lenis.css";
 
-:root {
+[data-theme="dark"] {
   --main-bg: #000000;
   --main-bg-2: #2c2929;
   --primary-color: #fc6c26;
   --primary-color2: #c65723;
   --text-color: #ffffff;
   --border-color: #ad9c9c;
+}
+
+[data-theme="white"] {
+  --main-bg: #ffffff;
+  --main-bg-2: #f8fafc;
+  --primary-color: #fc6c26;
+  --primary-color2: #e85d1f;
+  --text-color: #171717;
+  --border-color: #e2e8f0;
 }
 /* =========================================
    PROVITY — DARK ORANGE MIRROR SCROLLBAR
