@@ -113,12 +113,83 @@ const savePlanTasksController = async (req, res) => {
 };
 
 const getAllPlanController = async (req, res) => {
-  const plans = await planModel.find().sort({ _id: -1 });
+  try {
+    const plans = await planModel
+      .find({ user: req.user.id })
+      .sort({ _id: -1 })
+      .lean();
 
-  res.status(200).json({
-    message: "Plans retrieved successfully",
-    plans,
-  });
+    const taskStats = await planTaskModel.aggregate([
+      {
+        $match: {
+          user: new mongoose.Types.ObjectId(req.user.id),
+        },
+      },
+      {
+        $group: {
+          _id: "$plan",
+
+          totalTasks: {
+            $sum: 1,
+          },
+
+          completedTasks: {
+            $sum: {
+              $cond: ["$isDone", 1, 0],
+            },
+          },
+        },
+      },
+    ]);
+
+    const updatedPlans = plans.map((plan) => {
+      const stats = taskStats.find(
+        (task) => task._id.toString() === plan._id.toString(),
+      );
+
+      const totalTasks = stats?.totalTasks || 0;
+      const completedTasks = stats?.completedTasks || 0;
+
+      const allTasksCompleted = totalTasks > 0 && totalTasks === completedTasks;
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const endDate = new Date(plan.endDate);
+      endDate.setHours(0, 0, 0, 0);
+
+      let status;
+
+      if (allTasksCompleted) {
+        status = "completed";
+      } else if (endDate < today) {
+        status = "Expired";
+      } else {
+        status = "Active";
+      }
+
+      return {
+        ...plan,
+        status,
+        totalTasks,
+        completedTasks,
+        pendingTasks: totalTasks - completedTasks,
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Plans retrieved successfully",
+      plans: updatedPlans,
+    });
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to retrieve plans",
+    });
+  }
 };
 
 const getPlanTasksController = async (req, res) => {

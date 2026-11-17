@@ -11,8 +11,7 @@ const ManagementCard = ({ allPlans = [] }) => {
   const { handleGetPlanAllTasks } = useManagementHook();
   const { accessToken } = useSelector((state) => state.auth);
 
-
-  
+  console.log(allPlans);
 
   const formatDate = (date) => {
     if (!date) return "N/A";
@@ -71,18 +70,29 @@ const ManagementCard = ({ allPlans = [] }) => {
               >
                 <FiCalendar size={27} />
               </div>
+              <div className="flex items-center">
+                <span
+                  className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold border ${
+                    plan.status === "completed"
+                      ? "bg-green-500/10 text-green-400 border-green-500/20"
+                      : plan.status === "Expired"
+                        ? "bg-red-500/10 text-red-400 border-red-500/20"
+                        : "bg-blue-500/10 text-blue-400 border-blue-500/20"
+                  }`}
+                >
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      plan.status === "completed"
+                        ? "bg-green-400"
+                        : plan.status === "Expired"
+                          ? "bg-red-400"
+                          : "bg-blue-400"
+                    }`}
+                  />
 
-              {isPlanExpired(plan?.endDate) ? (
-                <span className="flex items-center gap-2 px-3 py-2 rounded-full text-xs font-semibold text-red-400 bg-red-500/10 border border-red-500/20">
-                  <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
-                  Expired
+                  {plan.status === "completed" ? "Completed" : plan.status}
                 </span>
-              ) : (
-                <span className="flex items-center gap-2 px-3 py-2 rounded-full text-xs font-semibold text-green-400 bg-green-500/10 border border-green-500/20">
-                  <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
-                  Active
-                </span>
-              )}
+              </div>
             </div>
 
             {/* Title & Description */}
