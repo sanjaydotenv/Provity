@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Plus, X, Flame, Loader2 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { createHabitAPI, getAllHabits } from "../../api/formeAPI";
+import BackBtn from "../components/BackBtn";
 
 const ForMePage = () => {
   const [habits, setHabits] = useState([]);
@@ -78,13 +79,17 @@ const ForMePage = () => {
           </p>
         </div>
 
-        <button
-          onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 bg-[#FC6C26] hover:bg-[#ff8547] transition px-5 py-3 rounded-xl text-sm font-semibold"
-        >
-          <Plus size={18} />
-          Add New Habit
-        </button>
+        <div className="flex items-center  gap-5">
+          <BackBtn />
+
+          <button
+            onClick={() => setShowModal(true)}
+            className="absolute bottom-10 right-10 flex items-center gap-2 bg-[#FC6C26] hover:bg-[#ff8547] transition px-5 py-3 rounded-xl text-sm font-semibold"
+          >
+            <Plus size={18} />
+            Add New Habit
+          </button>
+        </div>
       </header>
 
       {/* HERO */}
