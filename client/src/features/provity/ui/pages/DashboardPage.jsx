@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import ProvityLogo from "../components/ProvityLogo";
+import { IoIosArrowBack } from "react-icons/io";
+import { IoIosArrowForward } from "react-icons/io";
 
 import {
   IoHome,
@@ -57,7 +59,7 @@ const DashboardPage = () => {
 
   const { navigate } = useNavigateHook();
   const { user, loading, accessToken } = useSelector((state) => state.auth);
-  const { allFlows } = useSelector((state) => state.flow);
+  const { allFlows, DateWiseData } = useSelector((state) => state.flow);
 
   // Calculate Daily Progress
 
@@ -150,6 +152,11 @@ const DashboardPage = () => {
     dateWiseAllTaskShowRef.current.style.display = "flex";
     dispatch(setDayFlowDetailsData(flow));
   };
+
+  const page = 1;
+  const limit = 6;
+
+  const totalPages = Math.ceil(DateWiseData?.length / limit);
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#08090B] text-white selection:bg-[#FC6C26]/30">
@@ -483,6 +490,26 @@ const DashboardPage = () => {
                       </article>
                     );
                   })}
+                  <div className="flex items-center gap-3 self-start rounded-xl border border-white/[0.08] bg-white/[0.025] p-2 sm:self-auto">
+                    {/* Previous Button */}
+                    <button className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.08] text-gray-400 transition-all hover:border-[#FC6C26]/40 hover:bg-[#FC6C26]/10 hover:text-[#FC6C26] disabled:cursor-not-allowed disabled:opacity-30">
+                      <IoIosArrowBack />
+                    </button>
+
+                    {/* Page Indicator */}
+                    <div className="flex items-center gap-1.5 px-2 text-sm font-medium">
+                      <span className="text-[#FC6C26]">1</span>
+                      <span className="text-gray-600">/</span>
+                      <span className="text-gray-400">
+                        {totalPages}
+                      </span>
+                    </div>
+
+                    {/* Next Button */}
+                    <button className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.08] text-gray-400 transition-all hover:border-[#FC6C26]/40 hover:bg-[#FC6C26]/10 hover:text-[#FC6C26]">
+                      <IoIosArrowForward />
+                    </button>
+                  </div>
                 </div>
 
                 {dateWiseAllTaskShow && (
