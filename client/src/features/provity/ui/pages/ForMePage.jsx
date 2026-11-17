@@ -11,6 +11,7 @@ import {
 import { useSelector } from "react-redux";
 import { createHabitAPI, getAllHabits } from "../../api/formeAPI";
 import BackBtn from "../components/BackBtn";
+import ForMe from "../components/ForMe";
 
 const ForMePage = () => {
   const [habits, setHabits] = useState([]);
@@ -18,6 +19,8 @@ const ForMePage = () => {
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [currentTime, setCurrentTime] = useState(Date.now());
+
+  const [showMsg, setShowMsg] = useState(false);
 
   const { accessToken } = useSelector((state) => state.auth);
 
@@ -137,6 +140,7 @@ const ForMePage = () => {
 
             {/* Reflection CTA */}
             <button
+              onClick={() => setShowMsg(true)}
               type="button"
               className="group relative flex w-full items-center gap-3 overflow-hidden rounded-2xl border border-[#FC6C26]/20 bg-white/[0.035] p-4 text-left transition-all duration-300 hover:-translate-y-1 hover:border-[#FC6C26]/50 hover:bg-[#FC6C26]/[0.06] hover:shadow-[0_10px_40px_rgba(252,108,38,0.08)] sm:p-5 lg:w-[340px]"
             >
@@ -382,6 +386,12 @@ const ForMePage = () => {
               </button>
             </form>
           </div>
+        </div>
+      )}
+
+      {showMsg && (
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+          <ForMe setShowMsg={setShowMsg} />
         </div>
       )}
     </main>
