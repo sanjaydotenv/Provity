@@ -58,6 +58,7 @@ const DashboardPage = () => {
     setPage,
     totalPages,
     page,
+    startIndex
   } = useDashboardHook();
 
   const { navigate } = useNavigateHook();
@@ -87,6 +88,12 @@ const DashboardPage = () => {
       navigate("/", { replace: true });
     }
   }, [loading, user, navigate]);
+
+  useEffect(() => {
+    if (!DateWiseData || DateWiseData.length === 0) return;
+
+    handleProgress(DateWiseData[0]);
+  }, [DateWiseData]);
 
   if (loading || !user) {
     return <Loading />;
@@ -393,6 +400,7 @@ const DashboardPage = () => {
               <div className="grid grid-cols-1 items-stretch gap-5 2xl:grid-cols-[minmax(0,1fr)_280px]">
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                   {currentData?.map((flow, idx) => {
+                     const dayNumber = DateWiseData.length - (startIndex + idx);
                     const flowProgress =
                       flow.totalTasks > 0
                         ? Math.min(
@@ -415,8 +423,9 @@ const DashboardPage = () => {
 
                             <div className="min-w-0">
                               <h3 className="truncate text-xs font-medium text-white/90">
+                            
                                 Day{" "}
-                                {String(currentData?.length - idx).padStart(
+                                {String(dayNumber).padStart(
                                   3,
                                   "0",
                                 )}

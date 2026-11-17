@@ -46,13 +46,12 @@ export const useDashboardHook = () => {
 
   const limit = 6;
 
-  const totalPages = Math.ceil(DateWiseData?.length / limit);
+  const totalPages = Math.ceil((DateWiseData?.length || 0) / limit);
 
   const startIndex = (page - 1) * limit;
-
   const endIndex = startIndex + limit;
 
-  const currentData = DateWiseData?.slice(startIndex, endIndex);
+  const currentData = DateWiseData?.slice(startIndex, endIndex) || [];
 
   const dispatch = useDispatch();
 
@@ -158,5 +157,6 @@ export const useDashboardHook = () => {
     setPage,
     totalPages,
     page,
+    startIndex,
   };
 };

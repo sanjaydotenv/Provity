@@ -10,6 +10,7 @@ import { FiAnchor } from "react-icons/fi";
 const SideBar = ({ data, sidebarOpen, setSidebarOpen }) => {
   const { navigate } = useNavigateHook();
 
+
   return (
     <aside
       className={`fixed inset-y-0 left-0 z-50 flex w-[260px] flex-col border-r border-white/[0.08] bg-[#0A0B0D] px-5 py-7 transition-transform duration-300 lg:sticky lg:top-0 lg:h-screen lg:w-[230px] lg:shrink-0 lg:translate-x-0 ${
