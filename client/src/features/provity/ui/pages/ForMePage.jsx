@@ -35,42 +35,42 @@ const ForMePage = () => {
   }, []);
 
   useEffect(() => {
-  if (!showMsg) return;
+    if (!showMsg) return;
 
-  // Current scroll position save karo
-  const scrollY = window.scrollY;
+    // Current scroll position save karo
+    const scrollY = window.scrollY;
 
-  // Previous styles save karo
-  const previousBodyStyles = {
-    position: document.body.style.position,
-    top: document.body.style.top,
-    width: document.body.style.width,
-    overflow: document.body.style.overflow,
-  };
+    // Previous styles save karo
+    const previousBodyStyles = {
+      position: document.body.style.position,
+      top: document.body.style.top,
+      width: document.body.style.width,
+      overflow: document.body.style.overflow,
+    };
 
-  const previousHtmlOverflow = document.documentElement.style.overflow;
+    const previousHtmlOverflow = document.documentElement.style.overflow;
 
-  // Background scrolling completely lock
-  document.documentElement.style.overflow = "hidden";
+    // Background scrolling completely lock
+    document.documentElement.style.overflow = "hidden";
 
-  document.body.style.position = "fixed";
-  document.body.style.top = `-${scrollY}px`;
-  document.body.style.width = "100%";
-  document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = "100%";
+    document.body.style.overflow = "hidden";
 
-  return () => {
-    // Previous styles restore
-    document.documentElement.style.overflow = previousHtmlOverflow;
+    return () => {
+      // Previous styles restore
+      document.documentElement.style.overflow = previousHtmlOverflow;
 
-    document.body.style.position = previousBodyStyles.position;
-    document.body.style.top = previousBodyStyles.top;
-    document.body.style.width = previousBodyStyles.width;
-    document.body.style.overflow = previousBodyStyles.overflow;
+      document.body.style.position = previousBodyStyles.position;
+      document.body.style.top = previousBodyStyles.top;
+      document.body.style.width = previousBodyStyles.width;
+      document.body.style.overflow = previousBodyStyles.overflow;
 
-    // Previous scroll position restore
-    window.scrollTo(0, scrollY);
-  };
-}, [showMsg]);
+      // Previous scroll position restore
+      window.scrollTo(0, scrollY);
+    };
+  }, [showMsg]);
 
   // Fetch All Habits
   useEffect(() => {
@@ -429,21 +429,21 @@ const ForMePage = () => {
       )}
 
       {showMsg &&
-  createPortal(
-    <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 p-3 backdrop-blur-md sm:p-6"
-      onClick={() => setShowMsg(false)}
-    >
-      {/* Modal Container */}
-      <div
-        className="relative h-[85dvh] w-[90vw] overflow-hidden rounded-3xl border border-[var(--primary-color)]/20 bg-[var(--main-bg)] shadow-[0_0_80px_rgba(252,108,38,0.12)]"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <ForMe setShowMsg={setShowMsg} />
-      </div>
-    </div>,
-    document.body,
-  )}
+        createPortal(
+          <div
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 p-3 backdrop-blur-md sm:p-6"
+            onClick={() => setShowMsg(false)}
+          >
+            {/* Modal Container */}
+            <div
+              className="relative h-[85dvh] w-[90vw] overflow-hidden rounded-3xl border border-[var(--primary-color)]/20 bg-[var(--main-bg)] shadow-[0_0_80px_rgba(252,108,38,0.12)]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <ForMe setShowMsg={setShowMsg} />
+            </div>
+          </div>,
+          document.body,
+        )}
     </main>
   );
 };
