@@ -42,9 +42,17 @@ export const useDashboardHook = () => {
   const dateWiseAllTaskShowRef = useRef(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const recentTasks  = DateWiseData?.slice(0,6)
+  const [page, setPage] = useState(1);
 
+  const limit = 6;
 
+  const totalPages = Math.ceil(DateWiseData?.length / limit);
+
+  const startIndex = (page - 1) * limit;
+
+  const endIndex = startIndex + limit;
+
+  const currentData = DateWiseData?.slice(startIndex, endIndex);
 
   const dispatch = useDispatch();
 
@@ -97,7 +105,7 @@ export const useDashboardHook = () => {
   };
 
   const handleProgress = () => {
-    console.log(DateWiseData)
+    console.log(DateWiseData);
     if (DateWiseData) {
       setProgressValue(DateWiseData[0]);
     }
@@ -113,10 +121,8 @@ export const useDashboardHook = () => {
     setIsDetailsOpen(false);
   };
 
-
-  const handleUpdatedTask = async (id, accessToken , data) => {
-    const response = await updateFlowAPI(id, accessToken , data);
-    console.log(response)
+  const handleUpdatedTask = async (id, accessToken, data) => {
+    const response = await updateFlowAPI(id, accessToken, data);
   };
 
   return {
@@ -148,6 +154,9 @@ export const useDashboardHook = () => {
     completed,
     pending,
     progress,
-    recentTasks
+    currentData,
+    setPage,
+    totalPages,
+    page,
   };
 };

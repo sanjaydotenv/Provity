@@ -54,7 +54,10 @@ const DashboardPage = () => {
     pending,
     progress,
     totalTasks,
-    recentTasks,
+    currentData,
+    setPage,
+    totalPages,
+    page,
   } = useDashboardHook();
 
   const { navigate } = useNavigateHook();
@@ -78,10 +81,6 @@ const DashboardPage = () => {
   useEffect(() => {
     handleDayWiseData(accessToken);
   }, [accessToken]);
-
-  useEffect(() => {
-    handleProgress();
-  }, [recentTasks]);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -113,21 +112,21 @@ const DashboardPage = () => {
   const stats = [
     {
       label: "Today's Tasks",
-      value: recentTasks?.[0]?.completedTasks || 0,
+      value: currentData?.[0]?.completedTasks || 0,
       subtitle: "Tasks scheduled for today",
       icon: FiClipboard,
       accent: "orange",
     },
     {
       label: "Completed",
-      value: recentTasks?.[0]?.completedTasks || 0,
+      value: currentData?.[0]?.completedTasks || 0,
       subtitle: "Tasks finished successfully",
       icon: FiCheckCircle,
       accent: "green",
     },
     {
       label: "Pending Tasks",
-      value: recentTasks?.[0]?.pending ?? 0,
+      value: currentData?.[0]?.pending ?? 0,
       subtitle: "Tasks waiting for you",
       icon: FiClock,
       accent: "yellow",
@@ -153,10 +152,13 @@ const DashboardPage = () => {
     dispatch(setDayFlowDetailsData(flow));
   };
 
-  const page = 1;
-  const limit = 6;
+  const handlePrevious = () => {
+    setPage((prev) => Math.max(prev - 1, 1));
+  };
 
-  const totalPages = Math.ceil(DateWiseData?.length / limit);
+  const handleNext = () => {
+    setPage((prev) => Math.min(prev + 1, totalPages));
+  };
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#08090B] text-white selection:bg-[#FC6C26]/30">
@@ -390,7 +392,7 @@ const DashboardPage = () => {
 
               <div className="grid grid-cols-1 items-stretch gap-5 2xl:grid-cols-[minmax(0,1fr)_280px]">
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                  {recentTasks?.map((flow, idx) => {
+                  {currentData?.map((flow, idx) => {
                     const flowProgress =
                       flow.totalTasks > 0
                         ? Math.min(
@@ -402,7 +404,7 @@ const DashboardPage = () => {
                     return (
                       <article
                         onClick={() => handleDayWiseFlow(flow)}
-                        key={flow.date}
+                        key={flow._id}
                         className="group rounded-2xl border border-white/[0.08] bg-[#111214] p-4 transition duration-300 hover:-translate-y-0.5 hover:border-[#FC6C26]/30 hover:bg-[#151516]"
                       >
                         <div className="flex items-center justify-between gap-3">
@@ -414,7 +416,7 @@ const DashboardPage = () => {
                             <div className="min-w-0">
                               <h3 className="truncate text-xs font-medium text-white/90">
                                 Day{" "}
-                                {String(recentTasks?.length - idx).padStart(
+                                {String(currentData?.length - idx).padStart(
                                   3,
                                   "0",
                                 )}
@@ -490,24 +492,32 @@ const DashboardPage = () => {
                       </article>
                     );
                   })}
-                  <div className="flex items-center gap-3 self-start rounded-xl border border-white/[0.08] bg-white/[0.025] p-2 sm:self-auto">
+                  <div className="flex h-[54px] w-fit items-center gap-3 rounded-xl border border-white/[0.08] bg-[#111111] px-2.5 shadow-lg shadow-black/20">
                     {/* Previous Button */}
-                    <button className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.08] text-gray-400 transition-all hover:border-[#FC6C26]/40 hover:bg-[#FC6C26]/10 hover:text-[#FC6C26] disabled:cursor-not-allowed disabled:opacity-30">
-                      <IoIosArrowBack />
+                    <button
+                      onClick={handlePrevious}
+                      disabled={page === 1}
+                      aria-label="Previous page"
+                      className="group flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.02] text-gray-400 transition-all duration-200 hover:border-[#FC6C26]/40 hover:bg-[#FC6C26]/10 hover:text-[#FC6C26] active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-white/[0.08] disabled:hover:bg-white/[0.02] disabled:hover:text-gray-400"
+                    >
+                      <IoIosArrowBack size={17} />
                     </button>
 
                     {/* Page Indicator */}
-                    <div className="flex items-center gap-1.5 px-2 text-sm font-medium">
-                      <span className="text-[#FC6C26]">1</span>
-                      <span className="text-gray-600">/</span>
-                      <span className="text-gray-400">
-                        {totalPages}
-                      </span>
+                    <div className="flex min-w-[58px] items-center justify-center gap-2 text-sm font-semibold select-none">
+                      <span className="text-[#FC6C26]">{page}</span>
+                      <span className="text-white/20">/</span>
+                      <span className="text-gray-400">{totalPages}</span>
                     </div>
 
                     {/* Next Button */}
-                    <button className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.08] text-gray-400 transition-all hover:border-[#FC6C26]/40 hover:bg-[#FC6C26]/10 hover:text-[#FC6C26]">
-                      <IoIosArrowForward />
+                    <button
+                      onClick={handleNext}
+                      disabled={page === totalPages || totalPages === 0}
+                      aria-label="Next page"
+                      className="group flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.02] text-gray-400 transition-all duration-200 hover:border-[#FC6C26]/40 hover:bg-[#FC6C26]/10 hover:text-[#FC6C26] active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-white/[0.08] disabled:hover:bg-white/[0.02] disabled:hover:text-gray-400"
+                    >
+                      <IoIosArrowForward size={17} />
                     </button>
                   </div>
                 </div>
