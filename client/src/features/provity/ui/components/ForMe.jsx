@@ -146,7 +146,7 @@ const ForMe = ({ setShowMsg }) => {
               <p className="text-xs font-bold tracking-[3px] text-[var(--primary-color)]">
                 FIRST RESPONSE
               </p>
-              <h3 className="text-xl font-bold">I asked ChatGPT</h3>
+              <h3 className="text-xl font-bold">I asked AI</h3>
             </div>
           </div>
 

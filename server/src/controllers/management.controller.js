@@ -221,8 +221,6 @@ const getPlanTasksController = async (req, res) => {
     },
   ]);
 
-  console.log("THIS IS DATA", data);
-
   res.status(200).json({
     message: "Plan all Tasks fetched",
     tasks: data,
