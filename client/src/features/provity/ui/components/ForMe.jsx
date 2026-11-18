@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   X,
   Sparkles,
@@ -8,8 +8,15 @@ import {
   Flame,
   ArrowDown,
   MessageCircle,
-  Globe2
+  Globe2,
 } from "lucide-react";
+import for1 from "../../../../assets/videos/for1.mp4";
+import for2 from "../../../../assets/videos/for2.mp4";
+import for3 from "../../../../assets/videos/for3.mp4";
+import for4 from "../../../../assets/videos/for4.mp4";
+import for5 from "../../../../assets/videos/for5.mp4";
+import for6 from "../../../../assets/videos/for6.mp4";
+import for7 from "../../../../assets/videos/for7.mp4";
 
 const ForMe = ({ setShowMsg }) => {
   const translations = [
@@ -72,6 +79,22 @@ const ForMe = ({ setShowMsg }) => {
     { lang: "Khmer", text: "ទៅធ្វើការ!", code: "KM" },
     { lang: "Lao", text: "ໄປເຮັດວຽກ!", code: "LO" },
   ];
+
+  const videos = [for1, for2, for3, for4, for5, for6, for7];
+
+  const [activeIndex, setActiveIndex] = useState(0);
+  const videoRefs = useRef([]);
+
+  useEffect(() => {
+    videoRefs.current.forEach((video, index) => {
+      if (!video) return;
+
+      if (index !== activeIndex) {
+        video.pause();
+        video.currentTime = 0;
+      }
+    });
+  }, [activeIndex]);
 
   return (
     <div className="relative h-full w-full overflow-x-hidden overflow-y-auto overscroll-contain bg-[var(--main-bg)] text-[var(--text-color)]">
@@ -506,6 +529,157 @@ const ForMe = ({ setShowMsg }) => {
                 </span>
               </div>
             </div>
+          </div>
+        </section>
+
+        <section className="relative w-full h-[450px] overflow-hidden rounded-3xl bg-[#121212]">
+          {/* Background Effects */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
+      w-[500px] h-[300px] bg-orange-500/10 blur-[120px] rounded-full"
+            />
+
+            <div
+              className="absolute inset-0 bg-gradient-to-b 
+      from-white/[0.02] via-transparent to-black/40"
+            />
+          </div>
+
+          {/* Top Heading */}
+          <div className="absolute top-5 left-7 z-50 pointer-events-none">
+            <p className="text-orange-500 text-[10px] font-bold tracking-[4px] uppercase">
+              Video Showcase
+            </p>
+          </div>
+
+          {/* Videos */}
+          {videos.map((video, index) => {
+            let offset = index - activeIndex;
+
+            // Circular Positioning
+            if (offset > 3) offset -= videos.length;
+            if (offset < -3) offset += videos.length;
+
+            const isActive = offset === 0;
+
+            return (
+              <div
+                key={index}
+                onClick={() => setActiveIndex(index)}
+                className={`
+          absolute left-1/2 top-1/2
+          cursor-pointer
+          transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]
+          ${isActive ? "drop-shadow-[0_0_25px_rgba(252,108,38,0.2)]" : ""}
+        `}
+                style={{
+                  width: "30%",
+                  height: "100%",
+                  zIndex: 10 - Math.abs(offset),
+                  opacity: Math.abs(offset) > 2 ? 0 : 1,
+
+                  transform: `
+            translate(-50%, -50%)
+            translateX(${offset * 65}%)
+            scale(${isActive ? 1 : 0.72})
+          `,
+
+                  filter: isActive ? "none" : "brightness(0.4) saturate(0.6)",
+                }}
+              >
+                <div
+                  className={`
+            relative h-full w-full overflow-hidden rounded-2xl
+            border transition-all duration-700
+            ${
+              isActive
+                ? "border-orange-500/60 shadow-[0_0_30px_rgba(252,108,38,0.12)]"
+                : "border-white/10"
+            }
+          `}
+                >
+                  <video
+                    ref={(el) => (videoRefs.current[index] = el)}
+                    src={video}
+                    loop
+                    controls={isActive}
+                    className="h-full w-full object-cover"
+                  />
+
+                  {/* Video Overlay */}
+                  <div
+                    className={`
+              absolute inset-0 pointer-events-none
+              transition-opacity duration-500
+              ${
+                isActive
+                  ? "opacity-0"
+                  : "opacity-100 bg-gradient-to-t from-black/60 via-transparent to-black/20"
+              }
+            `}
+                  />
+
+                  {/* Active Badge */}
+                  {isActive && (
+                    <div className="absolute top-4 left-4 pointer-events-none">
+                      <span
+                        className="flex items-center gap-2 px-3 py-1.5
+                rounded-full bg-black/60 backdrop-blur-xl
+                border border-orange-500/30 text-orange-400
+                text-[10px] font-bold tracking-wider"
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
+                        NOW SELECTED
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Side Video Number */}
+                  {!isActive && (
+                    <div className="absolute bottom-5 left-5 pointer-events-none">
+                      <span className="text-white/70 text-sm font-bold">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Bottom Indicators */}
+          <div
+            className="absolute bottom-5 left-1/2 -translate-x-1/2 z-50
+    flex items-center gap-2"
+          >
+            {videos.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setActiveIndex(index)}
+                className={`
+          h-1 rounded-full transition-all duration-500
+          ${
+            activeIndex === index
+              ? "w-8 bg-orange-500"
+              : "w-2 bg-white/20 hover:bg-white/50"
+          }
+        `}
+              />
+            ))}
+          </div>
+
+          {/* Counter */}
+          <div className="absolute bottom-5 right-7 z-50 text-xs font-medium">
+            <span className="text-orange-500">
+              {String(activeIndex + 1).padStart(2, "0")}
+            </span>
+
+            <span className="text-white/30 mx-1">/</span>
+
+            <span className="text-white/40">
+              {String(videos.length).padStart(2, "0")}
+            </span>
           </div>
         </section>
 
