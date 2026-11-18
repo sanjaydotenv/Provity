@@ -206,7 +206,6 @@ const ManagementTaskDetails = () => {
 
   // ADD TASK
 
-
   // DELETE TASK
   const handleDeleteTask = (dayNumber, taskId) => {
     setDays((prev) =>
@@ -431,7 +430,7 @@ const ManagementTaskDetails = () => {
                       </button>
 
                       {isExpanded && (
-                        <div className="mb-2 space-y-1 rounded-xl bg-white/[0.02] p-1.5">
+                        <div className="mb-2 space-y-1 rounded-xl bg-white/[0.02] p-5 ">
                           {day.tasks.length === 0 ? (
                             <div className="py-5 text-center text-xs text-white/30">
                               No tasks scheduled for this day.
@@ -443,7 +442,7 @@ const ManagementTaskDetails = () => {
                                 className="group flex items-center gap-3 rounded-lg border border-white/[0.04] bg-white/[0.025] px-3 py-3 transition hover:border-[var(--primary-color)]/30"
                               >
                                 <button
-                                disabled={task.completed}
+                                  disabled={task.completed}
                                   onClick={() => {
                                     handlePlanTaskComplete(
                                       task._id,
@@ -466,17 +465,11 @@ const ManagementTaskDetails = () => {
                                 </button>
 
                                 <div className="min-w-0 flex-1">
-                                  <h4
-                                    className={`truncate text-xs font-semibold sm:text-sm ${
-                                      task.completed
-                                        ? "text-white/35 line-through"
-                                        : "text-white/90"
-                                    }`}
-                                  >
+                                  <h4 className="text-sm font-bold text-white sm:text-base">
                                     {task.title}
                                   </h4>
 
-                                  <p className="mt-0.5 truncate text-[10px] text-white/40 sm:text-xs">
+                                  <p className="mt-1 text-[10px] leading-relaxed text-white/40 sm:text-xs whitespace-normal break-words line-clamp-2">
                                     {task.description || "No description"}
                                   </p>
                                 </div>
