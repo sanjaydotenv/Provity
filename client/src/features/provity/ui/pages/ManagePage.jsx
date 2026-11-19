@@ -1,18 +1,15 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Plus,
   Search,
   Grid2X2,
   List,
-  BriefcaseBusiness,
-  Camera,
   MoreVertical,
   ExternalLink,
   Copy,
   Mail,
   Globe,
   Code2,
-  FolderKanban,
   Wrench,
   Tag,
   Download,
@@ -29,93 +26,7 @@ import {
 import ProvityLogo from "../components/ProvityLogo";
 import BackBtn from "../components/BackBtn";
 import { useManageHandleHook } from "../../hooks/ManageHandleHook";
-
-const initialHandles = [
-  {
-    id: 1,
-    name: "GitHub",
-    category: "Social Media",
-    description: "My code repositories and open source work.",
-    username: "@sanjaydotenv",
-    url: "https://github.com/sanjaydotenv",
-    icon: Code2,
-    color: "#ffffff",
-    bg: "rgba(255,255,255,0.12)",
-    favorite: true,
-  },
-  {
-    id: 2,
-    name: "LinkedIn",
-    category: "Social Media",
-    description: "Professional network and career updates.",
-    username: "@sanjay-vaishnav-bairagi",
-    url: "https://linkedin.com",
-    icon: BriefcaseBusiness,
-    color: "#0A9BEF",
-    bg: "rgba(10,155,239,0.15)",
-    favorite: true,
-  },
-  {
-    id: 3,
-    name: "Portfolio",
-    category: "Websites",
-    description: "My personal portfolio and projects.",
-    username: "mayur-io-portfolio.netlify.app",
-    url: "https://mayur-io-portfolio.netlify.app",
-    icon: Globe,
-    color: "#b44aff",
-    bg: "rgba(180,74,255,0.15)",
-    favorite: true,
-  },
-  {
-    id: 4,
-    name: "Gmail",
-    category: "Emails",
-    description: "My primary email for everything.",
-    username: "mayur.bairagi@gmail.com",
-    url: "mailto:mayur.bairagi@gmail.com",
-    icon: Mail,
-    color: "#ef4444",
-    bg: "rgba(239,68,68,0.12)",
-    favorite: false,
-  },
-  {
-    id: 5,
-    name: "Instagram",
-    category: "Social Media",
-    description: "Follow for updates and reels.",
-    username: "@mayur_xr",
-    url: "https://instagram.com",
-    icon: Camera,
-    color: "#e879f9",
-    bg: "rgba(232,121,249,0.15)",
-    favorite: false,
-  },
-  {
-    id: 6,
-    name: "Provity",
-    category: "Projects",
-    description: "My personal productivity tracker.",
-    username: "My Project",
-    url: "https://github.com/sanjaydotenv/Provity",
-    icon: FolderKanban,
-    color: "#fc6c26",
-    bg: "rgba(252,108,38,0.15)",
-    favorite: true,
-  },
-  {
-    id: 7,
-    name: "MongoDB Atlas",
-    category: "Developer Tools",
-    description: "Database management for my projects.",
-    username: "cloud.mongodb.com",
-    url: "https://cloud.mongodb.com",
-    icon: Layers,
-    color: "#22c55e",
-    bg: "rgba(34,197,94,0.13)",
-    favorite: false,
-  },
-];
+import { useSelector } from "react-redux";
 
 const categories = [
   { name: "All", icon: Grid2X2 },
@@ -127,8 +38,24 @@ const categories = [
   { name: "Other", icon: Layers },
 ];
 
+const handleUiConfig = {
+  Projects: { icon: Code2, color: "#fc6c26", bg: "rgba(252,108,38,0.15)" },
+  "Social Media": {
+    icon: User,
+    color: "#a855f7",
+    bg: "rgba(168,85,247,0.15)",
+  },
+  Emails: { icon: Mail, color: "#ef4444", bg: "rgba(239,68,68,0.12)" },
+  Websites: { icon: Globe, color: "#b44aff", bg: "rgba(180,74,255,0.15)" },
+  "Developer Tools": {
+    icon: Wrench,
+    color: "#22c55e",
+    bg: "rgba(34,197,94,0.13)",
+  },
+  Other: { icon: Layers, color: "#9ca3af", bg: "rgba(156,163,175,0.13)" },
+};
+
 const ManagePage = () => {
-  const [handles, setHandles] = useState(initialHandles);
   const [activeCategory, setActiveCategory] = useState("All");
   const [search, setSearch] = useState("");
   const [view, setView] = useState("grid");
@@ -138,9 +65,31 @@ const ManagePage = () => {
   const [editingId, setEditingId] = useState(null);
   const [copiedId, setCopiedId] = useState(null);
 
-  const { form, setForm, handleSubmit } = useManageHandleHook();
+  const { form, setForm, handleSubmit, getAllHandles } = useManageHandleHook();
 
-  // Filter and sort handles
+  const { allHandles } = useSelector((state) => state.handles);
+  const { accessToken } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (accessToken) getAllHandles(accessToken);
+  }, [accessToken]);
+
+  // Add UI-only icon and color properties to MongoDB records.
+  const handles = useMemo(() => {
+    return (Array.isArray(allHandles) ? allHandles : []).map((handle) => {
+      const ui = handleUiConfig[handle.category] || handleUiConfig.Other;
+
+      return {
+        ...handle,
+        id: handle._id || handle.id,
+        icon: ui.icon,
+        color: ui.color,
+        bg: ui.bg,
+        favorite: Boolean(handle.favorite),
+      };
+    });
+  }, [allHandles]);
+
   const filteredHandles = useMemo(() => {
     let result = [...handles];
 
@@ -152,7 +101,7 @@ const ManagePage = () => {
       const query = search.toLowerCase();
 
       result = result.filter((item) =>
-        [item.name, item.category, item.description, item.username]
+        [item.name, item.category, item.description, item.username, item.url]
           .join(" ")
           .toLowerCase()
           .includes(query),
@@ -161,16 +110,17 @@ const ManagePage = () => {
 
     if (sort === "Alphabetical") {
       result.sort((a, b) => a.name.localeCompare(b.name));
-    }
-
-    if (sort === "Favorites") {
+    } else if (sort === "Favorites") {
       result.sort((a, b) => Number(b.favorite) - Number(a.favorite));
+    } else {
+      result.sort(
+        (a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0),
+      );
     }
 
     return result;
   }, [handles, activeCategory, search, sort]);
 
-  // Statistics
   const stats = [
     {
       title: "Total Handles",
@@ -202,31 +152,44 @@ const ManagePage = () => {
     },
   ];
 
-  // Copy handle
-  const handleCopy = async (item) => {
-    try {
-      await navigator.clipboard.writeText(item.url);
-      setCopiedId(item.id);
-
-      setTimeout(() => setCopiedId(null), 1500);
-    } catch {
-      console.error("Unable to copy link");
-    }
-  };
-
-  // Add or update handle
-
   const closeModal = () => {
     setShowModal(false);
     setEditingId(null);
-
     setForm({
       name: "",
       category: "Projects",
+      password: "",
       description: "",
       username: "",
       url: "",
     });
+  };
+
+  const handleFormSubmit = async (e) => {
+    try {
+      const response = await handleSubmit(e);
+
+      if (response?.data?.success) {
+        await getAllHandles(accessToken);
+        closeModal();
+      }
+    } catch (error) {
+      console.error(
+        "Create handle failed:",
+        error.response?.data || error.message,
+      );
+    }
+  };
+
+  // Copy handle URL
+  const handleCopy = async (item) => {
+    try {
+      await navigator.clipboard.writeText(item.url || "");
+      setCopiedId(item.id);
+      setTimeout(() => setCopiedId(null), 1500);
+    } catch {
+      console.error("Unable to copy link");
+    }
   };
 
   return (
@@ -243,7 +206,9 @@ const ManagePage = () => {
           <ProvityLogo />
           <BackBtn />
         </div>
+
         <div className="line h-[1px] w-full bg-white/50"></div>
+
         <main className="max-w-[1600px] mx-auto px-5 md:px-9 py-8">
           {/* Hero Section */}
           <section className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 mb-8">
@@ -293,7 +258,6 @@ const ManagePage = () => {
                       <p className="text-white/50 text-xs md:text-sm">
                         {stat.title}
                       </p>
-
                       <h3 className="text-3xl font-bold mt-1">{stat.value}</h3>
                     </div>
                   </div>
@@ -408,7 +372,6 @@ const ManagePage = () => {
             <div className="flex items-center justify-between mb-5">
               <div>
                 <h3 className="text-xl font-semibold">Your Handles</h3>
-
                 <p className="text-xs text-white/40 mt-1">
                   {filteredHandles.length} handles found
                 </p>
@@ -419,143 +382,173 @@ const ManagePage = () => {
               <div
                 className={
                   view === "grid"
-                    ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5"
+                    ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5"
                     : "flex flex-col gap-3"
                 }
               >
                 {filteredHandles.map((item) => {
                   const Icon = item.icon;
+                  const hasPasswordButton =
+                    item.category === "Emails" ||
+                    item.category === "Social Media";
 
                   return (
                     <article
                       key={item.id}
-                      className={`group relative border border-[var(--border-color)] bg-gradient-to-br from-[var(--main-bg-2)]/80 to-transparent rounded-2xl hover:border-[var(--primary-color)]/50 hover:shadow-[0_8px_35px_rgba(252,108,38,0.07)] transition-all duration-300 ${
+                      className={`group relative overflow-visible rounded-2xl border border-[var(--border-color)] bg-[var(--main-bg-2)]/60 hover:border-[var(--primary-color)]/40 hover:bg-[var(--main-bg-2)] transition-all duration-300 ${
                         view === "grid"
                           ? "p-5"
                           : "p-4 flex flex-col sm:flex-row sm:items-center gap-5"
                       }`}
                     >
-                      <div className="flex items-start justify-between">
-                        <div
-                          className="w-14 h-14 rounded-2xl flex items-center justify-center"
-                          style={{
-                            backgroundColor: item.bg,
-                            color: item.color,
-                          }}
-                        >
-                          <Icon size={30} />
+                      {/* Card Header */}
+                      <div
+                        className={`flex items-center justify-between ${
+                          view === "list" ? "sm:w-14" : ""
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div
+                            className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
+                            style={{
+                              backgroundColor: item.bg,
+                              color: item.color,
+                            }}
+                          >
+                            <Icon size={22} />
+                          </div>
+
+                          {view === "list" && (
+                            <div className="sm:hidden">
+                              <h4 className="font-semibold text-sm">
+                                {item.name}
+                              </h4>
+                              <span className="text-xs text-white/40">
+                                {item.category}
+                              </span>
+                            </div>
+                          )}
                         </div>
 
-                        <div className="flex items-center gap-2">
-                          <div className="relative">
-                            <button
-                              onClick={() =>
-                                setMenuId(menuId === item.id ? null : item.id)
-                              }
-                              className="p-2 text-white/50 hover:text-white rounded-lg hover:bg-white/5"
-                            >
-                              <MoreVertical size={19} />
-                            </button>
+                        <div className="relative">
+                          <button
+                            onClick={() =>
+                              setMenuId(menuId === item.id ? null : item.id)
+                            }
+                            className="p-2 rounded-lg text-white/40 hover:text-white hover:bg-white/5 transition"
+                          >
+                            <MoreVertical size={19} />
+                          </button>
 
-                            {menuId === item.id && (
-                              <div className="absolute right-0 top-10 z-30 w-36 rounded-xl border border-[var(--border-color)] bg-[#201e1e] p-1 shadow-xl">
-                                <button className="w-full text-left px-3 py-2 text-sm hover:bg-white/5 rounded-lg">
-                                  Edit Handle
-                                </button>
+                          {menuId === item.id && (
+                            <div className="absolute right-0 top-10 z-30 w-40 rounded-xl border border-[var(--border-color)] bg-[#201e1e] p-1.5 shadow-xl">
+                              <button
+                                onClick={() => {
+                                  setEditingId(item.id);
+                                  setForm({
+                                    name: item.name || "",
+                                    category: item.category || "Projects",
+                                    password: item.password || "",
+                                    description: item.description || "",
+                                    username: item.username || "",
+                                    url: item.url || "",
+                                  });
+                                  setShowModal(true);
+                                  setMenuId(null);
+                                }}
+                                className="w-full text-left px-3 py-2.5 text-xs text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition"
+                              >
+                                Edit Handle
+                              </button>
 
-                                <button className="w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded-lg">
-                                  Delete
-                                </button>
-                              </div>
-                            )}
-                          </div>
+                              <button
+                                onClick={() => {
+                                  console.log("Delete Handle", item.id);
+                                  setMenuId(null);
+                                }}
+                                className="w-full text-left px-3 py-2.5 text-xs text-red-400 hover:bg-red-500/10 rounded-lg transition"
+                              >
+                                Delete Handle
+                              </button>
+                            </div>
+                          )}
                         </div>
                       </div>
 
-                      <div className={view === "list" ? "flex-1" : "mt-4"}>
-                        <span className="inline-flex px-3 py-1 rounded-full text-[10px] font-semibold bg-[var(--primary-color)]/15 text-[var(--primary-color)] mb-2">
-                          {item.category}
-                        </span>
+                      {/* Card Content */}
+                      <div
+                        className={view === "list" ? "flex-1 min-w-0" : "mt-5"}
+                      >
+                        {view === "grid" && (
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-medium tracking-wide bg-white/[0.05] text-white/50 mb-3">
+                            {item.category}
+                          </span>
+                        )}
 
-                        <h4 className="text-lg font-semibold">{item.name}</h4>
+                        <h4
+                          className={`font-semibold text-white truncate ${
+                            view === "grid" ? "text-base" : "text-sm"
+                          }`}
+                        >
+                          {item.name}
+                        </h4>
 
-                        <p className="text-sm text-white/50 mt-1 min-h-10">
-                          {item.description}
+                        <p className="text-xs text-white/40 mt-1.5 leading-relaxed line-clamp-2 min-h-[34px]">
+                          {item.description || "No description added."}
                         </p>
 
-                        <div className="flex items-center gap-2 mt-3 text-xs text-white/65 min-w-0">
-                          <User
-                            size={14}
-                            className="text-[var(--primary-color)] shrink-0"
-                          />
+                        {/* Username */}
+                        <div className="flex items-center gap-2 mt-4 px-3 py-2.5 rounded-lg bg-black/20 border border-white/[0.04] min-w-0">
+                          <User size={14} className="text-white/35 shrink-0" />
 
-                          <div className="flex flex-col">
-                            <span className="truncate">{item.username}</span>
-                            {item.category === "Emails" && (
-                              <button
-                                onClick={() =>
-                                  console.log("Check Password", item)
-                                }
-                                className="group flex items-center justify-center gap-2 w-full mt-3 py-2 px-3 rounded-lg border border-[var(--primary-color)]/30 bg-[var(--primary-color)]/10 text-[var(--primary-color)] text-xs font-medium hover:bg-[var(--primary-color)] hover:text-black hover:border-[var(--primary-color)] transition-all duration-300"
-                              >
-                                <ShieldCheck size={14} />
-                                <span>Check Password</span>
-                                <Eye
-                                  size={14}
-                                  className="opacity-60 group-hover:opacity-100 transition-opacity"
-                                />
-                              </button>
-                            )}
-                            {item.category === "Social Media" && (
-                              <button
-                                onClick={() =>
-                                  console.log("Check Password", item)
-                                }
-                                className="group flex items-center justify-center gap-2 w-full mt-3 py-2 px-3 rounded-lg border border-[var(--primary-color)]/30 bg-[var(--primary-color)]/10 text-[var(--primary-color)] text-xs font-medium hover:bg-[var(--primary-color)] hover:text-black hover:border-[var(--primary-color)] transition-all duration-300"
-                              >
-                                <ShieldCheck size={14} />
-                                <span>Check Password</span>
-                                <Eye
-                                  size={14}
-                                  className="opacity-60 group-hover:opacity-100 transition-opacity"
-                                />
-                              </button>
-                            )}
-                          </div>
+                          <span className="text-xs text-white/60 truncate flex-1">
+                            {item.username || "No username added"}
+                          </span>
                         </div>
+
+                        {/* Password Button */}
+                        {hasPasswordButton && (
+                          <button
+                            onClick={() => console.log("Check Password", item)}
+                            className="flex items-center justify-center gap-2 w-full mt-3 py-2.5 rounded-lg border border-[var(--primary-color)]/20 bg-[var(--primary-color)]/[0.06] text-[var(--primary-color)] text-xs font-medium hover:bg-[var(--primary-color)] hover:text-black hover:border-[var(--primary-color)] transition-all duration-300"
+                          >
+                            <ShieldCheck size={14} />
+                            Check Password
+                            <Eye size={13} />
+                          </button>
+                        )}
                       </div>
 
+                      {/* Card Footer */}
                       <div
-                        className={`flex items-center gap-2 pt-4 border-t border-[var(--border-color)] ${
-                          view === "list"
-                            ? "sm:border-0 sm:pt-0 sm:w-64"
-                            : "mt-4"
+                        className={`flex items-center gap-2 ${
+                          view === "grid"
+                            ? "mt-5 pt-4 border-t border-white/[0.06]"
+                            : "sm:w-52 sm:shrink-0"
                         }`}
                       >
                         <a
                           href={item.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border border-[var(--primary-color)] text-[var(--primary-color)] hover:bg-[var(--primary-color)] hover:text-black text-xs font-semibold transition-all"
+                          className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg bg-[var(--primary-color)] text-black text-xs font-semibold hover:opacity-90 transition"
                         >
-                          Open
+                          Open Link
                           <ExternalLink size={14} />
                         </a>
 
                         <button
                           onClick={() => handleCopy(item)}
-                          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--border-color)] hover:bg-white/5 text-xs transition"
+                          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-white/10 text-white/60 hover:text-white hover:bg-white/5 transition text-xs"
                           title="Copy URL"
                         >
                           {copiedId === item.id ? (
-                            <Check size={15} className="text-green-400" />
+                            <Check size={14} className="text-green-400" />
                           ) : (
-                            <Copy size={15} />
+                            <Copy size={14} />
                           )}
 
-                          <span>
-                            {copiedId === item.id ? "Copied" : "Copy"}
-                          </span>
+                          {copiedId === item.id ? "Copied" : "Copy"}
                         </button>
                       </div>
                     </article>
@@ -566,17 +559,21 @@ const ManagePage = () => {
                 {view === "grid" && (
                   <button
                     onClick={() => setShowModal(true)}
-                    className="min-h-[230px] rounded-2xl border border-dashed border-[var(--primary-color)]/50 bg-[var(--primary-color)]/[0.03] flex flex-col items-center justify-center gap-3 hover:bg-[var(--primary-color)]/[0.08] hover:border-[var(--primary-color)] transition-all group"
+                    className="min-h-[260px] rounded-2xl border border-dashed border-white/10 hover:border-[var(--primary-color)]/50 bg-white/[0.01] hover:bg-[var(--primary-color)]/[0.03] flex flex-col items-center justify-center gap-3 transition-all duration-300 group"
                   >
-                    <div className="w-14 h-14 rounded-full border border-[var(--primary-color)]/50 flex items-center justify-center text-[var(--primary-color)] group-hover:scale-110 transition">
-                      <Plus size={28} />
+                    <div className="w-12 h-12 rounded-xl border border-white/10 group-hover:border-[var(--primary-color)]/50 flex items-center justify-center text-white/40 group-hover:text-[var(--primary-color)] transition-all">
+                      <Plus size={24} />
                     </div>
 
-                    <h4 className="font-semibold">Add New Handle</h4>
+                    <div className="text-center">
+                      <h4 className="text-sm font-semibold text-white/70 group-hover:text-white">
+                        Add New Handle
+                      </h4>
 
-                    <p className="text-xs text-white/40 text-center max-w-[180px]">
-                      Add a new project, social link or important resource.
-                    </p>
+                      <p className="text-xs text-white/35 mt-1">
+                        Add another digital asset
+                      </p>
+                    </div>
                   </button>
                 )}
               </div>
@@ -673,7 +670,7 @@ const ManagePage = () => {
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleFormSubmit} className="space-y-4">
               {[
                 {
                   name: "name",
@@ -684,6 +681,11 @@ const ManagePage = () => {
                   name: "username",
                   label: "Username / Email",
                   placeholder: "e.g. @username",
+                },
+                {
+                  name: "password",
+                  label: "Password",
+                  placeholder: "Handle Password",
                 },
                 {
                   name: "url",
@@ -703,7 +705,7 @@ const ManagePage = () => {
 
                   <input
                     required={field.name === "name" || field.name === "url"}
-                    type="text"
+                    type={field.name === "password" ? "password" : "text"}
                     placeholder={field.placeholder}
                     value={form[field.name]}
                     onChange={(e) =>
