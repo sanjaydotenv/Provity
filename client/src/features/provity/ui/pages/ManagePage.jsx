@@ -22,6 +22,7 @@ import {
   Check,
   ShieldCheck,
   Eye,
+  Lock,
 } from "lucide-react";
 import ProvityLogo from "../components/ProvityLogo";
 import BackBtn from "../components/BackBtn";
@@ -55,6 +56,37 @@ const handleUiConfig = {
   Other: { icon: Layers, color: "#9ca3af", bg: "rgba(156,163,175,0.13)" },
 };
 
+const getPlatformLogo = (name) => {
+  const platforms = {
+    github: "github",
+    linkedin: "linkedin",
+    instagram: "instagram",
+    facebook: "facebook",
+    twitter: "x",
+    x: "x",
+    youtube: "youtube",
+    google: "google",
+    gmail: "gmail",
+    discord: "discord",
+    reddit: "reddit",
+    whatsapp: "whatsapp",
+    telegram: "telegram",
+    portfolio: "vercel",
+    vercel: "vercel",
+    netlify: "netlify",
+    stackoverflow: "stackoverflow",
+    leetcode: "leetcode",
+    npm: "npm",
+    codepen: "codepen",
+  };
+
+  const key = Object.keys(platforms).find((platform) =>
+    name?.toLowerCase().includes(platform),
+  );
+
+  return key ? `https://cdn.simpleicons.org/${platforms[key]}` : null;
+};
+
 const ManagePage = () => {
   const [activeCategory, setActiveCategory] = useState("All");
   const [search, setSearch] = useState("");
@@ -64,6 +96,73 @@ const ManagePage = () => {
   const [menuId, setMenuId] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [copiedId, setCopiedId] = useState(null);
+  const [copiedField, setCopiedField] = useState("");
+
+  const SECURITY_PIN = "******";
+  const [showPinModal, setShowPinModal] = useState(false);
+  const [securityPin, setSecurityPin] = useState("");
+  const [pinError, setPinError] = useState("");
+  const [passwordItem, setPasswordItem] = useState(null);
+  const [passwordCopied, setPasswordCopied] = useState(false);
+
+  const copyText = async (text, field) => {
+    if (!text) return;
+
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedField(field);
+
+      setTimeout(() => {
+        setCopiedField("");
+      }, 1500);
+    } catch (error) {
+      console.error("Copy failed:", error);
+    }
+  };
+
+  const openPasswordVerification = (item) => {
+    setPasswordItem(item);
+    setSecurityPin("");
+    setPinError("");
+    setPasswordCopied(false);
+    setShowPinModal(true);
+  };
+
+  const closePinModal = () => {
+    setShowPinModal(false);
+    setSecurityPin("");
+    setPinError("");
+    setPasswordItem(null);
+    setPasswordCopied(false);
+  };
+
+  const verifyAndCopyPassword = async (e) => {
+    e.preventDefault();
+
+    if (securityPin !== SECURITY_PIN) {
+      setPinError("Incorrect Security PIN. Please try again.");
+      setSecurityPin("");
+      return;
+    }
+
+    if (!passwordItem?.password) {
+      setPinError("Password is not available.");
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(passwordItem.password);
+      setPasswordCopied(true);
+      setPinError("");
+
+      setTimeout(() => {
+        closePinModal();
+      }, 1200);
+    } catch (error) {
+      console.error("Password copy failed:", error);
+      setPinError("Unable to copy password. Please check clipboard permissions.");
+    }
+  };
 
   const { form, setForm, handleSubmit, getAllHandles } = useManageHandleHook();
 
@@ -388,6 +487,8 @@ const ManagePage = () => {
               >
                 {filteredHandles.map((item) => {
                   const Icon = item.icon;
+                  const logo = getPlatformLogo(item.name);
+
                   const hasPasswordButton =
                     item.category === "Emails" ||
                     item.category === "Social Media";
@@ -395,41 +496,41 @@ const ManagePage = () => {
                   return (
                     <article
                       key={item.id}
-                      className={`group relative overflow-visible rounded-2xl border border-[var(--border-color)] bg-[var(--main-bg-2)]/60 hover:border-[var(--primary-color)]/40 hover:bg-[var(--main-bg-2)] transition-all duration-300 ${
+                      className={`group relative rounded-2xl border border-[var(--border-color)] bg-[var(--main-bg-2)]/60 hover:border-[var(--primary-color)]/40 transition-all duration-300 ${
                         view === "grid"
                           ? "p-5"
                           : "p-4 flex flex-col sm:flex-row sm:items-center gap-5"
                       }`}
                     >
-                      {/* Card Header */}
-                      <div
-                        className={`flex items-center justify-between ${
-                          view === "list" ? "sm:w-14" : ""
-                        }`}
-                      >
+                      {/* Header */}
+                      <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <div
-                            className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
-                            style={{
-                              backgroundColor: item.bg,
-                              color: item.color,
-                            }}
-                          >
-                            <Icon size={22} />
+                          {/* Automatic Platform Logo */}
+                          <div className="w-12 h-12 rounded-xl bg-white/[0.05] border border-white/[0.06] flex items-center justify-center overflow-hidden">
+                            {logo ? (
+                              <img
+                                src={logo}
+                                alt={item.name}
+                                className="w-6 h-6 object-contain"
+                              />
+                            ) : (
+                              <Icon size={23} style={{ color: item.color }} />
+                            )}
                           </div>
 
                           {view === "list" && (
                             <div className="sm:hidden">
-                              <h4 className="font-semibold text-sm">
+                              <h4 className="text-sm font-semibold">
                                 {item.name}
                               </h4>
-                              <span className="text-xs text-white/40">
+                              <p className="text-xs text-white/40">
                                 {item.category}
-                              </span>
+                              </p>
                             </div>
                           )}
                         </div>
 
+                        {/* Menu */}
                         <div className="relative">
                           <button
                             onClick={() =>
@@ -456,7 +557,7 @@ const ManagePage = () => {
                                   setShowModal(true);
                                   setMenuId(null);
                                 }}
-                                className="w-full text-left px-3 py-2.5 text-xs text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition"
+                                className="w-full text-left px-3 py-2.5 text-xs text-white/70 hover:text-white hover:bg-white/5 rounded-lg"
                               >
                                 Edit Handle
                               </button>
@@ -466,7 +567,7 @@ const ManagePage = () => {
                                   console.log("Delete Handle", item.id);
                                   setMenuId(null);
                                 }}
-                                className="w-full text-left px-3 py-2.5 text-xs text-red-400 hover:bg-red-500/10 rounded-lg transition"
+                                className="w-full text-left px-3 py-2.5 text-xs text-red-400 hover:bg-red-500/10 rounded-lg"
                               >
                                 Delete Handle
                               </button>
@@ -475,21 +576,17 @@ const ManagePage = () => {
                         </div>
                       </div>
 
-                      {/* Card Content */}
+                      {/* Content */}
                       <div
                         className={view === "list" ? "flex-1 min-w-0" : "mt-5"}
                       >
                         {view === "grid" && (
-                          <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-medium tracking-wide bg-white/[0.05] text-white/50 mb-3">
+                          <span className="inline-flex px-2.5 py-1 rounded-md text-[10px] font-medium bg-white/[0.05] text-white/50 mb-3">
                             {item.category}
                           </span>
                         )}
 
-                        <h4
-                          className={`font-semibold text-white truncate ${
-                            view === "grid" ? "text-base" : "text-sm"
-                          }`}
-                        >
+                        <h4 className="text-base font-semibold text-white truncate">
                           {item.name}
                         </h4>
 
@@ -497,29 +594,51 @@ const ManagePage = () => {
                           {item.description || "No description added."}
                         </p>
 
-                        {/* Username */}
-                        <div className="flex items-center gap-2 mt-4 px-3 py-2.5 rounded-lg bg-black/20 border border-white/[0.04] min-w-0">
-                          <User size={14} className="text-white/35 shrink-0" />
+                        {/* Username / Email with Copy */}
+                        <div className="flex items-center justify-between gap-2 mt-4 px-3 py-2.5 rounded-lg bg-black/20 border border-white/[0.05]">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <User
+                              size={14}
+                              className="text-white/35 shrink-0"
+                            />
 
-                          <span className="text-xs text-white/60 truncate flex-1">
-                            {item.username || "No username added"}
-                          </span>
+                            <span className="text-xs text-white/65 truncate">
+                              {item.username || "No username added"}
+                            </span>
+                          </div>
+
+                          <button
+                            onClick={() =>
+                              copyText(item.username, `${item.id}-username`)
+                            }
+                            disabled={!item.username}
+                            title="Copy username"
+                            className="shrink-0 text-white/40 hover:text-[var(--primary-color)] transition disabled:opacity-30"
+                          >
+                            {copiedField === `${item.id}-username` ? (
+                              <Check size={15} className="text-green-400" />
+                            ) : (
+                              <Copy size={14} />
+                            )}
+                          </button>
                         </div>
 
-                        {/* Password Button */}
+                        {/* Password Copy */}
                         {hasPasswordButton && (
                           <button
-                            onClick={() => console.log("Check Password", item)}
-                            className="flex items-center justify-center gap-2 w-full mt-3 py-2.5 rounded-lg border border-[var(--primary-color)]/20 bg-[var(--primary-color)]/[0.06] text-[var(--primary-color)] text-xs font-medium hover:bg-[var(--primary-color)] hover:text-black hover:border-[var(--primary-color)] transition-all duration-300"
+                            type="button"
+                            onClick={() => openPasswordVerification(item)}
+                            disabled={!item.password}
+                            className="flex items-center justify-center gap-2 w-full mt-3 py-2.5 rounded-lg border border-[var(--primary-color)]/20 bg-[var(--primary-color)]/[0.06] text-[var(--primary-color)] text-xs font-medium hover:bg-[var(--primary-color)] hover:text-black transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                           >
                             <ShieldCheck size={14} />
-                            Check Password
+                            Copy Password
                             <Eye size={13} />
                           </button>
                         )}
                       </div>
 
-                      {/* Card Footer */}
+                      {/* Footer */}
                       <div
                         className={`flex items-center gap-2 ${
                           view === "grid"
@@ -540,7 +659,6 @@ const ManagePage = () => {
                         <button
                           onClick={() => handleCopy(item)}
                           className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-white/10 text-white/60 hover:text-white hover:bg-white/5 transition text-xs"
-                          title="Copy URL"
                         >
                           {copiedId === item.id ? (
                             <Check size={14} className="text-green-400" />
@@ -548,7 +666,7 @@ const ManagePage = () => {
                             <Copy size={14} />
                           )}
 
-                          {copiedId === item.id ? "Copied" : "Copy"}
+                          {copiedId === item.id ? "Copied" : "Copy URL"}
                         </button>
                       </div>
                     </article>
@@ -640,6 +758,121 @@ const ManagePage = () => {
           </section>
         </main>
       </div>
+
+      {/* Security PIN Modal */}
+      {showPinModal && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 backdrop-blur-md p-4"
+          onClick={closePinModal}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-sm overflow-hidden rounded-2xl border border-white/10 bg-[#191919] p-6 shadow-[0_20px_80px_rgba(0,0,0,0.6)]"
+          >
+            <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-48 h-48 rounded-full bg-[var(--primary-color)]/10 blur-[80px] pointer-events-none" />
+
+            <button
+              type="button"
+              onClick={closePinModal}
+              aria-label="Close security verification"
+              className="absolute right-4 top-4 p-2 rounded-lg text-white/40 hover:text-white hover:bg-white/5 transition"
+            >
+              <X size={18} />
+            </button>
+
+            <div className="relative flex justify-center mb-5">
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-[var(--primary-color)]/10 border border-[var(--primary-color)]/20">
+                <ShieldCheck size={32} className="text-[var(--primary-color)]" />
+              </div>
+            </div>
+
+            <div className="text-center relative">
+              <h2 className="text-xl font-bold text-white">
+                Security Verification
+              </h2>
+              <p className="text-xs text-white/45 mt-2 leading-relaxed">
+                Enter your Security PIN to access and copy your saved password.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3 mt-6 p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+              <div className="w-10 h-10 rounded-lg bg-[var(--primary-color)]/10 flex items-center justify-center text-[var(--primary-color)]">
+                <Lock size={19} />
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-white truncate">
+                  {passwordItem?.name}
+                </p>
+                <p className="text-xs text-white/40">
+                  Password access requested
+                </p>
+              </div>
+            </div>
+
+            <form onSubmit={verifyAndCopyPassword} className="mt-6">
+              <label
+                htmlFor="security-pin"
+                className="text-xs font-medium text-white/60 block mb-3"
+              >
+                Enter Security PIN
+              </label>
+
+              <input
+                id="security-pin"
+                type="password"
+                inputMode="numeric"
+                autoComplete="off"
+                maxLength={6}
+                autoFocus
+                value={securityPin}
+                onChange={(e) => {
+                  setSecurityPin(e.target.value.replace(/\D/g, "").slice(0, 6));
+                  setPinError("");
+                }}
+                placeholder="••••••"
+                className="w-full text-center tracking-[14px] text-xl font-semibold py-4 px-4 rounded-xl bg-black/30 border border-white/10 text-white outline-none focus:border-[var(--primary-color)] transition placeholder:text-white/20"
+              />
+
+              {pinError && (
+                <p className="text-xs text-red-400 mt-3 text-center">
+                  {pinError}
+                </p>
+              )}
+
+              {passwordCopied && (
+                <p className="text-xs text-green-400 mt-3 text-center flex items-center justify-center gap-2">
+                  <Check size={14} />
+                  Password copied successfully!
+                </p>
+              )}
+
+              <div className="flex gap-3 mt-6">
+                <button
+                  type="button"
+                  onClick={closePinModal}
+                  className="flex-1 py-3 rounded-xl border border-white/10 text-white/60 text-sm hover:bg-white/5 transition"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={securityPin.length !== 6 || passwordCopied}
+                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-[var(--primary-color)] text-black text-sm font-semibold hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <ShieldCheck size={16} />
+                  Verify PIN
+                </button>
+              </div>
+            </form>
+
+            <div className="flex items-center justify-center gap-2 mt-5 text-[10px] text-white/30">
+              <Lock size={12} />
+              Protected Password Access
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Add / Edit Modal */}
       {showModal && (
