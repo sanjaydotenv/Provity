@@ -1,21 +1,14 @@
 import React, { useMemo, useState } from "react";
 import {
-  LayoutDashboard,
-  ChartNoAxesColumn,
-  Settings,
-  Sun,
   Plus,
-  ArrowLeft,
   Search,
   Grid2X2,
   List,
-  ChevronDown,
   BriefcaseBusiness,
   Camera,
   MoreVertical,
   ExternalLink,
   Copy,
-  Star,
   Mail,
   Globe,
   Code2,
@@ -29,17 +22,19 @@ import {
   User,
   Layers,
   Sparkles,
-  Link2,
   Check,
+  ShieldCheck,
+  Eye,
 } from "lucide-react";
 import ProvityLogo from "../components/ProvityLogo";
 import BackBtn from "../components/BackBtn";
+import { useManageHandleHook } from "../../hooks/ManageHandleHook";
 
 const initialHandles = [
   {
     id: 1,
     name: "GitHub",
-    category: "Projects",
+    category: "Social Media",
     description: "My code repositories and open source work.",
     username: "@sanjaydotenv",
     url: "https://github.com/sanjaydotenv",
@@ -143,13 +138,7 @@ const ManagePage = () => {
   const [editingId, setEditingId] = useState(null);
   const [copiedId, setCopiedId] = useState(null);
 
-  const [form, setForm] = useState({
-    name: "",
-    category: "Projects",
-    description: "",
-    username: "",
-    url: "",
-  });
+  const { form, setForm, handleSubmit } = useManageHandleHook();
 
   // Filter and sort handles
   const filteredHandles = useMemo(() => {
@@ -227,7 +216,6 @@ const ManagePage = () => {
 
   // Add or update handle
 
-
   const closeModal = () => {
     setShowModal(false);
     setEditingId(null);
@@ -240,7 +228,6 @@ const ManagePage = () => {
       url: "",
     });
   };
-
 
   return (
     <div className="min-h-screen w-full bg-[var(--main-bg)] text-[var(--text-color)]">
@@ -256,16 +243,11 @@ const ManagePage = () => {
           <ProvityLogo />
           <BackBtn />
         </div>
-        <div className="line h-[1px] w-full bg-white/50">
-
-        </div>
+        <div className="line h-[1px] w-full bg-white/50"></div>
         <main className="max-w-[1600px] mx-auto px-5 md:px-9 py-8">
-        
           {/* Hero Section */}
           <section className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 mb-8">
             <div>
-              
-
               <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
                 Manage All Your{" "}
                 <span className="text-[var(--primary-color)]">Handles</span>
@@ -465,8 +447,6 @@ const ManagePage = () => {
                         </div>
 
                         <div className="flex items-center gap-2">
-                       
-
                           <div className="relative">
                             <button
                               onClick={() =>
@@ -479,17 +459,11 @@ const ManagePage = () => {
 
                             {menuId === item.id && (
                               <div className="absolute right-0 top-10 z-30 w-36 rounded-xl border border-[var(--border-color)] bg-[#201e1e] p-1 shadow-xl">
-                                <button
-                                  onClick={() => handleEdit(item)}
-                                  className="w-full text-left px-3 py-2 text-sm hover:bg-white/5 rounded-lg"
-                                >
+                                <button className="w-full text-left px-3 py-2 text-sm hover:bg-white/5 rounded-lg">
                                   Edit Handle
                                 </button>
 
-                                <button
-                                  onClick={() => handleDelete(item.id)}
-                                  className="w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded-lg"
-                                >
+                                <button className="w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded-lg">
                                   Delete
                                 </button>
                               </div>
@@ -515,7 +489,39 @@ const ManagePage = () => {
                             className="text-[var(--primary-color)] shrink-0"
                           />
 
-                          <span className="truncate">{item.username}</span>
+                          <div className="flex flex-col">
+                            <span className="truncate">{item.username}</span>
+                            {item.category === "Emails" && (
+                              <button
+                                onClick={() =>
+                                  console.log("Check Password", item)
+                                }
+                                className="group flex items-center justify-center gap-2 w-full mt-3 py-2 px-3 rounded-lg border border-[var(--primary-color)]/30 bg-[var(--primary-color)]/10 text-[var(--primary-color)] text-xs font-medium hover:bg-[var(--primary-color)] hover:text-black hover:border-[var(--primary-color)] transition-all duration-300"
+                              >
+                                <ShieldCheck size={14} />
+                                <span>Check Password</span>
+                                <Eye
+                                  size={14}
+                                  className="opacity-60 group-hover:opacity-100 transition-opacity"
+                                />
+                              </button>
+                            )}
+                            {item.category === "Social Media" && (
+                              <button
+                                onClick={() =>
+                                  console.log("Check Password", item)
+                                }
+                                className="group flex items-center justify-center gap-2 w-full mt-3 py-2 px-3 rounded-lg border border-[var(--primary-color)]/30 bg-[var(--primary-color)]/10 text-[var(--primary-color)] text-xs font-medium hover:bg-[var(--primary-color)] hover:text-black hover:border-[var(--primary-color)] transition-all duration-300"
+                              >
+                                <ShieldCheck size={14} />
+                                <span>Check Password</span>
+                                <Eye
+                                  size={14}
+                                  className="opacity-60 group-hover:opacity-100 transition-opacity"
+                                />
+                              </button>
+                            )}
+                          </div>
                         </div>
                       </div>
 
