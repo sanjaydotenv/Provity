@@ -98,7 +98,7 @@ const ManagePage = () => {
   const [copiedId, setCopiedId] = useState(null);
   const [copiedField, setCopiedField] = useState("");
 
-  const SECURITY_PIN = "******";
+  const SECURITY_PIN = "123456";
   const [showPinModal, setShowPinModal] = useState(false);
   const [securityPin, setSecurityPin] = useState("");
   const [pinError, setPinError] = useState("");
