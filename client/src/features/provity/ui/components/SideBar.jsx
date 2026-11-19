@@ -1,7 +1,7 @@
 import React from "react";
-import { GiCrystalGrowth } from "react-icons/gi";
+import { GiCrystalGrowth, GiMucousPillar } from "react-icons/gi";
 import ProvityLogo from "./ProvityLogo";
-import { IoClose, IoHome } from "react-icons/io5";
+import { IoClose, IoHandLeft, IoHome } from "react-icons/io5";
 import { useNavigateHook } from "../../hooks/NavigationHook";
 import { FiArrowUpRight, FiPlus } from "react-icons/fi";
 import { FiAnchor } from "react-icons/fi";
@@ -68,7 +68,7 @@ const SideBar = ({ data, sidebarOpen, setSidebarOpen }) => {
           className="flex items-center gap-3 rounded-xl border border-transparent px-4 py-3.5 text-left text-sm text-white/55 transition hover:border-white/[0.08] hover:bg-white/[0.04] hover:text-white"
         >
           <GiCrystalGrowth />
-          Management
+          Plans
           <FiArrowUpRight className="ml-auto text-white/25" />
         </button>
 
@@ -81,6 +81,18 @@ const SideBar = ({ data, sidebarOpen, setSidebarOpen }) => {
         >
           <FiAnchor />
           For Me
+          <FiArrowUpRight className="ml-auto text-white/25" />
+        </button>
+
+         <button
+          onClick={() => {
+            setSidebarOpen(false);
+            navigate("/dashboard/manage");
+          }}
+          className="flex items-center gap-3 rounded-xl border border-transparent px-4 py-3.5 text-left text-sm text-white/55 transition hover:border-white/[0.08] hover:bg-white/[0.04] hover:text-white"
+        >
+          <IoHandLeft />
+          Management
           <FiArrowUpRight className="ml-auto text-white/25" />
         </button>
       </nav>

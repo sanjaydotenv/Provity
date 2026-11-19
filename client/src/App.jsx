@@ -15,6 +15,7 @@ import CreatePlanForm from "./features/provity/ui/pages/CreatePlanForm";
 import ManagementPlanDetails from "./features/provity/ui/components/ManagementPlanDetails";
 import ManagementTaskDetails from "./features/provity/ui/pages/ManagementTaskDetails";
 import ForMePage from "./features/provity/ui/pages/ForMePage";
+import ManagePage from "./features/provity/ui/pages/ManagePage";
 
 const RootLayout = () => {
   return (
@@ -80,6 +81,10 @@ const router = createBrowserRouter([
       {
         path: "/dashboard/forme",
         element: <ForMePage />
+      },
+      {
+        path: "/dashboard/manage",
+        element: <ManagePage />
       }
     ],
   },
