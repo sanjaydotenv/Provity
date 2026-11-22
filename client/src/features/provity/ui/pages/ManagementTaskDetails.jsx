@@ -26,6 +26,7 @@ import { useManagementHook } from "../../hooks/ManagementHook";
 import BackBtn from "../components/BackBtn";
 import { IoArrowBackOutline } from "react-icons/io5";
 import { useNavigateHook } from "../../hooks/NavigationHook";
+import ToasterMsg from "../components/ToasterMsg";
 
 const ManagementTaskDetails = () => {
   const [activeTab, setActiveTab] = useState("Tasks");
@@ -42,7 +43,7 @@ const ManagementTaskDetails = () => {
 
   const { accessToken } = useSelector((state) => state.auth);
 
-  const { planAllTasks = [] } = useSelector((state) => state.manage);
+  const { planAllTasks = [], loading } = useSelector((state) => state.manage);
 
   const planId = localStorage.getItem("planId");
 
@@ -256,13 +257,30 @@ const ManagementTaskDetails = () => {
 
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--primary-color)]/15 text-[var(--primary-color)]">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--primary-color)]/15 text-[var(--primary-color)] z-[99999]">
               <FiCalendar size={30} />
             </div>
 
             <div>
               <h1 className="text-xl font-bold sm:text-2xl">Plan Manager</h1>
-
+              {loading ? (
+                ""
+              ) : <div
+                  className="
+        absolute top-5 right-30
+     flex items-center gap-3 w-fit max-w-[90vw]
+    px-5 py-3 rounded-xl overflow-hidden
+    backdrop-blur-2xl bg-[#171717]/80
+    border border-green-500/30
+    shadow-xl shadow-green-500/10
+    animate-toast-in z-[99999]
+  "
+                >
+                  <ToasterMsg
+                    msg={"Task Created Successfully."}
+                    status="success"
+                  />
+                </div>}
               <p className="text-xs text-white/45 sm:text-sm">
                 Manage your productivity and daily tasks
               </p>

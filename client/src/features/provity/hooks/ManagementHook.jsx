@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   createPlanAPI,
@@ -11,6 +11,7 @@ import {
 import { useNavigateHook } from "./NavigationHook";
 import {
   setAllPlans,
+  setLoading,
   setPlan,
   setPlanAllTasks,
 } from "../state/ManagementSlice";
@@ -105,7 +106,7 @@ export const useManagementHook = () => {
       dispatch(setPlan(response.data.plan));
       navigate("/dashboard/management/details");
     } catch (error) {
-      toast.warn(error.response.data.message)
+      toast.warn(error.response.data.message);
     }
   };
 
@@ -168,7 +169,11 @@ export const useManagementHook = () => {
   const handlePlanTaskComplete = async (taskId, planId, accessToken) => {
     const data = { taskId, planId };
     await planTaskCompleteAPI(data, accessToken);
-    toast.success("Task Completed");
+    dispatch(setLoading(false));
+    const timer = setTimeout(() => {
+      dispatch(setLoading(true));
+      return clearTimeout(timer);
+    }, 3000);
   };
 
   return {

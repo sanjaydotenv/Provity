@@ -7,7 +7,8 @@ const flowSlice = createSlice({
     oneFlow: null,
     DateWiseData: null,
     todayTasks: null,
-    dayFlowAllTaskDetails: null
+    dayFlowAllTaskDetails: null,
+    loading: false,
   },
   reducers: {
     setFlowData: (state, action) => {
@@ -22,13 +23,22 @@ const flowSlice = createSlice({
     setTodayTasks: (state, action) => {
       state.todayTasks = action.payload;
     },
-    setDayFlowDetailsData: (state , action) => {
-      state.dayFlowAllTaskDetails = action.payload
-    }
+    setDayFlowDetailsData: (state, action) => {
+      state.dayFlowAllTaskDetails = action.payload;
+    },
+    setLoadingState: (state, action) => {
+      state.loading = action.payload;
+    },
   },
 });
 
-export const { setFlowData, setOneFlowData, setDateWiseData , setTodayTasks , setDayFlowDetailsData} =
-  flowSlice.actions;
+export const {
+  setFlowData,
+  setOneFlowData,
+  setDateWiseData,
+  setTodayTasks,
+  setDayFlowDetailsData,
+  setLoadingState
+} = flowSlice.actions;
 
 export default flowSlice.reducer;

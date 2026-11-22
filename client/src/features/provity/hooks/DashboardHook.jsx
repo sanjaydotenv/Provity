@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addTaskAPI,
@@ -12,9 +12,11 @@ import {
 import {
   setDateWiseData,
   setFlowData,
+  setLoadingState,
   setOneFlowData,
   setTodayTasks,
 } from "../state/FlowSlice";
+import { useNavigateHook } from "./NavigationHook";
 
 export const useDashboardHook = () => {
   const [taskValue, setTaskValue] = useState({
@@ -29,6 +31,8 @@ export const useDashboardHook = () => {
     progress: 0,
   });
 
+  const { navigate } = useNavigateHook();
+
   const totalTasks = progressValue?.totalTasks || 0;
   const completed = progressValue?.completedTasks || 0;
   const pending = progressValue?.incompleteTasks || 0;
@@ -41,6 +45,8 @@ export const useDashboardHook = () => {
   const { DateWiseData } = useSelector((state) => state.flow);
   const dateWiseAllTaskShowRef = useRef(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const { loading } = useSelector((state) => state.flow);
 
   const [page, setPage] = useState(1);
 
@@ -75,9 +81,17 @@ export const useDashboardHook = () => {
 
   const handleTaskSubmit = async () => {
     try {
-      const response = await addTaskAPI(taskValue, accessToken);
+      await addTaskAPI(taskValue, accessToken);
 
-      console.log(response);
+      navigate("/dashboard/flow");
+
+      dispatch(setLoadingState(true));
+
+      const timer = setTimeout(() => {
+        dispatch(setLoadingState(false));
+
+        return clearTimeout(timer);
+      }, 3000);
 
       setTaskValue({
         title: "",

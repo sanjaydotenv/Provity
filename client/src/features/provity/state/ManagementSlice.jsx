@@ -27,7 +27,11 @@ const managementSlice = createSlice({
   },
 });
 
-export const { setPlan, setLoading, setAllPlans, setPlanAllTasks } =
-  managementSlice.actions;
+export const {
+  setPlan,
+  setLoading,
+  setAllPlans,
+  setPlanAllTasks,
+} = managementSlice.actions;
 
 export default managementSlice.reducer;

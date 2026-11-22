@@ -33,6 +33,7 @@ import { setDayFlowDetailsData } from "../../state/FlowSlice";
 import SideBar from "../components/SideBar";
 import TimeOverview from "../components/TimeOverview";
 import { useDashboardTimeHook } from "../../hooks/DashboardTimeHook";
+import ToasterMsg from "../components/ToasterMsg";
 
 const ORANGE = "#FC6C26";
 
@@ -58,7 +59,7 @@ const DashboardPage = () => {
     setPage,
     totalPages,
     page,
-    startIndex
+    startIndex,
   } = useDashboardHook();
 
   const { navigate } = useNavigateHook();
@@ -170,6 +171,7 @@ const DashboardPage = () => {
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#08090B] text-white selection:bg-[#FC6C26]/30">
       {/* Background Effects */}
+
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="absolute -top-60 left-[25%] h-[420px] w-[420px] rounded-full bg-[#FC6C26]/[0.055] blur-[140px]" />
         <div className="absolute right-[-200px] top-[45%] h-[380px] w-[380px] rounded-full bg-orange-500/[0.035] blur-[130px]" />
@@ -400,7 +402,7 @@ const DashboardPage = () => {
               <div className="grid grid-cols-1 items-stretch gap-5 2xl:grid-cols-[minmax(0,1fr)_280px]">
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                   {currentData?.map((flow, idx) => {
-                     const dayNumber = DateWiseData.length - (startIndex + idx);
+                    const dayNumber = DateWiseData.length - (startIndex + idx);
                     const flowProgress =
                       flow.totalTasks > 0
                         ? Math.min(
@@ -423,12 +425,7 @@ const DashboardPage = () => {
 
                             <div className="min-w-0">
                               <h3 className="truncate text-xs font-medium text-white/90">
-                            
-                                Day{" "}
-                                {String(dayNumber).padStart(
-                                  3,
-                                  "0",
-                                )}
+                                Day {String(dayNumber).padStart(3, "0")}
                               </h3>
 
                               <p className="mt-1 text-[10px] text-white/35">

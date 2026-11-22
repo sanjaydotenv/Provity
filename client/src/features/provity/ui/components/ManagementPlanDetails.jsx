@@ -16,20 +16,20 @@ import {
 
 import { useManagementHook } from "../../hooks/ManagementHook";
 import Loading from "../../ui/components/Loading";
+import ToasterMsg from "./ToasterMsg";
 
 const ManagementPlanDetails = () => {
   const navigate = useNavigate();
 
-  console.log("running somethinf")
-  const planIdd = localStorage.getItem("planIdd")
+  console.log("running somethinf");
+  const planIdd = localStorage.getItem("planIdd");
 
-  const {
-  handleGetPlanAPI,
-  handleSubmitSaveAllTasksData,
-} = useManagementHook();
+  const { handleGetPlanAPI, handleSubmitSaveAllTasksData } =
+    useManagementHook();
 
   const { accessToken } = useSelector((state) => state.auth);
   const { plan } = useSelector((state) => state.manage);
+  
 
   // Local task state
   const [tasks, setTasks] = useState({});
@@ -38,10 +38,10 @@ const ManagementPlanDetails = () => {
   // Get Plan
 
   useEffect(() => {
-    if (!accessToken) return
+    if (!accessToken) return;
 
-    handleGetPlanAPI(planIdd , accessToken)
-  } , [accessToken])
+    handleGetPlanAPI(planIdd, accessToken);
+  }, [accessToken]);
 
   // Initialize tasks according to plan duration
   useEffect(() => {
@@ -151,11 +151,12 @@ const ManagementPlanDetails = () => {
     setError("");
 
     // Save all tasks through existing hook
-    handleSubmitSaveAllTasksData(plan._id, accessToken , tasks)
+    handleSubmitSaveAllTasksData(plan._id, accessToken, tasks);
   };
 
   return (
     <div className="min-h-screen bg-[#080808] text-white px-4 py-6 md:px-8 lg:px-10">
+      
       <div className="max-w-[1100px] mx-auto">
         {/* Back Button */}
         <button
