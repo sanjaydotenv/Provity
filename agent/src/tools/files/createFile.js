@@ -2,17 +2,16 @@ import { writeFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 import { tool } from "langchain";
 import { z } from "zod";
-
-const WORKSPACE = path.resolve("workspace");
+import CONSTANTS from "../../utils/constants.js";
 
 const createFile = tool(
   async function ({ fileName, content }) {
     try {
-      await mkdir(WORKSPACE, { recursive: true });
+      await mkdir(CONSTANTS.WORKSPACE, { recursive: true });
 
-      const filePath = path.resolve(WORKSPACE, fileName);
+      const filePath = path.resolve(CONSTANTS.WORKSPACE, fileName);
 
-      if (!filePath.startsWith(WORKSPACE + path.sep)) {
+      if (!filePath.startsWith(CONSTANTS.WORKSPACE + path.sep)) {
         return "Error: Invalid file path.";
       }
 
