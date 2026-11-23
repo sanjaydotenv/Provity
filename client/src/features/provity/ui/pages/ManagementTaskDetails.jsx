@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from "react";
 
 import {
   FiCalendar,
-  FiPlus,
   FiList,
   FiBarChart2,
   FiClock,
@@ -13,7 +12,6 @@ import {
   FiChevronRight,
   FiMoreVertical,
   FiTarget,
-  FiZap,
   FiInfo,
   FiTrendingUp,
   FiEdit2,
@@ -23,19 +21,27 @@ import {
 
 import { useSelector } from "react-redux";
 import { useManagementHook } from "../../hooks/ManagementHook";
-import BackBtn from "../components/BackBtn";
 import { IoArrowBackOutline } from "react-icons/io5";
 import { useNavigateHook } from "../../hooks/NavigationHook";
 import ToasterMsg from "../components/ToasterMsg";
 
 const ManagementTaskDetails = () => {
   const [activeTab, setActiveTab] = useState("Tasks");
-
   const [expandedDays, setExpandedDays] = useState([1]);
-
   const [showMenu, setShowMenu] = useState(null);
-
   const [days, setDays] = useState([]);
+
+  // LIVE COUNTDOWN STATE
+  const [currentTime, setCurrentTime] = useState(() => Date.now());
+
+  // UPDATE TIME EVERY SECOND
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentTime(Date.now());
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   const { navigate } = useNavigateHook();
 
@@ -54,6 +60,7 @@ const ManagementTaskDetails = () => {
     }
   }, [planId, accessToken]);
 
+  // GET LATEST PLAN
   const latestPlan = useMemo(() => {
     if (!Array.isArray(planAllTasks) || !planAllTasks.length) {
       return null;
@@ -143,7 +150,6 @@ const ManagementTaskDetails = () => {
   // SYNC DAYS WITH REDUX DATA
   useEffect(() => {
     setDays(formattedDays);
-
     setExpandedDays([1]);
   }, [formattedDays]);
 
@@ -163,18 +169,40 @@ const ManagementTaskDetails = () => {
   const progress =
     totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
-  // REMAINING DAYS
-  const remainingDays = latestPlan
-    ? Math.max(
-        0,
-        Math.ceil(
-          (new Date(`${latestPlan.endDate}T23:59:59`).getTime() - Date.now()) /
-            (1000 * 60 * 60 * 24),
-        ),
-      )
+  // ==========================================
+  // PLAN EXPIRATION COUNTDOWN
+  // ==========================================
+
+  // END DATE: 11:59:59.999 PM LOCAL TIME
+  const endTime = latestPlan?.endDate
+    ? new Date(`${latestPlan.endDate}T23:59:59.999`).getTime()
     : 0;
 
+  // CHECK VALID END TIME
+  const isValidEndTime = Number.isFinite(endTime) && endTime > 0;
+
+  // REMAINING MILLISECONDS
+  const remainingTime = isValidEndTime ? Math.max(0, endTime - currentTime) : 0;
+
+  // REMAINING DAYS
+  const countdownDays = Math.floor(remainingTime / (1000 * 60 * 60 * 24));
+
+  // REMAINING HOURS
+  const hours = Math.floor((remainingTime / (1000 * 60 * 60)) % 24);
+
+  // REMAINING MINUTES
+  const minutes = Math.floor((remainingTime / (1000 * 60)) % 60);
+
+  // REMAINING SECONDS
+  const seconds = Math.floor((remainingTime / 1000) % 60);
+
+  // PLAN EXPIRED CHECK
+  const isPlanExpired = !isValidEndTime || remainingTime === 0;
+
+  // ==========================================
   // TOGGLE DAY
+  // ==========================================
+
   const toggleDay = (dayNumber) => {
     setExpandedDays((prev) =>
       prev.includes(dayNumber)
@@ -183,7 +211,10 @@ const ManagementTaskDetails = () => {
     );
   };
 
+  // ==========================================
   // TOGGLE TASK
+  // ==========================================
+
   const toggleTask = (dayNumber, taskId) => {
     setDays((prev) =>
       prev.map((day) =>
@@ -205,9 +236,10 @@ const ManagementTaskDetails = () => {
     );
   };
 
-  // ADD TASK
-
+  // ==========================================
   // DELETE TASK
+  // ==========================================
+
   const handleDeleteTask = (dayNumber, taskId) => {
     setDays((prev) =>
       prev.map((day) =>
@@ -224,13 +256,17 @@ const ManagementTaskDetails = () => {
     setShowMenu(null);
   };
 
+  // TABS
   const tabs = [
     { name: "Tasks", icon: FiList },
     { name: "Overview", icon: FiBarChart2 },
     { name: "Timeline", icon: FiCalendar },
   ];
 
+  // ==========================================
   // NO PLAN FOUND
+  // ==========================================
+
   if (!latestPlan) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[var(--main-bg)] p-5 text-[var(--text-color)]">
@@ -250,6 +286,10 @@ const ManagementTaskDetails = () => {
     );
   }
 
+  // ==========================================
+  // MAIN UI
+  // ==========================================
+
   return (
     <div className="min-h-screen w-full bg-[var(--main-bg)] p-3 text-[var(--text-color)] sm:p-5">
       <div className="mx-auto max-w-[1600px] space-y-4">
@@ -257,30 +297,35 @@ const ManagementTaskDetails = () => {
 
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--primary-color)]/15 text-[var(--primary-color)] z-[99999]">
+            <div className="z-[99999] flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--primary-color)]/15 text-[var(--primary-color)]">
               <FiCalendar size={30} />
             </div>
 
             <div>
               <h1 className="text-xl font-bold sm:text-2xl">Plan Manager</h1>
+
               {loading ? (
                 ""
-              ) : <div
+              ) : (
+                <div
                   className="
-        absolute top-5 right-30
-     flex items-center gap-3 w-fit max-w-[90vw]
-    px-5 py-3 rounded-xl overflow-hidden
-    backdrop-blur-2xl bg-[#171717]/80
-    border border-green-500/30
-    shadow-xl shadow-green-500/10
-    animate-toast-in z-[99999]
-  "
+                    absolute top-5 right-30
+                    flex w-fit max-w-[90vw] items-center gap-3
+                    overflow-hidden rounded-xl
+                    border border-green-500/30
+                    bg-[#171717]/80 px-5 py-3
+                    shadow-xl shadow-green-500/10
+                    backdrop-blur-2xl
+                    animate-toast-in z-[99999]
+                  "
                 >
                   <ToasterMsg
                     msg={"Task Created Successfully."}
                     status="success"
                   />
-                </div>}
+                </div>
+              )}
+
               <p className="text-xs text-white/45 sm:text-sm">
                 Manage your productivity and daily tasks
               </p>
@@ -324,6 +369,8 @@ const ManagementTaskDetails = () => {
               </p>
 
               <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+                {/* CREATED DATE */}
+
                 <div className="border-l-2 border-white/10 pl-4">
                   <div className="flex items-center gap-2 text-xs text-white/50">
                     <FiCalendar className="text-[var(--primary-color)]" />
@@ -331,9 +378,11 @@ const ManagementTaskDetails = () => {
                   </div>
 
                   <p className="mt-2 text-sm font-semibold">
-                    {formatDate(latestPlan.createdAt || latestPlan.startDate)}
+                    {formatDate(latestPlan?.startDate)}
                   </p>
                 </div>
+
+                {/* TARGET DATE */}
 
                 <div className="border-l-2 border-white/10 pl-4">
                   <div className="flex items-center gap-2 text-xs text-white/50">
@@ -346,6 +395,8 @@ const ManagementTaskDetails = () => {
                   </p>
                 </div>
 
+                {/* LIVE COUNTDOWN */}
+
                 <div className="border-l-2 border-white/10 pl-4">
                   <div className="flex items-center gap-2 text-xs text-white/50">
                     <FiClock className="text-[var(--primary-color)]" />
@@ -353,8 +404,16 @@ const ManagementTaskDetails = () => {
                   </div>
 
                   <div className="mt-1 flex items-center gap-2">
-                    <span className="text-xl font-bold text-[var(--primary-color)]">
-                      {remainingDays} Days
+                    <span
+                      className={`text-xl font-bold ${
+                        isPlanExpired
+                          ? "text-red-500"
+                          : "text-[var(--primary-color)]"
+                      }`}
+                    >
+                      {isPlanExpired
+                        ? "Plan Expired"
+                        : `${String(countdownDays).padStart(2, "0")} : ${String(hours).padStart(2, "0")} : ${String(minutes).padStart(2, "0")} : ${String(seconds).padStart(2, "0")}`}
                     </span>
                   </div>
                 </div>
@@ -401,14 +460,15 @@ const ManagementTaskDetails = () => {
                     }`}
                   >
                     <Icon size={15} />
-
                     {tab.name}
                   </button>
                 );
               })}
             </div>
 
+            {/* ================================= */}
             {/* TASKS */}
+            {/* ================================= */}
 
             {activeTab === "Tasks" && (
               <div className="space-y-1 p-3">
@@ -422,9 +482,7 @@ const ManagementTaskDetails = () => {
                   return (
                     <div key={day.day}>
                       <button
-                        onClick={() => {
-                          toggleDay(day.day);
-                        }}
+                        onClick={() => toggleDay(day.day)}
                         className="flex w-full items-center justify-between rounded-lg px-2 py-3 transition hover:bg-white/[0.04]"
                       >
                         <div className="flex min-w-0 items-center gap-2">
@@ -435,8 +493,14 @@ const ManagementTaskDetails = () => {
                           )}
 
                           <span
-                            className={`h-2 w-2 shrink-0 rounded-full ${day.tasks[0].isDone ? "bg-green-500" : "bg-yellow-500"}`}
+                            className={`h-2 w-2 shrink-0 rounded-full ${
+                              day.tasks.length > 0 &&
+                              dayCompleted === day.tasks.length
+                                ? "bg-green-500"
+                                : "bg-yellow-500"
+                            }`}
                           />
+
                           <span className="truncate text-xs font-semibold sm:text-sm">
                             Day {day.day} – {day.date}
                           </span>
@@ -448,7 +512,7 @@ const ManagementTaskDetails = () => {
                       </button>
 
                       {isExpanded && (
-                        <div className="mb-2 space-y-1 rounded-xl bg-white/[0.02] p-5 ">
+                        <div className="mb-2 space-y-1 rounded-xl bg-white/[0.02] p-5">
                           {day.tasks.length === 0 ? (
                             <div className="py-5 text-center text-xs text-white/30">
                               No tasks scheduled for this day.
@@ -459,6 +523,8 @@ const ManagementTaskDetails = () => {
                                 key={task.id}
                                 className="group flex items-center gap-3 rounded-lg border border-white/[0.04] bg-white/[0.025] px-3 py-3 transition hover:border-[var(--primary-color)]/30"
                               >
+                                {/* COMPLETE TASK */}
+
                                 <button
                                   disabled={task.completed}
                                   onClick={() => {
@@ -467,11 +533,12 @@ const ManagementTaskDetails = () => {
                                       task.plan,
                                       accessToken,
                                     );
+
                                     toggleTask(day.day, task.id);
                                   }}
                                   className={`shrink-0 ${
                                     task.completed
-                                      ? "text-[var(--primary-color)] cursor-not-allowed"
+                                      ? "cursor-not-allowed text-[var(--primary-color)]"
                                       : "text-white/60 hover:text-[var(--primary-color)]"
                                   }`}
                                 >
@@ -482,15 +549,19 @@ const ManagementTaskDetails = () => {
                                   )}
                                 </button>
 
+                                {/* TASK DETAILS */}
+
                                 <div className="min-w-0 flex-1">
                                   <h4 className="text-sm font-bold text-white sm:text-base">
                                     {task.title}
                                   </h4>
 
-                                  <p className="mt-1 text-[10px] leading-relaxed text-white/40 sm:text-xs whitespace-normal break-words line-clamp-2">
+                                  <p className="mt-1 line-clamp-2 whitespace-normal break-words text-[10px] leading-relaxed text-white/40 sm:text-xs">
                                     {task.description || "No description"}
                                   </p>
                                 </div>
+
+                                {/* TASK DURATION */}
 
                                 <span
                                   className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold ${
@@ -503,6 +574,8 @@ const ManagementTaskDetails = () => {
                                 >
                                   {task.duration}
                                 </span>
+
+                                {/* TASK MENU */}
 
                                 <div className="relative">
                                   <button
@@ -541,7 +614,9 @@ const ManagementTaskDetails = () => {
               </div>
             )}
 
+            {/* ================================= */}
             {/* OVERVIEW */}
+            {/* ================================= */}
 
             {activeTab === "Overview" && (
               <div className="space-y-4 p-5">
@@ -587,6 +662,8 @@ const ManagementTaskDetails = () => {
                   })}
                 </div>
 
+                {/* OVERALL PROGRESS */}
+
                 <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
                   <div className="mb-3 flex justify-between text-sm">
                     <span className="text-white/60">Overall Progress</span>
@@ -606,7 +683,9 @@ const ManagementTaskDetails = () => {
               </div>
             )}
 
+            {/* ================================= */}
             {/* TIMELINE */}
+            {/* ================================= */}
 
             {activeTab === "Timeline" && (
               <div className="space-y-1 p-5">
@@ -643,7 +722,9 @@ const ManagementTaskDetails = () => {
             )}
           </div>
 
+          {/* ================================= */}
           {/* RIGHT SIDEBAR */}
+          {/* ================================= */}
 
           <div className="space-y-3">
             {/* PLAN DETAILS */}
@@ -751,8 +832,6 @@ const ManagementTaskDetails = () => {
                 <span>{progress}%</span>
               </div>
             </div>
-
-            {/* QUICK ACTIONS */}
 
             {/* PRODUCTIVITY */}
 
