@@ -309,15 +309,15 @@ const ManagementTaskDetails = () => {
               ) : (
                 <div
                   className="
-                    absolute top-5 right-30
-                    flex w-fit max-w-[90vw] items-center gap-3
-                    overflow-hidden rounded-xl
-                    border border-green-500/30
-                    bg-[#171717]/80 px-5 py-3
-                    shadow-xl shadow-green-500/10
-                    backdrop-blur-2xl
-                    animate-toast-in z-[99999]
-                  "
+    fixed top-5 right-25
+    flex w-fit max-w-[90vw] items-center gap-3
+    overflow-hidden rounded-xl
+    border border-green-500/30
+    bg-[#171717]/80 px-5 py-3
+    shadow-xl shadow-green-500/10
+    backdrop-blur-2xl
+    animate-toast-in z-[99999]
+  "
                 >
                   <ToasterMsg
                     msg={"Task Created Successfully."}

@@ -13,6 +13,7 @@ import {
   setDateWiseData,
   setFlowData,
   setLoadingState,
+  setMarkAsComplete,
   setOneFlowData,
   setTodayTasks,
 } from "../state/FlowSlice";
@@ -131,6 +132,13 @@ export const useDashboardHook = () => {
 
   const handleCompleteTask = async (id, accessToken) => {
     await markAsCompleteTaskAPI(id, accessToken);
+    dispatch(setMarkAsComplete(true));
+
+    const timer = setTimeout(() => {
+      dispatch(setMarkAsComplete(false));
+
+      return clearTimeout(timer);
+    }, 3000);
     setIsDetailsOpen(false);
   };
 

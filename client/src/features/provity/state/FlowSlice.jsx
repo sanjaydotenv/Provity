@@ -9,6 +9,7 @@ const flowSlice = createSlice({
     todayTasks: null,
     dayFlowAllTaskDetails: null,
     loading: false,
+    markAsComplete: false,
   },
   reducers: {
     setFlowData: (state, action) => {
@@ -29,6 +30,9 @@ const flowSlice = createSlice({
     setLoadingState: (state, action) => {
       state.loading = action.payload;
     },
+    setMarkAsComplete: (state, action) => {
+      state.markAsComplete = action.payload;
+    },
   },
 });
 
@@ -38,7 +42,8 @@ export const {
   setDateWiseData,
   setTodayTasks,
   setDayFlowDetailsData,
-  setLoadingState
+  setLoadingState,
+  setMarkAsComplete
 } = flowSlice.actions;
 
 export default flowSlice.reducer;

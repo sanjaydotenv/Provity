@@ -36,9 +36,8 @@ const FlowPage = () => {
   } = useDashboardHook();
 
   const { accessToken } = useSelector((state) => state.auth);
-  const { oneFlow, DateWiseData, todayTasks, loading } = useSelector(
-    (state) => state.flow,
-  );
+  const { oneFlow, DateWiseData, todayTasks, loading, markAsComplete } =
+    useSelector((state) => state.flow);
 
   useEffect(() => {
     handleTodayTasks(accessToken);
@@ -113,7 +112,7 @@ const FlowPage = () => {
       {/* Main Content */}
       <main className="mx-auto min-h-[calc(100svh-100px)] w-full max-w-7xl pb-24 pt-8 sm:pt-10">
         {/* Page Header */}
-        
+
         {loading && (
           <div
             className="
@@ -127,6 +126,22 @@ const FlowPage = () => {
   "
           >
             <ToasterMsg msg={"Task Created Successfully."} status="success" />
+          </div>
+        )}
+
+        {markAsComplete && (
+          <div
+            className="
+        absolute top-5 right-30
+     flex items-center gap-3 w-fit max-w-[90vw]
+    px-5 py-3 rounded-xl overflow-hidden
+    backdrop-blur-2xl bg-[#171717]/80
+    border border-green-500/30
+    shadow-xl shadow-green-500/10
+    animate-toast-in
+  "
+          >
+            <ToasterMsg msg={"Task Completed."} status="success" />
           </div>
         )}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
