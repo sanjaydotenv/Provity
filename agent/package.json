@@ -22,6 +22,7 @@
     "dotenv": "^18.0.10",
     "groq-sdk": "^1.6.0",
     "langchain": "^1.6.6",
+    "node-microphone": "^0.2.0",
     "node-record-lpcm16": "^1.0.1",
     "sox": "^0.1.0"
   }
