@@ -21,6 +21,8 @@ const ManagementPage = () => {
   const { allPlans } = useSelector((state) => state.manage);
   const { accessToken } = useSelector((state) => state.auth);
 
+  console.log(allPlans)
+
   const { handleGetAllPlans } = useManagementHook();
 
   useEffect(() => {

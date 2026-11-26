@@ -51,6 +51,19 @@ const ManagementTaskDetails = () => {
 
   const { planAllTasks = [], loading } = useSelector((state) => state.manage);
 
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const endDate = planAllTasks?.[0]?.endDate
+    ? new Date(planAllTasks[0].endDate)
+    : null;
+
+  endDate?.setHours(0, 0, 0, 0);
+
+  const isExpired = endDate ? today > endDate : false;
+
+  // console.log(planAllTasks[0]?.endDate)
+
   const planId = localStorage.getItem("planId");
 
   // FETCH PLAN TASKS
@@ -173,32 +186,47 @@ const ManagementTaskDetails = () => {
   // PLAN EXPIRATION COUNTDOWN
   // ==========================================
 
-  // END DATE: 11:59:59.999 PM LOCAL TIME
-  const endTime = latestPlan?.endDate
-    ? new Date(`${latestPlan.endDate}T23:59:59.999`).getTime()
+  // ==========================================
+  // PLAN COUNTDOWN
+  // ==========================================
+
+  const DAY = 1000 * 60 * 60 * 24;
+
+  const duration = Number(latestPlan?.duration || 0);
+
+  // PLAN CREATION TIME
+  const createdTime = latestPlan?.createdAt
+    ? new Date(latestPlan.createdAt).getTime()
     : 0;
 
-  // CHECK VALID END TIME
-  const isValidEndTime = Number.isFinite(endTime) && endTime > 0;
+  // EXPIRY TIME = CREATION TIME + DURATION
+  const endTime = createdTime + duration * DAY;
 
-  // REMAINING MILLISECONDS
-  const remainingTime = isValidEndTime ? Math.max(0, endTime - currentTime) : 0;
+  // VALIDATION
+  const isValidPlan =
+    Number.isFinite(createdTime) &&
+    Number.isFinite(duration) &&
+    createdTime > 0 &&
+    duration > 0;
 
-  // REMAINING DAYS
-  const countdownDays = Math.floor(remainingTime / (1000 * 60 * 60 * 24));
+  // REMAINING TIME
+  const remainingTime = isValidPlan ? Math.max(0, endTime - currentTime) : 0;
 
-  // REMAINING HOURS
+  // EXPIRED CHECK
+  const isPlanExpired = !isValidPlan || remainingTime === 0;
+
+  // DAYS LEFT
+  const countdownDays = Math.ceil(remainingTime / DAY);
+
+  // LAST 24 HOURS
+  const showLiveCountdown = !isPlanExpired && remainingTime <= DAY;
+
+  // HOURS, MINUTES, SECONDS
   const hours = Math.floor((remainingTime / (1000 * 60 * 60)) % 24);
 
-  // REMAINING MINUTES
   const minutes = Math.floor((remainingTime / (1000 * 60)) % 60);
 
-  // REMAINING SECONDS
   const seconds = Math.floor((remainingTime / 1000) % 60);
-
-  // PLAN EXPIRED CHECK
-  const isPlanExpired = !isValidEndTime || remainingTime === 0;
-
   // ==========================================
   // TOGGLE DAY
   // ==========================================
@@ -294,7 +322,6 @@ const ManagementTaskDetails = () => {
     <div className="min-h-screen w-full bg-[var(--main-bg)] p-3 text-[var(--text-color)] sm:p-5">
       <div className="mx-auto max-w-[1600px] space-y-4">
         {/* HEADER */}
-
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="z-[99999] flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--primary-color)]/15 text-[var(--primary-color)]">
@@ -413,7 +440,9 @@ const ManagementTaskDetails = () => {
                     >
                       {isPlanExpired
                         ? "Plan Expired"
-                        : `${String(countdownDays).padStart(2, "0")} : ${String(hours).padStart(2, "0")} : ${String(minutes).padStart(2, "0")} : ${String(seconds).padStart(2, "0")}`}
+                        : showLiveCountdown
+                          ? `${String(hours).padStart(2, "0")} : ${String(minutes).padStart(2, "0")} : ${String(seconds).padStart(2, "0")}`
+                          : `${countdownDays} Days Left`}
                     </span>
                   </div>
                 </div>
@@ -521,33 +550,64 @@ const ManagementTaskDetails = () => {
                             day.tasks.map((task) => (
                               <div
                                 key={task.id}
-                                className="group flex items-center gap-3 rounded-lg border border-white/[0.04] bg-white/[0.025] px-3 py-3 transition hover:border-[var(--primary-color)]/30"
+                                className="group flex items-center relative gap-3 rounded-lg border border-white/[0.04] bg-white/[0.025] px-3 py-3 transition hover:border-[var(--primary-color)]/30"
                               >
                                 {/* COMPLETE TASK */}
 
-                                <button
-                                  disabled={task.completed}
-                                  onClick={() => {
-                                    handlePlanTaskComplete(
-                                      task._id,
-                                      task.plan,
-                                      accessToken,
-                                    );
+                                <div className="group/complete relative shrink-0">
+                                  {/* EXPIRED TOOLTIP */}
 
-                                    toggleTask(day.day, task.id);
-                                  }}
-                                  className={`shrink-0 ${
-                                    task.completed
-                                      ? "cursor-not-allowed text-[var(--primary-color)]"
-                                      : "text-white/60 hover:text-[var(--primary-color)]"
-                                  }`}
-                                >
-                                  {task.completed ? (
-                                    <FiCheckCircle size={21} />
-                                  ) : (
-                                    <FiCircle size={21} />
+                                  {isExpired && !task.completed && (
+                                    <div className="pointer-events-none absolute bottom-full left-1/2 ml-30 z-50 mb-3 w-56 -translate-x-1/2 translate-y-2 opacity-0 transition-all duration-200 group-hover/complete:translate-y-0 group-hover/complete:opacity-100">
+                                      <div className="rounded-xl border border-red-500/20 bg-[#211515] px-3 py-2.5 shadow-xl shadow-black/40">
+                                        <div className="flex items-center gap-2">
+                                          <span className="h-2 w-2 rounded-full bg-red-500"></span>
+
+                                          <p className="text-xs font-bold text-red-400">
+                                            Plan Expired
+                                          </p>
+                                        </div>
+
+                                        <p className="mt-1.5 text-[11px] leading-relaxed text-white/60">
+                                          Your plan has expired. You can no
+                                          longer complete tasks.
+                                        </p>
+                                      </div>
+
+                                      {/* TOOLTIP ARROW */}
+
+                                      <div className="absolute left-1/2 top-full -mt-px -translate-x-1/2 border-[6px] border-transparent border-t-[#211515]"></div>
+                                    </div>
                                   )}
-                                </button>
+
+                                  <button
+                                    disabled={task.completed || isExpired}
+                                    onClick={() => {
+                                      handlePlanTaskComplete(
+                                        task._id,
+                                        task.plan,
+                                        accessToken,
+                                      );
+
+                                      toggleTask(day.day, task.id);
+                                    }}
+                                    className={`shrink-0 ${
+                                      task.completed
+                                        ? "cursor-not-allowed text-[var(--primary-color)]"
+                                        : "text-white/60 hover:text-[var(--primary-color)]"
+                                    } ${
+                                      isExpired
+                                        ? "cursor-not-allowed text-[var(--primary-color)]"
+                                        : "text-white/60 hover:text-[var(--primary-color)]"
+                                    }`}
+                                  >
+                                    {task.completed ? (
+                                      <FiCheckCircle size={21} />
+                                    ) : (
+                                      <FiCircle size={21} />
+                                    )}
+                                  </button>
+                                </div>
 
                                 {/* TASK DETAILS */}
 
@@ -746,7 +806,7 @@ const ManagementTaskDetails = () => {
                     icon: FiCalendar,
                     label: "Created On",
                     value: formatDate(
-                      latestPlan.createdAt || latestPlan.startDate,
+                      latestPlan.startDate,
                     ),
                   },
                   {

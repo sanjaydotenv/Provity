@@ -6,9 +6,13 @@ import AppError from "../utils/app.error.js";
 const createPlanController = async (req, res) => {
   const allPlans = await planModel.find();
 
+  console.log(allPlans);
+
   const result = await allPlans.some((plan) => {
     return plan.status === "Active";
   });
+
+  console.log(result);
 
   if (result) {
     return res.status(409).json({
@@ -142,6 +146,9 @@ const getAllPlanController = async (req, res) => {
       },
     ]);
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     const updatedPlans = plans.map((plan) => {
       const stats = taskStats.find(
         (task) => task._id.toString() === plan._id.toString(),
@@ -151,9 +158,6 @@ const getAllPlanController = async (req, res) => {
       const completedTasks = stats?.completedTasks || 0;
 
       const allTasksCompleted = totalTasks > 0 && totalTasks === completedTasks;
-
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
 
       const endDate = new Date(plan.endDate);
       endDate.setHours(0, 0, 0, 0);
@@ -176,6 +180,33 @@ const getAllPlanController = async (req, res) => {
         pendingTasks: totalTasks - completedTasks,
       };
     });
+
+    // UPDATE DATABASE STATUS
+
+    const bulkOperations = updatedPlans
+      .filter((plan) => {
+        return (
+          plans.find((p) => p._id.toString() === plan._id.toString())
+            ?.status !== plan.status
+        );
+      })
+      .map((plan) => ({
+        updateOne: {
+          filter: {
+            _id: plan._id,
+            user: req.user.id,
+          },
+          update: {
+            $set: {
+              status: plan.status,
+            },
+          },
+        },
+      }));
+
+    if (bulkOperations.length > 0) {
+      await planModel.bulkWrite(bulkOperations);
+    }
 
     res.status(200).json({
       success: true,
